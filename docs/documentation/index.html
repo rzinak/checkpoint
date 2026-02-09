@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation - Checkpoint</title>
+  <meta name="description" content="Complete documentation for Checkpoint save game manager">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="mobile-header">
+    <button class="menu-toggle" id="menuToggle">
+      <i data-lucide="menu"></i>
+    </button>
+    <span class="mobile-title">Checkpoint Docs</span>
+    <a href="../index.html" class="home-link">
+      <i data-lucide="home"></i>
+    </a>
+  </header>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="../index.html" class="logo-link">
+        <div class="logo">C</div>
+        <span>Checkpoint</span>
+      </a>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <h3>Getting Started</h3>
+        <ul>
+          <li><a href="#introduction">Introduction</a></li>
+          <li><a href="#installation">Installation</a></li>
+          <li><a href="#first-game">Your First Game</a></li>
+        </ul>
+      </div>
+      
+      <div class="nav-section">
+        <h3>Using Checkpoint</h3>
+        <ul>
+          <li><a href="#snapshots">Working with Snapshots</a></li>
+          <li><a href="#restore">Restoring Saves</a></li>
+          <li><a href="#covers">Game Covers</a></li>
+          <li><a href="#manage">Managing Games</a></li>
+        </ul>
+      </div>
+      
+      <div class="nav-section">
+        <h3>Configuration</h3>
+        <ul>
+          <li><a href="#settings">Settings</a></li>
+          <li><a href="#backup-location">Backup Location</a></li>
+          <li><a href="#languages">Languages</a></li>
+        </ul>
+      </div>
+      
+      <div class="nav-section">
+        <h3>Help</h3>
+        <ul>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#troubleshooting">Troubleshooting</a></li>
+          <li><a href="#tips">Tips & Tricks</a></li>
+        </ul>
+      </div>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <a href="https://github.com/rzinak/checkpoint" target="_blank">
+        <i data-lucide="github"></i>
+        GitHub
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="content">
+      <section id="introduction">
+        <h1>Checkpoint Documentation</h1>
+        <p class="lead">
+          Checkpoint is a save game manager for local games. It helps you create backups (snapshots) 
+          of your save files, switch between different saves, and protect your progress from accidents 
+          or corruption.
+        </p>
+        
+        <h2>What is Checkpoint?</h2>
+        <p>
+          If you play games outside of Steam, GOG, or other platforms that automatically sync saves, 
+          you probably know the pain of losing progress. Maybe a save got corrupted, or you want to 
+          try a different path in the game without losing your main progress.
+        </p>
+        <p>
+          Checkpoint solves this by letting you create timestamped backups of your save files. 
+          You can have multiple saves for the same game, switch between them instantly, and never 
+          worry about losing hours of progress again.
+        </p>
+        
+        <h3>Key Features</h3>
+        <ul>
+          <li><strong>Snapshots</strong> - Create timestamped backups with one click</li>
+          <li><strong>Instant Restore</strong> - Switch between saves in seconds</li>
+          <li><strong>Smart Protection</strong> - Auto-backs up current save before restoring</li>
+          <li><strong>Game Covers</strong> - Upload custom images to identify games visually</li>
+          <li><strong>Process Detection</strong> - Won't restore while game is running</li>
+          <li><strong>Cross-Platform</strong> - Windows, Linux, and macOS support</li>
+        </ul>
+      </section>
+
+      <section id="installation">
+        <h2>Installation</h2>
+        
+        <h3>Windows</h3>
+        <ol>
+          <li>Download <code>checkpoint.exe</code> from the releases page</li>
+          <li>Place it anywhere (Documents, Desktop, etc.)</li>
+          <li>Double-click to run - no installation needed</li>
+        </ol>
+        <p>
+          Checkpoint is a portable executable. It doesn't require installation 
+          and doesn't write to the registry.
+        </p>
+        
+        <h3>Linux</h3>
+        <p><strong>Debian/Ubuntu:</strong></p>
+        <pre><code>sudo dpkg -i checkpoint_0.1.0_amd64.deb</code></pre>
+        
+        <p><strong>Fedora:</strong></p>
+        <pre><code>sudo rpm -i checkpoint-0.1.0-1.x86_64.rpm</code></pre>
+        
+        <p><strong>Arch (AUR):</strong></p>
+        <pre><code>yay -S checkpoint</code></pre>
+        
+        <p>
+          You can also run the AppImage directly without installing: 
+          <code>chmod +x Checkpoint-0.1.0.AppImage && ./Checkpoint-0.1.0.AppImage</code>
+        </p>
+        
+        <h3>macOS</h3>
+        <ol>
+          <li>Download the <code>Checkpoint_0.1.0.dmg</code></li>
+          <li>Open the DMG and drag Checkpoint to your Applications folder</li>
+          <li>On first launch, you may need to right-click and select "Open" due to Gatekeeper</li>
+        </ol>
+      </section>
+
+      <section id="first-game">
+        <h2>Your First Game</h2>
+        
+        <p>
+          Let's add your first game to Checkpoint. For this example, we'll use a hypothetical 
+          game called "RPG Adventure" that stores saves in <code>Documents/MyGames/RPGAventure</code>.
+        </p>
+        
+        <h3>Step 1: Click "Add Game"</h3>
+        <p>
+          In the sidebar, click the green "Add Game" button. This opens a modal where you'll 
+          enter the game details.
+        </p>
+        
+        <h3>Step 2: Fill in the Details</h3>
+        <ul>
+          <li><strong>Game Name</strong> - "RPG Adventure" (whatever you want to call it)</li>
+          <li><strong>Save Location</strong> - The folder where save files are stored. Use the 
+          "Browse" button to navigate to it, or type the path directly.</li>
+          <li><strong>Executable Name (optional)</strong> - "RPGAdventure.exe" - This lets Checkpoint 
+          check if the game is running before restoring saves.</li>
+        </ul>
+        
+        <h3>Step 3: Add a Cover (Optional)</h3>
+        <p>
+          Click on the cover upload area to add an image. This helps identify the game visually. 
+          Works best with vertical images (3:4 ratio) like game box art. Max size 2MB, JPG or PNG.
+        </p>
+        
+        <h3>Step 4: Save</h3>
+        <p>
+          Click "Add Game" and you're done! The game now appears on your dashboard with a card 
+          showing the cover (or a placeholder), name, save location, and creation date.
+        </p>
+      </section>
+
+      <section id="snapshots">
+        <h2>Working with Snapshots</h2>
+        
+        <p>
+          Snapshots are the heart of Checkpoint. They're complete copies of your save folder 
+          at a specific point in time, stored safely in your backup location.
+        </p>
+        
+        <h3>Creating a Snapshot</h3>
+        <ol>
+          <li>Click on a game card to open its detail page</li>
+          <li>Click the "Create Snapshot" button</li>
+          <li>Give it a name (optional) - something descriptive like "Before Boss Fight" or "Good Ending Route"</li>
+          <li>Click "Create"</li>
+        </ol>
+        <p>
+          The snapshot is created with a timestamp. For large games (several GB), this might 
+          take a minute. A loading indicator shows progress.
+        </p>
+        
+        <h3>Snapshot Details</h3>
+        <p>Each snapshot shows:</p>
+        <ul>
+          <li>Name (or timestamp if unnamed)</li>
+          <li>Date and time created</li>
+          <li>Size of the backup</li>
+          <li>Number of files</li>
+        </ul>
+        
+        <h3>Renaming Snapshots</h3>
+        <p>
+          Click the pencil icon on any snapshot to rename it. This is useful when you initially 
+          create a quick backup but later want to give it a more descriptive name.
+        </p>
+        
+        <h3>Deleting Snapshots</h3>
+        <p>
+          Click the trash icon to delete a snapshot. You'll get a confirmation dialog because 
+          this cannot be undone. Deleted snapshots free up disk space immediately.
+        </p>
+      </section>
+
+      <section id="restore">
+        <h2>Restoring Saves</h2>
+        
+        <p>
+          Restoring replaces your current save files with the files from a snapshot. This is 
+          useful for:
+        </p>
+        <ul>
+          <li>Going back to an earlier point in the game</li>
+          <li>Trying different choices/paths without starting over</li>
+          <li>Recovering from corrupted saves</li>
+          <li>Sharing saves between different playthroughs</li>
+        </ul>
+        
+        <h3>How to Restore</h3>
+        <ol>
+          <li>Open the game's detail page</li>
+          <li>Find the snapshot you want to restore</li>
+          <li>Click the restore button (circular arrow icon)</li>
+          <li>Confirm the restore operation</li>
+        </ol>
+        
+        <h3>Safety Features</h3>
+        <p>
+          <strong>Auto-Backup:</strong> Before restoring, Checkpoint automatically creates a 
+          snapshot of your current save. This means if you change your mind, you can restore 
+          back to where you were. Look for snapshots named "Auto-backup before restore" in 
+          your snapshot list.
+        </p>
+        <p>
+          <strong>Process Detection:</strong> If you provided an executable name when adding 
+          the game, Checkpoint will check if it's running before allowing a restore. This 
+          prevents conflicts and corrupted saves. Close the game first, then restore.
+        </p>
+        
+        <div class="warning">
+          <strong>Warning:</strong> Restoring will overwrite your current save files. While 
+          Checkpoint auto-backs up first, make sure you understand which snapshot you're 
+          restoring to. The confirmation dialog shows the snapshot name and date to help 
+          prevent mistakes.
+        </div>
+      </section>
+
+      <section id="covers">
+        <h2>Game Covers</h2>
+        
+        <p>
+          Game covers make your dashboard look great and help you quickly identify games. 
+          They're optional but recommended.
+        </p>
+        
+        <h3>Best Practices</h3>
+        <ul>
+          <li><strong>Aspect Ratio:</strong> Use vertical images (portrait orientation), ideally 3:4 ratio</li>
+          <li><strong>Size:</strong> Keep under 2MB for fast loading</li>
+          <li><strong>Format:</strong> JPG for photos, PNG for graphics with transparency</li>
+          <li><strong>Source:</strong> Box art from SteamGridDB, IGDB, or official game sites work great</li>
+        </ul>
+        
+        <h3>Adding Covers to Existing Games</h3>
+        <p>
+          Currently, covers can only be added when creating a game. If you want to add a cover 
+          to an existing game, you'll need to:
+        </p>
+        <ol>
+          <li>Note down the save location from the game's detail page</li>
+          <li>Delete the game from Checkpoint (this doesn't delete your actual saves)</li>
+          <li>Add the game again with the same details plus the cover image</li>
+        </ol>
+        <p>
+          Future versions will support adding covers to existing games directly.
+        </p>
+      </section>
+
+      <section id="manage">
+        <h2>Managing Games</h2>
+        
+        <h3>Deleting a Game</h3>
+        <p>
+          To remove a game from Checkpoint:
+        </p>
+        <ol>
+          <li>Open the game's detail page</li>
+          <li>Click the "Delete Game" button (top right)</li>
+          <li>Confirm the deletion</li>
+        </ol>
+        <p>
+          <strong>Important:</strong> Deleting a game from Checkpoint removes the game entry 
+          and all its snapshots from your backup location. It does NOT delete your actual 
+          game saves from their original location. Your current progress remains untouched.
+        </p>
+        
+        <h3>Where Are Backups Stored?</h3>
+        <p>
+          By default, snapshots are stored in:
+        </p>
+        <ul>
+          <li><strong>Windows:</strong> <code>C:\Users\YourUsername\checkpoint\</code></li>
+          <li><strong>Linux/macOS:</strong> <code>~/checkpoint/</code> (your home folder)</li>
+        </ul>
+        <p>
+          Inside that folder, each game gets its own folder named with the game's ID, 
+          and snapshots are stored within those folders.
+        </p>
+        <p>
+          You can change this location in Settings if you want backups on a different drive 
+          (useful if you have limited space on your main drive).
+        </p>
+      </section>
+
+      <section id="settings">
+        <h2>Settings</h2>
+        
+        <p>
+          Access settings by clicking "Settings" in the sidebar. Here you can customize 
+          Checkpoint to your preferences.
+        </p>
+        
+        <h3>Appearance</h3>
+        <p>
+          Toggle between Light and Dark themes. Your preference is saved and applies 
+          immediately across the app.
+        </p>
+        
+        <h3>Language</h3>
+        <p>
+          Checkpoint supports multiple languages:
+        </p>
+        <ul>
+          <li>English</li>
+          <li>Portuguese</li>
+          <li>Spanish</li>
+        </ul>
+        <p>
+          Select your preferred language from the dropdown. The change applies immediately.
+        </p>
+      </section>
+
+      <section id="backup-location">
+        <h2>Backup Location</h2>
+        
+        <p>
+          By default, Checkpoint stores all snapshots in <code>~/checkpoint/</code> on your 
+          home drive. You can change this to any folder you have write access to.
+        </p>
+        
+        <h3>Why Change It?</h3>
+        <ul>
+          <li><strong>Different Drive:</strong> Store backups on an external drive or secondary HDD/SSD</li>
+          <li><strong>Cloud Sync:</strong> Point to a Dropbox, Google Drive, or OneDrive folder for automatic cloud backup</li>
+          <li><strong>Space Management:</strong> If your main drive is filling up, move backups elsewhere</li>
+        </ul>
+        
+        <h3>Changing the Location</h3>
+        <ol>
+          <li>Open Settings</li>
+          <li>Under "Backup Location", click "Browse" or type a new path</li>
+          <li>Click "Save Settings"</li>
+        </ol>
+        
+        <div class="warning">
+          <strong>Warning:</strong> Changing the backup location does NOT move existing snapshots. 
+          You'll need to manually move the files from the old location to the new one if you want 
+          to keep them. New snapshots will go to the new location.
+        </div>
+        
+        <h3>Recommended Setup</h3>
+        <p>
+          For the best protection, consider pointing your backup location to:
+        </p>
+        <ul>
+          <li>An external drive that you only connect for backups</li>
+          <li>A cloud-synced folder (Dropbox, Google Drive, etc.)</li>
+          <li>A NAS or network drive</li>
+        </ul>
+        <p>
+          This way, even if your main drive fails, your saves are safe elsewhere.
+        </p>
+      </section>
+
+      <section id="languages">
+        <h2>Languages</h2>
+        
+        <p>
+          Checkpoint supports multiple interface languages. The language setting affects 
+          all text in the application, including buttons, menus, and error messages.
+        </p>
+        
+        <h3>Current Languages</h3>
+        <ul>
+          <li><strong>English</strong> - Default language</li>
+          <li><strong>Portuguese (Português)</strong> - For Brazilian and European Portuguese users</li>
+          <li><strong>Spanish (Español)</strong> - For Spanish-speaking users</li>
+        </ul>
+        
+        <h3>Changing Language</h3>
+        <ol>
+          <li>Go to Settings</li>
+          <li>Find the "Language" section</li>
+          <li>Select your preferred language from the dropdown</li>
+          <li>The change applies immediately - no restart needed</li>
+        </ol>
+        
+        <h3>Contributing Translations</h3>
+        <p>
+          Want to help translate Checkpoint to your language? Check the GitHub repository 
+          for contribution guidelines. We welcome community translations!
+        </p>
+      </section>
+
+      <section id="faq">
+        <h2>Frequently Asked Questions</h2>
+        
+        <div class="faq-item">
+          <h3>Does Checkpoint work with Steam/GOG/Epic games?</h3>
+          <p>
+            Yes, but it's designed primarily for games that DON'T have cloud save sync. 
+            Steam, GOG, and Epic already backup your saves to the cloud. Checkpoint is 
+            most useful for:
+          </p>
+          <ul>
+            <li>Pirated games (not that we endorse that, but it works)</li>
+            <li>GOG games with cloud sync disabled</li>
+            <li>Old games from before cloud saves were common</li>
+            <li>Emulated games (retro console emulators)</li>
+            <li>Games from itch.io or other indie platforms</li>
+          </ul>
+        </div>
+        
+        <div class="faq-item">
+          <h3>Will Checkpoint slow down my games?</h3>
+          <p>
+            No. Checkpoint only accesses your save files when you explicitly create a 
+            snapshot or restore. It doesn't run in the background monitoring files or 
+            using CPU. The only time it's active is when the window is open and you're 
+            using it.
+          </p>
+        </div>
+        
+        <div class="faq-item">
+          <h3>Can I use Checkpoint for games with anti-cheat?</h3>
+          <p>
+            Generally yes, but with caution. Checkpoint only copies files in your save 
+            directory. It doesn't modify game files, inject code, or do anything that 
+            would trigger anti-cheat. However, some aggressive anti-cheat systems might 
+            flag any file operations near game files. If you're unsure, check with the 
+            game's community first.
+          </p>
+        </div>
+        
+        <div class="faq-item">
+          <h3>How much disk space do I need?</h3>
+          <p>
+            Each snapshot is a complete copy of your save folder. If your saves are 
+            500MB and you create 10 snapshots, that's ~5GB. Plan accordingly. You can 
+            always delete old snapshots to free space.
+          </p>
+        </div>
+        
+        <div class="faq-item">
+          <h3>Can I move snapshots between computers?</h3>
+          <p>
+            Yes! The snapshot folders are self-contained. You can copy them from one 
+            computer's checkpoint folder to another. Just make sure the game is installed 
+            at the same save location path on both machines.
+          </p>
+        </div>
+        
+        <div class="faq-item">
+          <h3>Is my data safe?</h3>
+          <p>
+            Checkpoint never sends your save files anywhere. Everything stays local on 
+            your machine (or wherever you set your backup location). The app doesn't 
+            connect to the internet except to check for updates (which you can disable).
+          </p>
+        </div>
+      </section>
+
+      <section id="troubleshooting">
+        <h2>Troubleshooting</h2>
+        
+        <h3>"Failed to create snapshot" Error</h3>
+        <p><strong>Cause:</strong> Checkpoint can't read the save files or write to the backup location.</p>
+        <p><strong>Solutions:</strong></p>
+        <ul>
+          <li>Make sure the game isn't running (some games lock save files while running)</li>
+          <li>Check that you have read permissions on the save folder</li>
+          <li>Verify you have write permissions and disk space at the backup location</li>
+          <li>Try running Checkpoint as administrator (Windows) or with sudo (Linux)</li>
+        </ul>
+        
+        <h3>"Game is currently running" Warning</h3>
+        <p>
+          You provided an executable name when adding the game, and Checkpoint detected 
+          it's running. Close the game completely (check Task Manager/System Monitor) 
+          before restoring. Some games have launcher processes that stay open - make 
+          sure those are closed too.
+        </p>
+        
+        <h3>Snapshots Taking Forever</h3>
+        <p>
+          Large save files (several GB) take time to copy. This is normal for games 
+          with large worlds or many mods. The loading overlay shows it's working. 
+          Don't close Checkpoint during this time.
+        </p>
+        
+        <h3>Restored Save Not Showing In-Game</h3>
+        <p>
+          Make sure you:
+        </p>
+        <ol>
+          <li>Restored while the game was completely closed</li>
+          <li>Waited for the restore to complete (saw success message)</li>
+          <li>Didn't have the game running in the background</li>
+        </ol>
+        <p>
+          Some games cache save data in memory. If the game was running, it might not 
+          see the restored files until restarted.
+        </p>
+      </section>
+
+      <section id="tips">
+        <h2>Tips & Tricks</h2>
+        
+        <h3>Naming Conventions</h3>
+        <p>
+          Develop a naming system for snapshots that makes sense to you:
+        </p>
+        <ul>
+          <li><strong>Chapter-based:</strong> "Ch3 Complete"</li>
+          <li><strong>Location-based:</strong> "Before Final Dungeon"</li>
+          <li><strong>Choice-based:</strong> "Joined Faction A"</li>
+          <li><strong>Date-based:</strong> "2024-02-09 Evening"</li>
+          <li><strong>Build-based:</strong> "Melee Build Lvl 50"</li>
+        </ul>
+        
+        <h3>The "Before" Rule</h3>
+        <p>
+          Always create a snapshot BEFORE:
+        </p>
+        <ul>
+          <li>Major boss fights</li>
+          <li>Story choices that can't be undone</li>
+          <li>Trying out mods</li>
+          <li>Experimenting with game files</li>
+          <li>Starting a new playthrough (to preserve old saves)</li>
+        </ul>
+        
+        <h3>Clean Up Regularly</h3>
+        <p>
+          Snapshots take up space. Every few months, review your snapshots and delete:
+        </p>
+        <ul>
+          <li>Old auto-backups ("Auto-backup before restore")</li>
+          <li>Snapshots from completed playthroughs you won't return to</li>
+          <li>Duplicate snapshots (same point in game)</li>
+        </ul>
+        
+        <h3>Multiple Save Strategies</h3>
+        <p>
+          Use Checkpoint alongside in-game save slots for maximum protection:
+        </p>
+        <ul>
+          <li>In-game saves for quick load/save during play</li>
+          <li>Checkpoint snapshots for major milestones and backups</li>
+        </ul>
+        
+        <h3>Share Saves With Friends</h3>
+        <p>
+          Want to share a cool save state? The snapshot folder is self-contained. 
+          Zip it up and send it to a friend. They can place it in their Checkpoint 
+          folder and restore it (make sure they have the same game version).
+        </p>
+        
+        <div class="tip">
+          <strong>Pro Tip:</strong> Set up a recurring reminder to create a snapshot 
+          weekly. It's a 5-second habit that could save you hours of lost progress.
+        </div>
+      </section>
+
+      <footer class="page-footer">
+        <p>Documentation last updated: February 2026</p>
+        <p>Found an error? <a href="https://github.com/rzinak/checkpoint/issues">Report it on GitHub</a></p>
+      </footer>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

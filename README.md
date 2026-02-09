@@ -105,7 +105,7 @@ Binaries will be in `src-tauri/target/release/bundle/`
 - Binary executable
 
 ### Windows Output
-- `.exe` installer
+- `.exe` portable executable
 - `.msi` installer
 
 ### macOS Output
@@ -117,8 +117,8 @@ To build for multiple platforms, use GitHub Actions or build on each platform se
 ## Usage
 
 1. **Add a Game**: Click the + button and enter:
-   - Game name (e.g., "NBA 2K16")
-   - Save location (e.g., `/home/user/Documents/Games/.../3DMGAME`)
+   - Game name (e.g., "Elden Ring")
+   - Save location (path to your save folder)
    - Executable name (optional, for process checking)
 
 2. **Create Snapshot**: Select a game and click "Create Snapshot"
@@ -152,21 +152,11 @@ Configuration is stored in:
 - **Linux/macOS**: `~/.config/checkpoint/config.json`
 - **Windows**: `%APPDATA%\checkpoint\config.json`
 
-Backups are stored in `~/checkpoint/` by default (configurable in settings).
+Backups are stored in:
+- **Linux/macOS**: `~/checkpoint/` by default
+- **Windows**: `C:\Users\<username>\checkpoint\` by default
 
-## Testing with NBA 2K16
-
-For testing with NBA 2K16:
-
-**Save Location**: `/home/ren/Documents/Games/NBiiiA-2K16-SteamRIP.com/NBA 2K16/3DMGAME`
-
-**Executable**: `NBA2K16.exe`
-
-**Test Flow**:
-1. Add the game with the path above
-2. Create a snapshot
-3. Play the game and make progress
-4. Restore the snapshot - your current save will be backed up automatically first
+The backup location is configurable in settings.
 
 ## Development Notes
 

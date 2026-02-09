@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkpoint - Save Game Manager</title>
+  <meta name="description" content="Never lose your game progress again. Checkpoint is a simple, powerful save game backup tool for local games.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <div class="nav-brand">
+        <div class="logo">
+          <!-- LOGO HERE -->
+          <div class="logo-icon">C</div>
+        </div>
+        <span class="brand-text">Checkpoint</span>
+      </div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#download">Download</a>
+        <a href="https://github.com/rzinak/checkpoint" target="_blank" class="github-link">
+          <i data-lucide="github"></i>
+        </a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <i data-lucide="sun" class="sun-icon"></i>
+          <i data-lucide="moon" class="moon-icon"></i>
+        </button>
+      </div>
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i data-lucide="menu"></i>
+      </button>
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#features">Features</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#download">Download</a>
+    <a href="https://github.com/rzinak/checkpoint" target="_blank">GitHub</a>
+  </div>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+
+        <h1 class="hero-title">
+          Never Lose Your<br>
+          <span class="gradient-text">Game Progress</span>
+        </h1>
+        <p class="hero-description">
+          Checkpoint is a simple, powerful save game backup tool for local games. 
+          Create snapshots, switch between saves, and protect your progress with ease.
+        </p>
+        <div class="hero-buttons">
+          <a href="#download" class="btn btn-primary">
+            <i data-lucide="download"></i>
+            Download Now
+          </a>
+          <a href="https://github.com/rzinak/checkpoint" target="_blank" class="btn btn-secondary">
+            <i data-lucide="github"></i>
+            View on GitHub
+          </a>
+        </div>
+
+      </div>
+      <div class="hero-visual">
+        <div class="app-preview">
+          <div class="app-window">
+            <div class="app-header">
+              <div class="app-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+            <div class="app-content">
+              <div class="sidebar-mock">
+                <div class="logo-mock">C</div>
+                <div class="nav-items">
+                  <div class="nav-item active"></div>
+                  <div class="nav-item"></div>
+                </div>
+              </div>
+              <div class="main-mock">
+                <div class="card-grid">
+                  <div class="game-card-mock">
+                    <div class="card-cover"></div>
+                    <div class="card-info">
+                      <div class="card-title"></div>
+                      <div class="card-meta"></div>
+                    </div>
+                  </div>
+                  <div class="game-card-mock">
+                    <div class="card-cover"></div>
+                    <div class="card-info">
+                      <div class="card-title"></div>
+                      <div class="card-meta"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Features</span>
+        <h2 class="section-title">Everything You Need</h2>
+        <p class="section-description">
+          Simple yet powerful features to manage your game saves
+        </p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i data-lucide="save"></i>
+          </div>
+          <h3>Automatic Snapshots</h3>
+          <p>Create timestamped backups of your save files with a single click. Keep multiple versions organized.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i data-lucide="rotate-ccw"></i>
+          </div>
+          <h3>Instant Restore</h3>
+          <p>Switch between saves instantly. Perfect for trying different game paths or recovering from mistakes.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i data-lucide="shield"></i>
+          </div>
+          <h3>Smart Protection</h3>
+          <p>Automatically backs up current save before restoring. Never lose progress accidentally.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i data-lucide="image"></i>
+          </div>
+          <h3>Game Covers</h3>
+          <p>Upload custom cover images for your games. Beautiful visual organization.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i data-lucide="monitor"></i>
+          </div>
+          <h3>Cross-Platform</h3>
+          <p>Available for Windows, Linux, and macOS. Your saves go where you go.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i data-lucide="lock"></i>
+          </div>
+          <h3>Process Detection</h3>
+          <p>Prevents restore while game is running. Smart safety checks protect your data.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Simple</span>
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-description">
+          Get started in three easy steps
+        </p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Add Your Game</h3>
+            <p>Tell Checkpoint where your save files are located. Add an optional cover image for easy identification.</p>
+          </div>
+        </div>
+        <div class="step-arrow">
+          <i data-lucide="arrow-right"></i>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Create Snapshots</h3>
+            <p>Click "Create Snapshot" anytime to save your current progress. Name it whatever you want.</p>
+          </div>
+        </div>
+        <div class="step-arrow">
+          <i data-lucide="arrow-right"></i>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Restore Anytime</h3>
+            <p>Select any snapshot and click restore. Your save is instantly back to that point.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="download" id="download">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge">Get Started</span>
+        <h2 class="section-title">Download Checkpoint</h2>
+        <p class="section-description">
+          Available for all major platforms.
+        </p>
+      </div>
+      <div class="download-grid">
+        <a href="#" class="download-card">
+          <div class="download-icon">
+            <i data-lucide="monitor"></i>
+          </div>
+          <h3>Windows</h3>
+          <p>.exe Installer</p>
+          <span class="download-btn">Download</span>
+        </a>
+        <a href="#" class="download-card">
+          <div class="download-icon">
+            <i data-lucide="laptop"></i>
+          </div>
+          <h3>Linux</h3>
+          <p>.deb / .rpm</p>
+          <span class="download-btn">Download</span>
+        </a>
+        <a href="#" class="download-card">
+          <div class="download-icon">
+            <i data-lucide="apple"></i>
+          </div>
+          <h3>macOS</h3>
+          <p>.dmg</p>
+          <span class="download-btn">Download</span>
+        </a>
+      </div>
+      <div class="download-note">
+        <i data-lucide="info"></i>
+        <p>Latest version: v0.1.0 | <a href="https://github.com/rzinak/checkpoint/releases">View all releases</a></p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="logo">
+            <div class="logo-icon">C</div>
+          </div>
+          <span>Checkpoint</span>
+        </div>
+        <div class="footer-links">
+          <a href="https://github.com/rzinak/checkpoint">GitHub</a>
+          <a href="./documentation/index.html" target="_blank">Documentation</a>
+          <a href="#">Report Issue</a>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>© 2026 Checkpoint</p>
+      </div>
+
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
