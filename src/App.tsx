@@ -1,0 +1,215 @@
+import { useState, useEffect } from 'react';
+import { Dashboard } from './components/Dashboard';
+import { GameDetail } from './components/GameDetail';
+import { AddGameModal } from './components/AddGameModal';
+import { Settings } from './components/Settings';
+import { LoadingOverlay } from './components/LoadingOverlay';
+import { I18nProvider, useI18n } from './lib/i18n';
+import { listGames, getConfig } from './lib/api';
+import type { Game, Config } from './lib/types';
+import { Home, Settings as SettingsIcon, Plus } from 'lucide-react';
+import './App.css';
+
+type View = 'dashboard' | 'game' | 'settings';
+type Theme = 'light' | 'dark';
+
+function AppContent() {
+  const { t } = useI18n();
+  const [view, setView] = useState<View>('dashboard');
+  const [games, setGames] = useState<Game[]>([]);
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
+  const [config, setConfig] = useState<Config | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadingMessage, setLoadingMessage] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+  const [theme, setTheme] = useState<Theme>(() => {
+    const saved = localStorage.getItem('checkpoint-theme');
+    if (saved === 'light' || saved === 'dark') return saved;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('checkpoint-theme', theme);
+  }, [theme]);
+
+  const loadData = async () => {
+    try {
+      setIsLoading(true);
+      setLoadingMessage(t('loading.loading') as string);
+      setError(null);
+      const [gamesData, configData] = await Promise.all([
+        listGames(),
+        getConfig()
+      ]);
+      setGames(gamesData);
+      setConfig(configData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : (t('errors.failedLoadData') as string));
+    } finally {
+      setIsLoading(false);
+      setLoadingMessage('');
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const handleGameSelect = (game: Game) => {
+    setSelectedGame(game);
+    setView('game');
+  };
+
+  const handleBackToDashboard = () => {
+    setSelectedGame(null);
+    setView('dashboard');
+  };
+
+  const handleGameAdded = (newGame: Game) => {
+    setGames([...games, newGame]);
+    setIsAddModalOpen(false);
+  };
+
+  const handleGameDeleted = (game_id: string) => {
+    setGames(games.filter(g => g.id !== game_id));
+    if (selectedGame?.id === game_id) {
+      setSelectedGame(null);
+      setView('dashboard');
+    }
+  };
+
+  const handleGameUpdated = (updatedGame: Game) => {
+    setGames(games.map(g => g.id === updatedGame.id ? updatedGame : g));
+    if (selectedGame?.id === updatedGame.id) {
+      setSelectedGame(updatedGame);
+    }
+  };
+
+  const setLoadingWithMessage = (loading: boolean, message: string = '') => {
+    setIsLoading(loading);
+    setLoadingMessage(message);
+  };
+
+  if (isLoading && !games.length) {
+    return (
+      <div className="app">
+        <div className="loading">
+          <div className="loading-spinner"></div>
+          <p>{t('loading.loading')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="app">
+      {/* Loading Overlay */}
+      <LoadingOverlay isLoading={isLoading && !!loadingMessage} message={loadingMessage} />
+
+      {/* Sidebar Navigation */}
+      <aside className="sidebar">
+        {/* LOGO HERE - Replace with actual logo image */}
+        <div className="sidebar-logo">
+          <div className="logo-placeholder">
+            {/* LOGO HERE */}
+            <div className="logo-icon">C</div>
+          </div>
+          <span className="logo-text">{t('app.name')}</span>
+        </div>
+
+        {/* Navigation Items */}
+        <nav className="sidebar-nav">
+          <button 
+            className={`nav-item ${view === 'dashboard' ? 'active' : ''}`}
+            onClick={() => setView('dashboard')}
+            title={t('nav.home') as string}
+          >
+            <Home size={20} />
+            <span>{t('nav.home')}</span>
+          </button>
+          
+          <button 
+            className={`nav-item ${view === 'settings' ? 'active' : ''}`}
+            onClick={() => setView('settings')}
+            title={t('nav.settings') as string}
+          >
+            <SettingsIcon size={20} />
+            <span>{t('nav.settings')}</span>
+          </button>
+        </nav>
+
+        {/* Add Game Button */}
+        <div className="sidebar-footer">
+          <button 
+            className="sidebar-add-btn"
+            onClick={() => setIsAddModalOpen(true)}
+            title={t('nav.addGame') as string}
+          >
+            <Plus size={24} />
+            <span>{t('nav.addGame')}</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="main-content">
+        {error && (
+          <div className="error-banner">
+            {error}
+            <button onClick={() => setError(null)}>Dismiss</button>
+          </div>
+        )}
+
+        <div className="content-wrapper">
+          {view === 'dashboard' && (
+            <Dashboard 
+              games={games} 
+              onGameSelect={handleGameSelect}
+              onRefresh={loadData}
+            />
+          )}
+
+          {view === 'game' && selectedGame && (
+            <GameDetail 
+              game={selectedGame}
+              onBack={handleBackToDashboard}
+              onGameDeleted={handleGameDeleted}
+              onGameUpdated={handleGameUpdated}
+              setLoading={setLoadingWithMessage}
+            />
+          )}
+
+          {view === 'settings' && config && (
+            <Settings 
+              config={config}
+              onBack={() => setView('dashboard')}
+              onConfigUpdate={setConfig}
+              theme={theme}
+              onThemeChange={setTheme}
+            />
+          )}
+        </div>
+      </main>
+
+      {isAddModalOpen && (
+        <AddGameModal 
+          onClose={() => setIsAddModalOpen(false)}
+          onGameAdded={handleGameAdded}
+          setLoading={setLoadingWithMessage}
+        />
+      )}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <I18nProvider>
+      <AppContent />
+    </I18nProvider>
+  );
+}
+
+export default App;

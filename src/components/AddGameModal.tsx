@@ -1,0 +1,227 @@
+import { useState, useRef } from 'react';
+import { addGame, selectFolder } from '../lib/api';
+import { useI18n } from '../lib/i18n';
+import type { Game } from '../lib/types';
+import { X, FolderOpen, ImagePlus, Trash2 } from 'lucide-react';
+
+interface AddGameModalProps {
+  onClose: () => void;
+  onGameAdded: (game: Game) => void;
+  setLoading: (loading: boolean, message?: string) => void;
+}
+
+export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalProps) {
+  const { t } = useI18n();
+  const [name, setName] = useState('');
+  const [saveLocation, setSaveLocation] = useState('');
+  const [exeName, setExeName] = useState('');
+  const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleBrowse = async () => {
+    try {
+      const folder = await selectFolder();
+      if (folder) {
+        setSaveLocation(folder);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('errors.failedSelectFolder'));
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setError('Please select an image file (JPG or PNG)');
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setError('Image must be less than 2MB');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      setCoverImage(result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveCover = () => {
+    setCoverImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!name.trim() || !saveLocation.trim()) {
+      setError(t('errors.requiredFields'));
+      return;
+    }
+
+    setIsLoading(true);
+    setLoading(true, t('loading.loading'));
+    setError(null);
+
+    try {
+      const game = await addGame({
+        name: name.trim(),
+        save_location: saveLocation.trim(),
+        exe_name: exeName.trim() || undefined,
+        cover_image: coverImage || undefined,
+      });
+      onGameAdded(game);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('errors.failedAddGame'));
+      setIsLoading(false);
+      setLoading(false, '');
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>{t('addGame.title')}</h2>
+          <button className="modal-close" onClick={onClose}>
+            <X size={24} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="modal-body">
+            {error && (
+              <div className="alert alert-error" style={{ marginBottom: '1rem' }}>
+                {error}
+              </div>
+            )}
+
+            <div className="cover-upload">
+              <label className="cover-upload-label">Cover Image (Optional)</label>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileSelect}
+                accept="image/png,image/jpeg"
+                style={{ display: 'none' }}
+              />
+
+              {coverImage ? (
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+                  <div className="cover-upload-preview">
+                    <img src={coverImage} alt="Cover preview" />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRemoveCover}
+                    style={{
+                      position: 'absolute',
+                      top: '-8px',
+                      right: '-8px',
+                      background: 'var(--error)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '24px',
+                      height: '24px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      padding: 0,
+                    }}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              ) : (
+                <div
+                  className="cover-upload-area"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <div className="cover-upload-placeholder">
+                    <ImagePlus size={32} />
+                    <p style={{ marginTop: '0.5rem', marginBottom: 0 }}>Click to upload cover</p>
+                  </div>
+                </div>
+              )}
+              <p className="cover-upload-hint">JPG or PNG, max 2MB, 3:4 ratio recommended</p>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="gameName">{t('addGame.name')} *</label>
+              <input
+                type="text"
+                id="gameName"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t('addGame.namePlaceholder')}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="saveLocation">{t('addGame.saveLocation')} *</label>
+              <input
+                type="text"
+                id="saveLocation"
+                value={saveLocation}
+                onChange={(e) => setSaveLocation(e.target.value)}
+                placeholder={t('addGame.saveLocationPlaceholder')}
+                required
+              />
+              <button
+                type="button"
+                className="browse-button"
+                onClick={handleBrowse}
+              >
+                <FolderOpen size={16} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
+                {t('addGame.browse')}
+              </button>
+              <p className="hint">{t('addGame.saveLocationHint')}</p>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="exeName">{t('addGame.executable')}</label>
+              <input
+                type="text"
+                id="exeName"
+                value={exeName}
+                onChange={(e) => setExeName(e.target.value)}
+                placeholder={t('addGame.executablePlaceholder')}
+              />
+              <p className="hint">{t('addGame.executableHint')}</p>
+            </div>
+          </div>
+
+          <div className="modal-footer">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={onClose}
+              disabled={isLoading}
+            >
+              {t('addGame.cancel')}
+            </button>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={isLoading}
+            >
+              {isLoading ? t('loading.loading') : t('addGame.add')}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,96 @@
+{
+  "app": {
+    "name": "Checkpoint",
+    "tagline": "Gestor de Partidas Guardadas"
+  },
+  "nav": {
+    "home": "Inicio",
+    "settings": "Ajustes",
+    "addGame": "Añadir Juego"
+  },
+  "dashboard": {
+    "title": "Tus Juegos",
+    "emptyState": {
+      "title": "¿Listo para hacer backup de tus partidas?",
+      "description": "Añade tu primer juego para empezar a crear snapshots de tus archivos de guardado. Nunca pierdas el progreso.",
+      "button": "Añadir Tu Primer Juego"
+    },
+    "refresh": "Actualizar"
+  },
+  "gameCard": {
+    "added": "Añadido",
+    "snapshots": "snapshots"
+  },
+  "gameDetail": {
+    "back": "Volver a Juegos",
+    "saveLocation": "Ubicación de Guardado",
+    "executable": "Ejecutable",
+    "snapshots": "Snapshots",
+    "createSnapshot": "Crear Snapshot",
+    "deleteGame": "Eliminar Juego",
+    "rename": "Renombrar",
+    "restore": "Restaurar",
+    "delete": "Eliminar",
+    "snapshotNamePlaceholder": "Nombre del snapshot (opcional)",
+    "cancel": "Cancelar",
+    "create": "Crear",
+    "noSnapshots": "Aún no hay snapshots. ¡Crea tu primer backup!",
+    "gameRunning": "está en ejecución. No puedes restaurar mientras el juego esté activo.",
+    "confirmRestore": "¿Estás seguro de que quieres restaurar este snapshot? Esto sobrescribirá tu partida actual.",
+    "confirmDeleteSnapshot": "¿Estás seguro de que quieres eliminar este snapshot?",
+    "confirmDeleteGame": "¿Estás seguro de que quieres eliminar {name}? Esto también eliminará todos los snapshots."
+  },
+  "addGame": {
+    "title": "Añadir Nuevo Juego",
+    "name": "Nombre del Juego",
+    "namePlaceholder": "ej: NBA 2K16",
+    "saveLocation": "Ubicación de Guardado",
+    "saveLocationPlaceholder": "/ruta/a/carpeta/de/guardado",
+    "browse": "Examinar",
+    "saveLocationHint": "La carpeta donde se almacenan tus partidas guardadas",
+    "executable": "Nombre del Ejecutable (opcional)",
+    "executablePlaceholder": "ej: NBA2K16.exe",
+    "executableHint": "Se usa para verificar si el juego está en ejecución antes de restaurar",
+    "cancel": "Cancelar",
+    "add": "Añadir Juego"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "appearance": "Apariencia",
+    "theme": "Tema",
+    "lightMode": "Modo Claro",
+    "darkMode": "Modo Oscuro",
+    "language": "Idioma",
+    "backupLocation": "Ubicación de Backup",
+    "backupFolder": "Carpeta de Backup",
+    "backupHint": "Todos los snapshots de juegos se almacenarán en esta carpeta",
+    "save": "Guardar Ajustes",
+    "saving": "Guardando...",
+    "about": "Acerca de",
+    "version": "Checkpoint v0.1.0",
+    "description": "Una herramienta simple de backup de partidas para juegos locales."
+  },
+  "loading": {
+    "creatingSnapshot": "Creando snapshot...",
+    "restoring": "Restaurando partida...",
+    "deleting": "Eliminando...",
+    "loading": "Cargando..."
+  },
+  "errors": {
+    "requiredFields": "Por favor, completa todos los campos obligatorios",
+    "backupLocationEmpty": "La ubicación de backup no puede estar vacía",
+    "failedAddGame": "Error al añadir juego",
+    "failedCreateSnapshot": "Error al crear snapshot",
+    "failedRestore": "Error al restaurar snapshot",
+    "failedDeleteSnapshot": "Error al eliminar snapshot",
+    "failedDeleteGame": "Error al eliminar juego",
+    "failedRename": "Error al renombrar snapshot",
+    "failedLoadData": "Error al cargar datos",
+    "failedSelectFolder": "Error al seleccionar carpeta",
+    "failedSaveSettings": "Error al guardar ajustes"
+  },
+  "success": {
+    "settingsSaved": "¡Ajustes guardados correctamente!",
+    "restoreComplete": "Restauración completada correctamente"
+  }
+}

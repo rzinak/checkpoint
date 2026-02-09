@@ -1,0 +1,96 @@
+{
+  "app": {
+    "name": "Checkpoint",
+    "tagline": "Save Game Manager"
+  },
+  "nav": {
+    "home": "Home",
+    "settings": "Settings",
+    "addGame": "Add Game"
+  },
+  "dashboard": {
+    "title": "Your Games",
+    "emptyState": {
+      "title": "Ready to backup your saves?",
+      "description": "Add your first game to start creating snapshots of your save files. Never lose progress again.",
+      "button": "Add Your First Game"
+    },
+    "refresh": "Refresh"
+  },
+  "gameCard": {
+    "added": "Added",
+    "snapshots": "snapshots"
+  },
+  "gameDetail": {
+    "back": "Back to Games",
+    "saveLocation": "Save Location",
+    "executable": "Executable",
+    "snapshots": "Snapshots",
+    "createSnapshot": "Create Snapshot",
+    "deleteGame": "Delete Game",
+    "rename": "Rename",
+    "restore": "Restore",
+    "delete": "Delete",
+    "snapshotNamePlaceholder": "Snapshot name (optional)",
+    "cancel": "Cancel",
+    "create": "Create",
+    "noSnapshots": "No snapshots yet. Create your first backup!",
+    "gameRunning": "is currently running. You cannot restore while the game is active.",
+    "confirmRestore": "Are you sure you want to restore this snapshot? This will overwrite your current save.",
+    "confirmDeleteSnapshot": "Are you sure you want to delete this snapshot?",
+    "confirmDeleteGame": "Are you sure you want to delete {name}? This will also delete all snapshots."
+  },
+  "addGame": {
+    "title": "Add New Game",
+    "name": "Game Name",
+    "namePlaceholder": "e.g., NBA 2K16",
+    "saveLocation": "Save Location",
+    "saveLocationPlaceholder": "/path/to/save/folder",
+    "browse": "Browse",
+    "saveLocationHint": "The folder where your game saves are stored",
+    "executable": "Executable Name (optional)",
+    "executablePlaceholder": "e.g., NBA2K16.exe",
+    "executableHint": "Used to check if the game is running before restore",
+    "cancel": "Cancel",
+    "add": "Add Game"
+  },
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "theme": "Theme",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode",
+    "language": "Language",
+    "backupLocation": "Backup Location",
+    "backupFolder": "Backup Folder",
+    "backupHint": "All game snapshots will be stored in this folder",
+    "save": "Save Settings",
+    "saving": "Saving...",
+    "about": "About",
+    "version": "Checkpoint v0.1.0",
+    "description": "A simple save game backup tool for local games."
+  },
+  "loading": {
+    "creatingSnapshot": "Creating snapshot...",
+    "restoring": "Restoring save...",
+    "deleting": "Deleting...",
+    "loading": "Loading..."
+  },
+  "errors": {
+    "requiredFields": "Please fill in all required fields",
+    "backupLocationEmpty": "Backup location cannot be empty",
+    "failedAddGame": "Failed to add game",
+    "failedCreateSnapshot": "Failed to create snapshot",
+    "failedRestore": "Failed to restore snapshot",
+    "failedDeleteSnapshot": "Failed to delete snapshot",
+    "failedDeleteGame": "Failed to delete game",
+    "failedRename": "Failed to rename snapshot",
+    "failedLoadData": "Failed to load data",
+    "failedSelectFolder": "Failed to select folder",
+    "failedSaveSettings": "Failed to save settings"
+  },
+  "success": {
+    "settingsSaved": "Settings saved successfully!",
+    "restoreComplete": "Restore completed successfully"
+  }
+}
