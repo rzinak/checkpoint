@@ -1,6 +1,7 @@
 pub mod commands;
 pub mod config;
 pub mod game;
+pub mod oauth_server;
 pub mod process;
 pub mod snapshot;
 
@@ -35,6 +36,9 @@ pub fn run() {
             is_process_running,
             select_folder,
             import_snapshot,
+            oauth_server::start_oauth_server,
+            oauth_server::wait_for_oauth_code,
+            oauth_server::stop_oauth_server,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

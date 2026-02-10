@@ -248,10 +248,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         token,
         game.id,
         snapshot.name,
-        zipBlob,
-        (progress) => {
-          setLoading(true, `Uploading... ${Math.round(progress)}%`);
-        }
+        zipBlob
       );
 
       setCloudSyncState({
@@ -300,9 +297,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       )[0];
 
       setLoading(true, 'Downloading from cloud...');
-      const blob = await downloadSnapshot(token, latestSnapshot.id, (progress) => {
-        setLoading(true, `Downloading... ${Math.round(progress)}%`);
-      });
+      const blob = await downloadSnapshot(token, latestSnapshot.id);
 
       // Create a new local snapshot from the downloaded file
       const arrayBuffer = await blob.arrayBuffer();

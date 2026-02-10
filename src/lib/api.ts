@@ -53,3 +53,13 @@ export const selectFolder = (): Promise<string | null> =>
 
 export const importSnapshot = (gameId: string, name: string, fileData: Uint8Array): Promise<Snapshot> =>
   invoke('import_snapshot', { gameId, name, fileData });
+
+// OAuth server commands
+export const startOAuthServer = (): Promise<number> =>
+  invoke('start_oauth_server');
+
+export const waitForOAuthCode = (): Promise<string | null> =>
+  invoke('wait_for_oauth_code');
+
+export const stopOAuthServer = (): Promise<void> =>
+  invoke('stop_oauth_server');

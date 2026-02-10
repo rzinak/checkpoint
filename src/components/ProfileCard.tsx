@@ -1,6 +1,7 @@
 import { useProfile } from '../lib/profileContext';
 import { initiateGoogleAuth } from '../lib/googleDrive';
-import { User, LogOut, LogIn } from 'lucide-react';
+import { startOAuthServer, waitForOAuthCode, stopOAuthServer } from '../lib/api';
+import { User, LogOut, LogIn, Loader2 } from 'lucide-react';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { useState } from 'react';
 
@@ -10,33 +11,38 @@ interface ProfileCardProps {
 
 export function ProfileCard({ onOpenProfile }: ProfileCardProps) {
   const { profile, isAuthenticated, logout, isLoading, loginWithGoogle } = useProfile();
-  const [showManualInput, setShowManualInput] = useState(false);
-  const [manualCode, setManualCode] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const handleLogin = async () => {
-    try {
-      const authUrl = await initiateGoogleAuth();
-      await openUrl(authUrl);
-    } catch (error) {
-      console.error('Failed to initiate login:', error);
-      alert('Google OAuth configuration missing!\n\n1. Go to https://console.cloud.google.com/\n2. Create OAuth credentials (Desktop app)\n3. Download client_secret.json\n4. Put it in the public/ folder\n\nSee client_secret.json.example for the format.');
-    }
-  };
-
-  const handleManualSubmit = async () => {
-    if (!manualCode.trim()) return;
+    setIsLoggingIn(true);
     
-    setIsSubmitting(true);
     try {
-      await loginWithGoogle(manualCode.trim());
-      setShowManualInput(false);
-      setManualCode('');
+      // Step 1: Start the OAuth server
+      console.log('Starting OAuth server...');
+      await startOAuthServer();
+      
+      // Step 2: Get the auth URL and open browser
+      const authUrl = await initiateGoogleAuth();
+      console.log('Opening browser...');
+      await openUrl(authUrl);
+      
+      // Step 3: Wait for the OAuth code from the server
+      console.log('Waiting for OAuth code...');
+      const code = await waitForOAuthCode();
+      
+      if (code) {
+        console.log('Got code, exchanging for tokens...');
+        await loginWithGoogle(code);
+      } else {
+        console.log('No code received, login cancelled or timed out');
+      }
     } catch (error) {
-      console.error('Manual login failed:', error);
-      alert('Invalid code. Please make sure you copied it correctly from the browser.');
+      console.error('Login failed:', error);
+      alert('Login failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      // Stop the server if there's an error
+      await stopOAuthServer().catch(() => {});
     } finally {
-      setIsSubmitting(false);
+      setIsLoggingIn(false);
     }
   };
 
@@ -51,40 +57,6 @@ export function ProfileCard({ onOpenProfile }: ProfileCardProps) {
   }
 
   if (!isAuthenticated) {
-    if (showManualInput) {
-      return (
-        <div className="profile-card profile-card-manual">
-          <div className="profile-manual-input">
-            <input
-              type="text"
-              placeholder="Paste code here..."
-              value={manualCode}
-              onChange={(e) => setManualCode(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleManualSubmit()}
-              className="manual-code-input"
-              disabled={isSubmitting}
-            />
-            <div className="manual-code-actions">
-              <button 
-                className="btn btn-secondary btn-small" 
-                onClick={() => setShowManualInput(false)}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </button>
-              <button 
-                className="btn btn-primary btn-small" 
-                onClick={handleManualSubmit}
-                disabled={isSubmitting || !manualCode.trim()}
-              >
-                {isSubmitting ? '...' : 'Submit'}
-              </button>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
     return (
       <div className="profile-card profile-card-guest">
         <div className="profile-avatar profile-avatar-placeholder">
@@ -96,16 +68,14 @@ export function ProfileCard({ onOpenProfile }: ProfileCardProps) {
         <button
           className="profile-login-btn"
           onClick={handleLogin}
+          disabled={isLoggingIn}
           title="Sign in with Google"
         >
-          <LogIn size={18} />
-        </button>
-        <button
-          className="profile-manual-btn"
-          onClick={() => setShowManualInput(true)}
-          title="Enter code manually"
-        >
-          ...
+          {isLoggingIn ? (
+            <Loader2 size={18} className="spinner" />
+          ) : (
+            <LogIn size={18} />
+          )}
         </button>
       </div>
     );
