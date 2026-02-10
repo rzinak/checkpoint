@@ -2,7 +2,7 @@ use crate::config::Config;
 use crate::game::{AddGameRequest, Game, UpdateGameRequest};
 use crate::snapshot::{CreateSnapshotRequest, RestoreResult, Snapshot};
 use crate::AppState;
-use base64::{Engine as _, engine::general_purpose};
+use base64::{engine::general_purpose, Engine as _};
 use tauri::{AppHandle, State};
 
 #[tauri::command]
@@ -26,24 +26,30 @@ pub async fn add_game(request: AddGameRequest, state: State<'_, AppState>) -> Re
         let config = state.config.lock().map_err(|e| e.to_string())?;
         config.backup_location.clone()
     };
-    
+
     let mut game = Game::new(request.name, request.save_location, request.exe_name, None);
-    
+
     if let Some(cover_data) = request.cover_image {
         let base64_data = if cover_data.contains(',') {
-            cover_data.split(',').nth(1).unwrap_or(&cover_data).to_string()
+            cover_data
+                .split(',')
+                .nth(1)
+                .unwrap_or(&cover_data)
+                .to_string()
         } else {
             cover_data
         };
-        
+
         match general_purpose::STANDARD.decode(&base64_data) {
             Ok(image_bytes) => {
                 let game_dir = std::path::Path::new(&backup_location).join(&game.id);
-                std::fs::create_dir_all(&game_dir).map_err(|e| format!("Failed to create game directory: {}", e))?;
-                
+                std::fs::create_dir_all(&game_dir)
+                    .map_err(|e| format!("Failed to create game directory: {}", e))?;
+
                 let cover_path = game_dir.join("cover.png");
-                std::fs::write(&cover_path, image_bytes).map_err(|e| format!("Failed to save cover: {}", e))?;
-                
+                std::fs::write(&cover_path, image_bytes)
+                    .map_err(|e| format!("Failed to save cover: {}", e))?;
+
                 game.cover_image = Some("cover.png".to_string());
             }
             Err(e) => {
@@ -51,13 +57,13 @@ pub async fn add_game(request: AddGameRequest, state: State<'_, AppState>) -> Re
             }
         }
     }
-    
+
     {
         let mut config = state.config.lock().map_err(|e| e.to_string())?;
         config.games.push(game.clone());
         config.save()?;
     }
-    
+
     Ok(game)
 }
 
@@ -90,13 +96,15 @@ pub async fn update_game(
         let config = state.config.lock().map_err(|e| e.to_string())?;
         config.backup_location.clone()
     };
-    
+
     let mut config = state.config.lock().map_err(|e| e.to_string())?;
-    
-    let game_index = config.games.iter()
+
+    let game_index = config
+        .games
+        .iter()
         .position(|g| g.id == request.game_id)
         .ok_or("Game not found")?;
-    
+
     if let Some(name) = request.name {
         config.games[game_index].name = name;
     }
@@ -106,26 +114,30 @@ pub async fn update_game(
     if let Some(exe_name) = request.exe_name {
         config.games[game_index].exe_name = Some(exe_name);
     }
-    
+
     if let Some(cover_data) = request.cover_image {
         let game_id = config.games[game_index].id.clone();
-        
+
         let base64_data = if cover_data.contains(',') {
-            cover_data.split(',').nth(1).unwrap_or(&cover_data).to_string()
+            cover_data
+                .split(',')
+                .nth(1)
+                .unwrap_or(&cover_data)
+                .to_string()
         } else {
             cover_data
         };
-        
+
         match general_purpose::STANDARD.decode(&base64_data) {
             Ok(image_bytes) => {
                 let game_dir = std::path::Path::new(&backup_location).join(&game_id);
                 std::fs::create_dir_all(&game_dir)
                     .map_err(|e| format!("Failed to create game directory: {}", e))?;
-                
+
                 let cover_path = game_dir.join("cover.png");
                 std::fs::write(&cover_path, image_bytes)
                     .map_err(|e| format!("Failed to save cover: {}", e))?;
-                
+
                 config.games[game_index].cover_image = Some("cover.png".to_string());
             }
             Err(e) => {
@@ -133,10 +145,10 @@ pub async fn update_game(
             }
         }
     }
-    
+
     let updated_game = config.games[game_index].clone();
     config.save()?;
-    
+
     Ok(updated_game)
 }
 
@@ -149,7 +161,7 @@ pub async fn create_snapshot(
         let config = state.config.lock().map_err(|e| e.to_string())?;
         config.backup_location.clone()
     };
-    
+
     tokio::task::spawn_blocking(move || {
         crate::snapshot::create_snapshot(&request, &backup_location)
     })
@@ -179,7 +191,7 @@ pub async fn restore_snapshot(
             .ok_or("Game not found")?;
         (game, config.backup_location.clone())
     };
-    
+
     tokio::task::spawn_blocking(move || {
         crate::snapshot::restore_snapshot(&snapshot_id, &game, &backup_location)
     })
@@ -197,7 +209,7 @@ pub async fn delete_snapshot(
         let config = state.config.lock().map_err(|e| e.to_string())?;
         config.backup_location.clone()
     };
-    
+
     tokio::task::spawn_blocking(move || {
         crate::snapshot::delete_snapshot(&snapshot_id, &game_id, &backup_location)
     })
@@ -238,4 +250,23 @@ pub async fn select_folder(app: AppHandle) -> Result<Option<String>, String> {
     let folder = app.dialog().file().blocking_pick_folder();
 
     Ok(folder.map(|p| p.to_string()))
+}
+
+#[tauri::command]
+pub async fn import_snapshot(
+    game_id: String,
+    name: String,
+    file_data: Vec<u8>,
+    state: State<'_, AppState>,
+) -> Result<Snapshot, String> {
+    let backup_location = {
+        let config = state.config.lock().map_err(|e| e.to_string())?;
+        config.backup_location.clone()
+    };
+
+    tokio::task::spawn_blocking(move || {
+        crate::snapshot::import_snapshot(&game_id, &name, &file_data, &backup_location)
+    })
+    .await
+    .map_err(|e| format!("Task failed: {}", e))?
 }

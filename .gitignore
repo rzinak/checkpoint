@@ -45,3 +45,6 @@ coverage
 .cache
 .parcel-cache
 .vite
+
+# Google OAuth secrets
+client_secret.json

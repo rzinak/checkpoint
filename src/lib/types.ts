@@ -48,3 +48,27 @@ export interface RestoreResult {
   backup_snapshot_id?: string;
   message: string;
 }
+
+export interface UserProfile {
+  mode: 'local' | 'google';
+  name: string;
+  email?: string;
+  avatar_url?: string;
+  google_id?: string;
+  access_token?: string;
+  refresh_token?: string;
+  token_expires_at?: number;
+  last_sync?: string;
+}
+
+export interface CloudSyncState {
+  last_upload?: string;
+  last_download?: string;
+  sync_status: 'idle' | 'syncing' | 'error';
+  error_message?: string;
+}
+
+export interface GameWithBackupConfig extends Game {
+  backup_destination: 'local' | 'cloud' | 'both';
+  cloud_sync_state?: CloudSyncState;
+}

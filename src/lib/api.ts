@@ -50,3 +50,6 @@ export const isProcessRunning = (processName: string): Promise<boolean> =>
 
 export const selectFolder = (): Promise<string | null> =>
   invoke('select_folder');
+
+export const importSnapshot = (gameId: string, name: string, fileData: Uint8Array): Promise<Snapshot> =>
+  invoke('import_snapshot', { gameId, name, fileData });

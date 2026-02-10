@@ -16,8 +16,8 @@ export function Dashboard({ games, onGameSelect, onRefresh }: DashboardProps) {
     <div className="dashboard">
       <div className="dashboard-header">
         <h2>{t('dashboard.title')}</h2>
-        <button 
-          className="refresh-btn" 
+        <button
+          className="refresh-btn"
           onClick={onRefresh}
           title={t('dashboard.refresh')}
         >
@@ -40,9 +40,9 @@ export function Dashboard({ games, onGameSelect, onRefresh }: DashboardProps) {
       ) : (
         <div className="games-grid">
           {games.map((game) => (
-            <GameCard 
-              key={game.id} 
-              game={game} 
+            <GameCard
+              key={game.id}
+              game={game}
               onClick={() => onGameSelect(game)}
             />
           ))}
