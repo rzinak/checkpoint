@@ -3,41 +3,27 @@ const GOOGLE_TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token';
 const GOOGLE_DRIVE_ENDPOINT = 'https://www.googleapis.com/drive/v3';
 const GOOGLE_UPLOAD_ENDPOINT = 'https://www.googleapis.com/upload/drive/v3';
 
-let clientConfig: { client_id: string; client_secret: string; redirect_uri: string } | null = null;
+const REDIRECT_URI = 'http://localhost:1420/auth-callback.html';
 
-async function loadClientConfig() {
-  if (clientConfig) return clientConfig;
-  
-  try {
-    const response = await fetch('/client_secret.json');
-    const data = await response.json();
-    
-    // Support both "installed" (desktop app) and "web" (web app) client types
-    const clientData = data.installed || data.web;
-    
-    if (!clientData) {
-      throw new Error('Invalid client_secret.json format. Expected "installed" or "web" key.');
-    }
-    
-    clientConfig = {
-      client_id: clientData.client_id,
-      client_secret: clientData.client_secret,
-      redirect_uri: clientData.redirect_uris[0]
-    };
-    return clientConfig;
-  } catch (error) {
-    console.error('Failed to load client secret:', error);
-    throw new Error('OAuth configuration not found or invalid');
+// Get OAuth credentials from environment variables (embedded at build time)
+const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const CLIENT_SECRET = import.meta.env.VITE_GOOGLE_CLIENT_SECRET;
+
+function checkConfig() {
+  if (!CLIENT_ID || !CLIENT_SECRET) {
+    throw new Error(
+      'Google OAuth credentials not configured. ' +
+      'Please set VITE_GOOGLE_CLIENT_ID and VITE_GOOGLE_CLIENT_SECRET environment variables. ' +
+      'See .env.example for details.'
+    );
   }
 }
 
-const REDIRECT_URI = 'http://localhost:1420/auth-callback.html';
-
 export async function initiateGoogleAuth(): Promise<string> {
-  const config = await loadClientConfig();
+  checkConfig();
   
   const params = new URLSearchParams({
-    client_id: config.client_id,
+    client_id: CLIENT_ID,
     redirect_uri: REDIRECT_URI,
     response_type: 'code',
     scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
@@ -49,16 +35,15 @@ export async function initiateGoogleAuth(): Promise<string> {
 }
 
 export async function exchangeCodeForTokens(code: string): Promise<{ access_token: string; refresh_token: string; expires_in: number }> {
-  const config = await loadClientConfig();
+  checkConfig();
   
-  // Must match the redirect_uri used in initiateGoogleAuth
   const response = await fetch(GOOGLE_TOKEN_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       code,
-      client_id: config.client_id,
-      client_secret: config.client_secret,
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET,
       redirect_uri: REDIRECT_URI,
       grant_type: 'authorization_code'
     })
@@ -74,15 +59,15 @@ export async function exchangeCodeForTokens(code: string): Promise<{ access_toke
 }
 
 export async function refreshAccessToken(refreshToken: string): Promise<{ access_token: string; expires_in: number }> {
-  const config = await loadClientConfig();
+  checkConfig();
   
   const response = await fetch(GOOGLE_TOKEN_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       refresh_token: refreshToken,
-      client_id: config.client_id,
-      client_secret: config.client_secret,
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET,
       grant_type: 'refresh_token'
     })
   });
@@ -100,24 +85,20 @@ export async function getUserInfo(accessToken: string): Promise<{ name: string; 
   });
   
   if (!response.ok) {
-    throw new Error('Failed to fetch user info');
+    throw new Error('Failed to get user info');
   }
   
-  const data = await response.json();
-  return {
-    name: data.name,
-    email: data.email,
-    picture: data.picture
-  };
+  return response.json();
 }
 
+// Get storage info
 export async function getDriveStorageInfo(accessToken: string): Promise<{ used: number; total: number }> {
   const response = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/about?fields=storageQuota`, {
     headers: { Authorization: `Bearer ${accessToken}` }
   });
   
   if (!response.ok) {
-    throw new Error('Failed to fetch storage info');
+    throw new Error('Failed to get storage info');
   }
   
   const data = await response.json();
@@ -127,193 +108,88 @@ export async function getDriveStorageInfo(accessToken: string): Promise<{ used: 
   };
 }
 
-export async function findOrCreateCheckpointFolder(accessToken: string): Promise<string> {
-  // Search for existing Checkpoint folder
-  const searchResponse = await fetch(
-    `${GOOGLE_DRIVE_ENDPOINT}/files?q=${encodeURIComponent("name='Checkpoint' and mimeType='application/vnd.google-apps.folder' and trashed=false")}&spaces=drive`,
-    { headers: { Authorization: `Bearer ${accessToken}` } }
-  );
-  
-  if (!searchResponse.ok) {
-    throw new Error('Failed to search for Checkpoint folder');
-  }
-  
-  const searchData = await searchResponse.json();
-  
-  if (searchData.files && searchData.files.length > 0) {
-    return searchData.files[0].id;
-  }
-  
-  // Create Checkpoint folder
-  const createResponse = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/files`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      name: 'Checkpoint',
-      mimeType: 'application/vnd.google-apps.folder'
-    })
-  });
-  
-  if (!createResponse.ok) {
-    throw new Error('Failed to create Checkpoint folder');
-  }
-  
-  const createData = await createResponse.json();
-  return createData.id;
-}
-
+// Upload a snapshot
 export async function uploadSnapshot(
   accessToken: string,
   gameId: string,
   snapshotName: string,
-  fileBlob: Blob,
-  onProgress?: (progress: number) => void
+  fileBlob: Blob
 ): Promise<string> {
-  const checkpointFolderId = await findOrCreateCheckpointFolder(accessToken);
-  
-  // Find or create game folder
-  const gameFolderResponse = await fetch(
-    `${GOOGLE_DRIVE_ENDPOINT}/files?q=${encodeURIComponent(`name='${gameId}' and '${checkpointFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`)}&spaces=drive`,
-    { headers: { Authorization: `Bearer ${accessToken}` } }
-  );
-  
-  let gameFolderId: string;
-  
-  if (gameFolderResponse.ok) {
-    const gameFolderData = await gameFolderResponse.json();
-    if (gameFolderData.files && gameFolderData.files.length > 0) {
-      gameFolderId = gameFolderData.files[0].id;
-    } else {
-      // Create game folder
-      const createGameFolder = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/files`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name: gameId,
-          mimeType: 'application/vnd.google-apps.folder',
-          parents: [checkpointFolderId]
-        })
-      });
-      
-      if (!createGameFolder.ok) {
-        throw new Error('Failed to create game folder');
-      }
-      
-      gameFolderId = (await createGameFolder.json()).id;
-    }
-  } else {
-    throw new Error('Failed to search for game folder');
-  }
-  
-  // Upload file
+  // Create file metadata
   const metadata = {
-    name: `${snapshotName}.zip`,
-    parents: [gameFolderId]
+    name: `${gameId}/${snapshotName}.zip`,
+    parents: ['appDataFolder'] // Store in app-specific folder
   };
   
-  const formData = new FormData();
-  formData.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-  formData.append('file', fileBlob);
+  // Create multipart request
+  const boundary = '-------314159265358979323846';
+  const delimiter = "\r\n--" + boundary + "\r\n";
+  const close_delim = "\r\n--" + boundary + "--";
   
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    
-    if (onProgress) {
-      xhr.upload.addEventListener('progress', (event) => {
-        if (event.lengthComputable) {
-          const progress = (event.loaded / event.total) * 100;
-          onProgress(progress);
-        }
-      });
-    }
-    
-    xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
-        const response = JSON.parse(xhr.responseText);
-        resolve(response.id);
-      } else {
-        reject(new Error('Upload failed'));
-      }
-    });
-    
-    xhr.addEventListener('error', () => reject(new Error('Upload failed')));
-    
-    xhr.open('POST', `${GOOGLE_UPLOAD_ENDPOINT}/files?uploadType=multipart`);
-    xhr.setRequestHeader('Authorization', `Bearer ${accessToken}`);
-    xhr.send(formData);
+  const reader = new FileReader();
+  const base64Data = await new Promise<string>((resolve) => {
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      resolve(result.split(',')[1]);
+    };
+    reader.readAsDataURL(fileBlob);
   });
+  
+  const multipartRequestBody =
+    delimiter +
+    'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+    JSON.stringify(metadata) +
+    delimiter +
+    'Content-Type: application/zip\r\n' +
+    'Content-Transfer-Encoding: base64\r\n' +
+    '\r\n' +
+    base64Data +
+    close_delim;
+  
+  const response = await fetch(`${GOOGLE_UPLOAD_ENDPOINT}/files?uploadType=multipart`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'multipart/related; boundary="' + boundary + '"'
+    },
+    body: multipartRequestBody
+  });
+  
+  if (!response.ok) {
+    throw new Error('Failed to upload snapshot');
+  }
+  
+  const result = await response.json();
+  return result.id;
 }
 
-export async function listCloudSnapshots(accessToken: string, gameId: string): Promise<{ id: string; name: string; modifiedTime: string; size: number }[]> {
-  const checkpointFolderId = await findOrCreateCheckpointFolder(accessToken);
+// List snapshots for a game
+export async function listCloudSnapshots(accessToken: string, gameId: string): Promise<{ id: string; name: string; modifiedTime: string }[]> {
+  const query = encodeURIComponent(`name contains '${gameId}/' and trashed = false`);
+  const response = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/files?q=${query}&fields=files(id,name,modifiedTime)`, {
+    headers: { Authorization: `Bearer ${accessToken}` }
+  });
   
-  // Find game folder
-  const gameFolderResponse = await fetch(
-    `${GOOGLE_DRIVE_ENDPOINT}/files?q=${encodeURIComponent(`name='${gameId}' and '${checkpointFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`)}&spaces=drive`,
-    { headers: { Authorization: `Bearer ${accessToken}` } }
-  );
-  
-  if (!gameFolderResponse.ok) {
-    return [];
+  if (!response.ok) {
+    throw new Error('Failed to list cloud snapshots');
   }
   
-  const gameFolderData = await gameFolderResponse.json();
-  if (!gameFolderData.files || gameFolderData.files.length === 0) {
-    return [];
-  }
-  
-  const gameFolderId = gameFolderData.files[0].id;
-  
-  // List files in game folder
-  const filesResponse = await fetch(
-    `${GOOGLE_DRIVE_ENDPOINT}/files?q=${encodeURIComponent(`'${gameFolderId}' in parents and trashed=false`)}&fields=files(id,name,modifiedTime,size)&spaces=drive`,
-    { headers: { Authorization: `Bearer ${accessToken}` } }
-  );
-  
-  if (!filesResponse.ok) {
-    return [];
-  }
-  
-  const filesData = await filesResponse.json();
-  return filesData.files || [];
+  const data = await response.json();
+  return data.files;
 }
 
+// Download a snapshot
 export async function downloadSnapshot(
   accessToken: string,
-  fileId: string,
-  onProgress?: (progress: number) => void
+  fileId: string
 ): Promise<Blob> {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    
-    if (onProgress) {
-      xhr.addEventListener('progress', (event) => {
-        if (event.lengthComputable) {
-          const progress = (event.loaded / event.total) * 100;
-          onProgress(progress);
-        }
-      });
-    }
-    
-    xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
-        resolve(xhr.response);
-      } else {
-        reject(new Error('Download failed'));
-      }
-    });
-    
-    xhr.addEventListener('error', () => reject(new Error('Download failed')));
-    
-    xhr.open('GET', `${GOOGLE_DRIVE_ENDPOINT}/files/${fileId}?alt=media`);
-    xhr.setRequestHeader('Authorization', `Bearer ${accessToken}`);
-    xhr.responseType = 'blob';
-    xhr.send();
+  const response = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/files/${fileId}?alt=media`, {
+    headers: { Authorization: `Bearer ${accessToken}` }
   });
+  
+  if (!response.ok) {
+    throw new Error('Failed to download snapshot');
+  }
+  
+  return response.blob();
 }
