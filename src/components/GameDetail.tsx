@@ -6,11 +6,14 @@ import {
   deleteSnapshot,
   renameSnapshot,
   deleteGame,
-  isProcessRunning
+  isProcessRunning,
+  importSnapshot
 } from '../lib/api';
 import { useI18n } from '../lib/i18n';
-import type { Game, Snapshot } from '../lib/types';
-import { ArrowLeft, Plus, RotateCcw, Trash2, Edit3, CheckCircle, AlertTriangle } from 'lucide-react';
+import { useProfile } from '../lib/profileContext';
+import { uploadSnapshot, listCloudSnapshots, downloadSnapshot } from '../lib/googleDrive';
+import type { Game, Snapshot, CloudSyncState } from '../lib/types';
+import { ArrowLeft, Plus, RotateCcw, Trash2, Edit3, CheckCircle, AlertTriangle, Cloud, CloudUpload, CloudDownload, Loader2 } from 'lucide-react';
 import { EditGameModal } from './EditGameModal';
 
 interface GameDetailProps {
@@ -23,6 +26,7 @@ interface GameDetailProps {
 
 export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoading }: GameDetailProps) {
   const { t } = useI18n();
+  const { isAuthenticated, getValidAccessToken } = useProfile();
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +37,12 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
   const [editingSnapshot, setEditingSnapshot] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  
+  // Cloud sync states
+  const [cloudSyncState, setCloudSyncState] = useState<CloudSyncState>({ sync_status: 'idle' });
+  const [backupDestination, setBackupDestination] = useState<'local' | 'cloud' | 'both'>('local');
+  const [isUploading, setIsUploading] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const checkProcess = useCallback(async () => {
     if (game.exe_name) {
@@ -174,6 +184,153 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
     }
   };
 
+  const handleUploadToCloud = async (snapshot: Snapshot) => {
+    if (!isAuthenticated) {
+      setError('Please sign in with Google first');
+      return;
+    }
+
+    setIsUploading(true);
+    setCloudSyncState({ sync_status: 'syncing' });
+    setLoading(true, 'Preparing upload...');
+
+    try {
+      const token = await getValidAccessToken();
+      if (!token) {
+        throw new Error('Failed to get valid access token');
+      }
+
+      // Read the snapshot files and create a zip
+      setLoading(true, 'Reading snapshot files...');
+      const { readDir, readFile } = await import('@tauri-apps/plugin-fs');
+      const { join } = await import('@tauri-apps/api/path');
+      
+      // Get snapshot directory path
+      const snapshotPath = snapshot.path;
+      
+      // Read all files in the snapshot directory recursively
+      const files: { path: string; content: Uint8Array }[] = [];
+      
+      async function readDirectoryRecursive(dirPath: string, relativePath: string = '') {
+        const entries = await readDir(dirPath);
+        
+        for (const entry of entries) {
+          const entryRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
+          const entryFullPath = await join(dirPath, entry.name);
+          
+          if (entry.isDirectory) {
+            await readDirectoryRecursive(entryFullPath, entryRelativePath);
+          } else if (entry.isFile && entry.name !== '.checkpoint-meta.json') {
+            const content = await readFile(entryFullPath);
+            files.push({ path: entryRelativePath, content });
+          }
+        }
+      }
+      
+      await readDirectoryRecursive(snapshotPath);
+      
+      // Create zip using JSZip
+      setLoading(true, 'Creating zip archive...');
+      const JSZip = (await import('jszip')).default;
+      const zip = new JSZip();
+      
+      for (const file of files) {
+        zip.file(file.path, file.content);
+      }
+      
+      const zipBlob = await zip.generateAsync({ type: 'blob' }, (metadata: { percent: number }) => {
+        setLoading(true, `Creating zip... ${Math.round(metadata.percent)}%`);
+      });
+
+      // Upload to Google Drive
+      setLoading(true, 'Uploading to cloud...');
+      await uploadSnapshot(
+        token,
+        game.id,
+        snapshot.name,
+        zipBlob,
+        (progress) => {
+          setLoading(true, `Uploading... ${Math.round(progress)}%`);
+        }
+      );
+
+      setCloudSyncState({
+        sync_status: 'idle',
+        last_upload: new Date().toISOString()
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to upload to cloud');
+      setCloudSyncState({
+        sync_status: 'error',
+        error_message: err instanceof Error ? err.message : 'Upload failed'
+      });
+    } finally {
+      setIsUploading(false);
+      setLoading(false, '');
+    }
+  };
+
+  const handleDownloadFromCloud = async () => {
+    if (!isAuthenticated) {
+      setError('Please sign in with Google first');
+      return;
+    }
+
+    setIsDownloading(true);
+    setCloudSyncState({ sync_status: 'syncing' });
+    setLoading(true, 'Checking cloud snapshots...');
+
+    try {
+      const token = await getValidAccessToken();
+      if (!token) {
+        throw new Error('Failed to get valid access token');
+      }
+
+      // List cloud snapshots
+      const cloudSnapshots = await listCloudSnapshots(token, game.id);
+      if (cloudSnapshots.length === 0) {
+        setError('No cloud snapshots found for this game');
+        setCloudSyncState({ sync_status: 'idle' });
+        return;
+      }
+
+      // For now, download the most recent one
+      const latestSnapshot = cloudSnapshots.sort((a, b) => 
+        new Date(b.modifiedTime).getTime() - new Date(a.modifiedTime).getTime()
+      )[0];
+
+      setLoading(true, 'Downloading from cloud...');
+      const blob = await downloadSnapshot(token, latestSnapshot.id, (progress) => {
+        setLoading(true, `Downloading... ${Math.round(progress)}%`);
+      });
+
+      // Create a new local snapshot from the downloaded file
+      const arrayBuffer = await blob.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+      
+      const newSnapshot = await importSnapshot(
+        game.id,
+        latestSnapshot.name.replace('.zip', ''),
+        uint8Array
+      );
+      setSnapshots([newSnapshot, ...snapshots]);
+      
+      setCloudSyncState({
+        sync_status: 'idle',
+        last_download: new Date().toISOString()
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to download from cloud');
+      setCloudSyncState({
+        sync_status: 'error',
+        error_message: err instanceof Error ? err.message : 'Download failed'
+      });
+    } finally {
+      setIsDownloading(false);
+      setLoading(false, '');
+    }
+  };
+
   const formatSize = (bytes: number) => {
     if (bytes === 0) return '0 B';
     const k = 1024;
@@ -222,6 +379,75 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
             <AlertTriangle size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
           )}
           {restoreResult.message}
+        </div>
+      )}
+
+      {/* Cloud Sync Section */}
+      {isAuthenticated ? (
+        <div className="cloud-sync-section">
+          <div className="cloud-sync-header">
+            <Cloud size={18} />
+            <h3>Cloud Backup</h3>
+          </div>
+          
+          <div className="backup-destination">
+            <label>Backup Destination:</label>
+            <select 
+              value={backupDestination}
+              onChange={(e) => setBackupDestination(e.target.value as 'local' | 'cloud' | 'both')}
+              className="backup-destination-select"
+            >
+              <option value="local">Local Only</option>
+              <option value="cloud">Cloud Only</option>
+              <option value="both">Local & Cloud</option>
+            </select>
+          </div>
+
+          <div className="cloud-sync-actions">
+            <button
+              className="btn btn-secondary btn-small"
+              onClick={handleDownloadFromCloud}
+              disabled={isDownloading}
+              title="Download latest from cloud"
+            >
+              {isDownloading ? (
+                <Loader2 size={16} className="spinner" />
+              ) : (
+                <CloudDownload size={16} />
+              )}
+              <span>Download from Cloud</span>
+            </button>
+          </div>
+
+          {cloudSyncState.sync_status === 'syncing' && (
+            <div className="cloud-sync-status syncing">
+              <Loader2 size={14} className="spinner" />
+              <span>Syncing...</span>
+            </div>
+          )}
+          
+          {cloudSyncState.sync_status === 'error' && cloudSyncState.error_message && (
+            <div className="cloud-sync-status error">
+              <AlertTriangle size={14} />
+              <span>{cloudSyncState.error_message}</span>
+            </div>
+          )}
+          
+          {cloudSyncState.last_upload && (
+            <div className="cloud-sync-status success">
+              <CheckCircle size={14} />
+              <span>Last uploaded: {new Date(cloudSyncState.last_upload).toLocaleString()}</span>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="cloud-sync-section cloud-sync-login-prompt">
+          <div className="cloud-sync-header">
+            <Cloud size={18} />
+            <h3>Cloud Backup</h3>
+          </div>
+          <p className="cloud-login-text">Sign in with Google to enable cloud backup</p>
+          <p className="cloud-login-hint">Click the profile card in the sidebar to sign in</p>
         </div>
       )}
 
@@ -338,6 +564,20 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
                   </p>
                 </div>
                 <div className="snapshot-actions">
+                  {isAuthenticated && (
+                    <button
+                      className="btn btn-secondary btn-small"
+                      onClick={() => handleUploadToCloud(snapshot)}
+                      disabled={isUploading}
+                      title="Upload to cloud"
+                    >
+                      {isUploading ? (
+                        <Loader2 size={16} className="spinner" />
+                      ) : (
+                        <CloudUpload size={16} />
+                      )}
+                    </button>
+                  )}
                   <button
                     className="btn btn-secondary btn-small"
                     onClick={() => handleRenameStart(snapshot)}

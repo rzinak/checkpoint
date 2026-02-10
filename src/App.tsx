@@ -1,20 +1,25 @@
 import { useState, useEffect } from 'react';
+import { getCurrent, onOpenUrl } from '@tauri-apps/plugin-deep-link';
 import { Dashboard } from './components/Dashboard';
 import { GameDetail } from './components/GameDetail';
 import { AddGameModal } from './components/AddGameModal';
 import { Settings } from './components/Settings';
+import { Profile } from './components/Profile';
+import { ProfileCard } from './components/ProfileCard';
 import { LoadingOverlay } from './components/LoadingOverlay';
 import { I18nProvider, useI18n } from './lib/i18n';
+import { ProfileProvider, useProfile } from './lib/profileContext';
 import { listGames, getConfig } from './lib/api';
 import type { Game, Config } from './lib/types';
 import { Home, Settings as SettingsIcon, Plus } from 'lucide-react';
 import './App.css';
 
-type View = 'dashboard' | 'game' | 'settings';
+type View = 'dashboard' | 'game' | 'settings' | 'profile';
 type Theme = 'light' | 'dark';
 
 function AppContent() {
   const { t } = useI18n();
+  const { loginWithGoogle } = useProfile();
   const [view, setView] = useState<View>('dashboard');
   const [games, setGames] = useState<Game[]>([]);
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
@@ -56,6 +61,55 @@ function AppContent() {
   useEffect(() => {
     loadData();
   }, []);
+
+  // Handle OAuth deep link callback
+  useEffect(() => {
+    const handleDeepLink = async (urls: string[] | null) => {
+      if (!urls || urls.length === 0) return;
+      
+      try {
+        const url = new URL(urls[0]);
+        
+        // Check if this is an auth callback
+        if (url.protocol === 'checkpoint:' && url.host === 'auth') {
+          const code = url.searchParams.get('code');
+          const error = url.searchParams.get('error');
+          
+          if (error) {
+            setError('Google sign-in failed: ' + error);
+            return;
+          }
+          
+          if (code) {
+            try {
+              setIsLoading(true);
+              setLoadingMessage('Signing in with Google...');
+              await loginWithGoogle(code);
+            } catch (err) {
+              setError(err instanceof Error ? err.message : 'Failed to sign in with Google');
+            } finally {
+              setIsLoading(false);
+              setLoadingMessage('');
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Failed to handle deep link:', err);
+      }
+    };
+    
+    // Listen for deep links while app is running
+    const unlistenPromise = onOpenUrl(handleDeepLink);
+    
+    // Also check if app was opened with a deep link
+    getCurrent().then(handleDeepLink).catch(err => {
+      console.error('Failed to get initial deep link:', err);
+    });
+    
+    return () => {
+      unlistenPromise.then(unlisten => unlisten());
+    };
+  }, [loginWithGoogle]);
 
   const handleGameSelect = (game: Game) => {
     setSelectedGame(game);
@@ -105,12 +159,10 @@ function AppContent() {
 
   return (
     <div className="app">
-      {/* Loading Overlay */}
       <LoadingOverlay isLoading={isLoading && !!loadingMessage} message={loadingMessage} />
 
-      {/* Sidebar Navigation */}
       <aside className="sidebar">
-        {/* LOGO HERE - Replace with actual logo image */}
+        {/* LOGO HERE - gotta replace with actual logo image */}
         <div className="sidebar-logo">
           <div className="logo-placeholder">
             {/* LOGO HERE */}
@@ -119,9 +171,8 @@ function AppContent() {
           <span className="logo-text">{t('app.name')}</span>
         </div>
 
-        {/* Navigation Items */}
         <nav className="sidebar-nav">
-          <button 
+          <button
             className={`nav-item ${view === 'dashboard' ? 'active' : ''}`}
             onClick={() => setView('dashboard')}
             title={t('nav.home') as string}
@@ -129,8 +180,8 @@ function AppContent() {
             <Home size={20} />
             <span>{t('nav.home')}</span>
           </button>
-          
-          <button 
+
+          <button
             className={`nav-item ${view === 'settings' ? 'active' : ''}`}
             onClick={() => setView('settings')}
             title={t('nav.settings') as string}
@@ -140,9 +191,8 @@ function AppContent() {
           </button>
         </nav>
 
-        {/* Add Game Button */}
         <div className="sidebar-footer">
-          <button 
+          <button
             className="sidebar-add-btn"
             onClick={() => setIsAddModalOpen(true)}
             title={t('nav.addGame') as string}
@@ -151,9 +201,10 @@ function AppContent() {
             <span>{t('nav.addGame')}</span>
           </button>
         </div>
+
+        <ProfileCard onOpenProfile={() => setView('profile')} />
       </aside>
 
-      {/* Main Content */}
       <main className="main-content">
         {error && (
           <div className="error-banner">
@@ -164,15 +215,15 @@ function AppContent() {
 
         <div className="content-wrapper">
           {view === 'dashboard' && (
-            <Dashboard 
-              games={games} 
+            <Dashboard
+              games={games}
               onGameSelect={handleGameSelect}
               onRefresh={loadData}
             />
           )}
 
           {view === 'game' && selectedGame && (
-            <GameDetail 
+            <GameDetail
               game={selectedGame}
               onBack={handleBackToDashboard}
               onGameDeleted={handleGameDeleted}
@@ -182,7 +233,7 @@ function AppContent() {
           )}
 
           {view === 'settings' && config && (
-            <Settings 
+            <Settings
               config={config}
               onBack={() => setView('dashboard')}
               onConfigUpdate={setConfig}
@@ -190,11 +241,15 @@ function AppContent() {
               onThemeChange={setTheme}
             />
           )}
+
+          {view === 'profile' && (
+            <Profile onBack={() => setView('dashboard')} />
+          )}
         </div>
       </main>
 
       {isAddModalOpen && (
-        <AddGameModal 
+        <AddGameModal
           onClose={() => setIsAddModalOpen(false)}
           onGameAdded={handleGameAdded}
           setLoading={setLoadingWithMessage}
@@ -207,7 +262,9 @@ function AppContent() {
 function App() {
   return (
     <I18nProvider>
-      <AppContent />
+      <ProfileProvider>
+        <AppContent />
+      </ProfileProvider>
     </I18nProvider>
   );
 }

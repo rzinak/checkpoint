@@ -403,3 +403,79 @@ struct SnapshotMetadata {
     size: u64,
     file_count: usize,
 }
+
+pub fn import_snapshot(
+    game_id: &str,
+    name: &str,
+    file_data: &[u8],
+    backup_location: &str,
+) -> Result<Snapshot, String> {
+    use std::io::Cursor;
+    use zip::ZipArchive;
+
+    let timestamp = Utc::now();
+    let snapshot_id = Uuid::new_v4().to_string();
+
+    let snapshot_dir = Path::new(backup_location).join(game_id).join(&snapshot_id);
+
+    fs::create_dir_all(&snapshot_dir)
+        .map_err(|e| format!("Failed to create snapshot directory: {}", e))?;
+
+    // Extract zip file
+    let cursor = Cursor::new(file_data);
+    let mut archive =
+        ZipArchive::new(cursor).map_err(|e| format!("Failed to read zip archive: {}", e))?;
+
+    let mut total_size: u64 = 0;
+    let mut file_count: usize = 0;
+
+    for i in 0..archive.len() {
+        let mut file = archive
+            .by_index(i)
+            .map_err(|e| format!("Failed to access file in archive: {}", e))?;
+
+        if file.is_file() {
+            let out_path = snapshot_dir.join(file.name());
+
+            if let Some(parent) = out_path.parent() {
+                fs::create_dir_all(parent)
+                    .map_err(|e| format!("Failed to create directory: {}", e))?;
+            }
+
+            let mut outfile =
+                fs::File::create(&out_path).map_err(|e| format!("Failed to create file: {}", e))?;
+            std::io::copy(&mut file, &mut outfile)
+                .map_err(|e| format!("Failed to extract file: {}", e))?;
+
+            let metadata =
+                fs::metadata(&out_path).map_err(|e| format!("Failed to get metadata: {}", e))?;
+            total_size += metadata.len();
+            file_count += 1;
+        }
+    }
+
+    let metadata = SnapshotMetadata {
+        id: snapshot_id.clone(),
+        game_id: game_id.to_string(),
+        timestamp,
+        name: name.to_string(),
+        size: total_size,
+        file_count,
+    };
+
+    let metadata_path = snapshot_dir.join(".checkpoint-meta.json");
+    let metadata_json = serde_json::to_string_pretty(&metadata)
+        .map_err(|e| format!("Failed to serialize metadata: {}", e))?;
+    fs::write(&metadata_path, metadata_json)
+        .map_err(|e| format!("Failed to write metadata: {}", e))?;
+
+    Ok(Snapshot {
+        id: snapshot_id,
+        game_id: game_id.to_string(),
+        timestamp,
+        name: name.to_string(),
+        path: snapshot_dir.to_string_lossy().to_string(),
+        size: total_size,
+        file_count,
+    })
+}
