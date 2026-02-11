@@ -3,6 +3,7 @@ import { addGame, selectFolder } from '../lib/api';
 import { useI18n } from '../lib/i18n';
 import type { Game } from '../lib/types';
 import { X, FolderOpen, ImagePlus, Trash2 } from 'lucide-react';
+import { Input, Button } from './ui';
 
 interface AddGameModalProps {
   onClose: () => void;
@@ -157,68 +158,64 @@ export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalP
               <p className="cover-upload-hint">JPG or PNG, max 2MB, 3:4 ratio recommended</p>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="gameName">{t('addGame.name')} *</label>
-              <input
-                type="text"
-                id="gameName"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={t('addGame.namePlaceholder')}
-                required
-              />
-            </div>
+            <Input
+              label={t('addGame.name') + ' *'}
+              id="gameName"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={t('addGame.namePlaceholder')}
+              required
+            />
 
-            <div className="form-group">
-              <label htmlFor="saveLocation">{t('addGame.saveLocation')} *</label>
-              <input
-                type="text"
-                id="saveLocation"
-                value={saveLocation}
-                onChange={(e) => setSaveLocation(e.target.value)}
-                placeholder={t('addGame.saveLocationPlaceholder')}
-                required
-              />
-              <button
-                type="button"
-                className="browse-button"
-                onClick={handleBrowse}
-              >
-                <FolderOpen size={16} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                {t('addGame.browse')}
-              </button>
-              <p className="hint">{t('addGame.saveLocationHint')}</p>
-            </div>
+            <Input
+              label={t('addGame.saveLocation') + ' *'}
+              id="saveLocation"
+              type="text"
+              value={saveLocation}
+              onChange={(e) => setSaveLocation(e.target.value)}
+              placeholder={t('addGame.saveLocationPlaceholder')}
+              hint={t('addGame.saveLocationHint')}
+              required
+            />
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<FolderOpen size={16} />}
+              onClick={handleBrowse}
+              style={{ marginTop: '-0.5rem', marginBottom: '1rem' }}
+            >
+              {t('addGame.browse')}
+            </Button>
 
-            <div className="form-group">
-              <label htmlFor="exeName">{t('addGame.executable')}</label>
-              <input
-                type="text"
-                id="exeName"
-                value={exeName}
-                onChange={(e) => setExeName(e.target.value)}
-                placeholder={t('addGame.executablePlaceholder')}
-              />
-              <p className="hint">{t('addGame.executableHint')}</p>
-            </div>
+            <Input
+              label={t('addGame.executable')}
+              id="exeName"
+              type="text"
+              value={exeName}
+              onChange={(e) => setExeName(e.target.value)}
+              placeholder={t('addGame.executablePlaceholder')}
+              hint={t('addGame.executableHint')}
+            />
           </div>
 
           <div className="modal-footer">
-            <button
-              type="button"
-              className="btn btn-secondary"
+            <Button
+              variant="secondary"
+              size="md"
               onClick={onClose}
               disabled={isLoading}
             >
               {t('addGame.cancel')}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="primary"
+              size="md"
               type="submit"
-              className="btn btn-primary"
-              disabled={isLoading}
+              isLoading={isLoading}
             >
-              {isLoading ? t('loading.loading') : t('addGame.add')}
-            </button>
+              {t('addGame.add')}
+            </Button>
           </div>
         </form>
       </div>

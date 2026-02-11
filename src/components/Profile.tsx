@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useProfile } from '../lib/profileContext';
 import { getDriveStorageInfo } from '../lib/googleDrive';
 import { ArrowLeft, User, Cloud, Database, LogOut, Loader2 } from 'lucide-react';
+import { ConfirmModal } from './ConfirmModal';
 
 interface ProfileProps {
   onBack: () => void;
@@ -11,6 +12,7 @@ export function Profile({ onBack }: ProfileProps) {
   const { profile, isAuthenticated, logout, getValidAccessToken } = useProfile();
   const [storageInfo, setStorageInfo] = useState<{ used: number; total: number } | null>(null);
   const [isLoadingStorage, setIsLoadingStorage] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -42,8 +44,7 @@ export function Profile({ onBack }: ProfileProps) {
   };
 
   const handleLogout = () => {
-    logout();
-    onBack();
+    setShowLogoutConfirm(true);
   };
 
   if (!isAuthenticated) {
@@ -137,6 +138,21 @@ export function Profile({ onBack }: ProfileProps) {
           </button>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={showLogoutConfirm}
+        title="Sign Out"
+        message="Are you sure you want to sign out? You'll need to sign in again to access your cloud backups."
+        confirmText="Sign Out"
+        cancelText="Cancel"
+        danger={true}
+        onConfirm={() => {
+          logout();
+          setShowLogoutConfirm(false);
+          onBack();
+        }}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
     </div>
   );
 }

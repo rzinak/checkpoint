@@ -4,6 +4,28 @@
   padding: 0;
 }
 
+/* Global form element reset to prevent native OS styling */
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
 /* Light theme (default) - Discord Light + Forest Green */
 :root {
   --bg-primary: #f2f3f5;
@@ -1108,6 +1130,38 @@ body {
   color: var(--error);
 }
 
+/* Compact Login Button */
+.profile-login-compact {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.profile-login-compact:hover:not(:disabled) {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+}
+
+.profile-login-compact:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.profile-login-compact .google-icon {
+  flex-shrink: 0;
+}
+
 .profile-card-loading {
   justify-content: center;
   padding: 0.75rem;
@@ -1359,6 +1413,24 @@ body {
   font-size: 0.8125rem;
   cursor: pointer;
   transition: all 0.15s;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.backup-destination-select option {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .backup-destination-select {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .backup-destination-select option {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .backup-destination-select:focus {
@@ -1734,4 +1806,233 @@ body {
 .cloud-backup-item:hover {
   border-color: var(--accent);
   background: var(--bg-tertiary);
+}
+
+/* ==================== CUSTOM UI COMPONENTS ==================== */
+
+/* Form Group */
+.custom-form-group {
+  margin-bottom: 1rem;
+}
+
+.custom-form-label {
+  display: block;
+  margin-bottom: 0.375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.75rem;
+}
+
+.custom-form-hint {
+  display: block;
+  font-size: 0.6875rem;
+  color: var(--text-secondary);
+  margin-top: 0.375rem;
+}
+
+.custom-form-error {
+  display: block;
+  font-size: 0.6875rem;
+  color: var(--error);
+  margin-top: 0.375rem;
+}
+
+/* Custom Input */
+.custom-input {
+  width: 100%;
+  padding: 0.5rem 0.625rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.custom-input:hover {
+  border-color: var(--border-strong);
+}
+
+.custom-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-light);
+}
+
+.custom-input.has-error {
+  border-color: var(--error);
+}
+
+.custom-input.has-error:focus {
+  box-shadow: 0 0 0 2px rgba(237, 66, 69, 0.2);
+}
+
+.custom-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Custom Select */
+.custom-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select {
+  width: 100%;
+  padding: 0.5rem 2rem 0.5rem 0.625rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.custom-select:hover {
+  border-color: var(--border-strong);
+}
+
+.custom-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-light);
+}
+
+.custom-select.has-error {
+  border-color: var(--error);
+}
+
+.custom-select-arrow {
+  position: absolute;
+  right: 0.625rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+/* Custom Button */
+.custom-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-family: inherit;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+  position: relative;
+}
+
+.custom-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Button Sizes */
+.custom-btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+}
+
+.custom-btn-md {
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+}
+
+.custom-btn-lg {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9375rem;
+}
+
+/* Button Variants */
+.custom-btn-primary {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.custom-btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.custom-btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.custom-btn-secondary:hover:not(:disabled) {
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
+}
+
+.custom-btn-danger {
+  background: transparent;
+  color: var(--error);
+  border-color: var(--border);
+}
+
+.custom-btn-danger:hover:not(:disabled) {
+  background: rgba(237, 66, 69, 0.1);
+  border-color: rgba(237, 66, 69, 0.3);
+}
+
+.custom-btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: transparent;
+}
+
+.custom-btn-ghost:hover:not(:disabled) {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* Button Full Width */
+.custom-btn-full {
+  width: 100%;
+}
+
+/* Button Loading State */
+.custom-btn-loading {
+  cursor: wait;
+}
+
+.custom-btn-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+
+.custom-btn-spinner svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Button Icons */
+.custom-btn-icon-left,
+.custom-btn-icon-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-btn-text {
+  line-height: 1;
 }

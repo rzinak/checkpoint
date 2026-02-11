@@ -3,6 +3,7 @@ import { setBackupLocation, selectFolder } from '../lib/api';
 import { useI18n } from '../lib/i18n';
 import type { Config } from '../lib/types';
 import { ArrowLeft, FolderOpen, Sun, Moon, Globe } from 'lucide-react';
+import { Select, Input, Button } from './ui';
 
 interface SettingsProps {
   config: Config;
@@ -112,55 +113,50 @@ export function Settings({ config, onBack, onConfigUpdate, theme, onThemeChange 
         <h3>{t('settings.language')}</h3>
         <div className="language-selector">
           <Globe size={16} style={{ color: 'var(--text-secondary)' }} />
-          <select
+          <Select
             value={language}
             onChange={(e) => setLanguage(e.target.value as 'en' | 'pt' | 'es')}
+            options={languages.map(lang => ({ value: lang.code, label: lang.name }))}
             className="language-select"
-          >
-            {languages.map(lang => (
-              <option key={lang.code} value={lang.code}>
-                {lang.name}
-              </option>
-            ))}
-          </select>
+          />
         </div>
       </div>
 
       <div className="settings-section">
         <h3>{t('settings.backupLocation')}</h3>
         <div className="form-group">
-          <label htmlFor="backupLocation">{t('settings.backupFolder')}</label>
-          <input
-            type="text"
+          <Input
+            label={t('settings.backupFolder')}
             id="backupLocation"
+            type="text"
             value={backupPath}
             onChange={(e) => {
               setBackupPath(e.target.value);
               setSuccess(false);
             }}
             placeholder="/path/to/backup/folder"
+            hint={t('settings.backupHint')}
           />
-          <button
-            type="button"
-            className="browse-button"
+          <Button
+            variant="secondary"
+            size="sm"
+            leftIcon={<FolderOpen size={16} />}
             onClick={handleBrowse}
+            style={{ marginTop: '0.5rem' }}
           >
-            <FolderOpen size={16} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
             {t('addGame.browse')}
-          </button>
-          <p className="hint">
-            {t('settings.backupHint')}
-          </p>
+          </Button>
         </div>
 
         <div style={{ marginTop: '1.5rem' }}>
-          <button
-            className="btn btn-primary"
+          <Button
+            variant="primary"
+            size="md"
+            isLoading={isSaving}
             onClick={handleSave}
-            disabled={isSaving}
           >
-            {isSaving ? t('settings.saving') : t('settings.save')}
-          </button>
+            {t('settings.save')}
+          </Button>
         </div>
       </div>
 

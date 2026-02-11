@@ -19,6 +19,7 @@ import { EditGameModal } from './EditGameModal';
 import { CloudBackupInfo } from './CloudBackupInfo';
 import { CloudBackupListModal } from './CloudBackupListModal';
 import { ConfirmModal } from './ConfirmModal';
+import { Select } from './ui';
 import { deleteCloudSnapshot } from '../lib/googleDrive';
 
 interface GameDetailProps {
@@ -565,15 +566,16 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
           
           <div className="backup-destination">
             <label>Backup Destination:</label>
-            <select 
+            <Select
               value={backupDestination}
               onChange={(e) => setBackupDestination(e.target.value as 'local' | 'cloud' | 'both')}
+              options={[
+                { value: 'local', label: 'Local Only' },
+                { value: 'cloud', label: 'Cloud Only' },
+                { value: 'both', label: 'Local & Cloud' }
+              ]}
               className="backup-destination-select"
-            >
-              <option value="local">Local Only</option>
-              <option value="cloud">Cloud Only</option>
-              <option value="both">Local & Cloud</option>
-            </select>
+            />
           </div>
 
           <div className="cloud-sync-actions">
