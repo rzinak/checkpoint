@@ -5,19 +5,60 @@ import { GameDetail } from './components/GameDetail';
 import { AddGameModal } from './components/AddGameModal';
 import { Settings } from './components/Settings';
 import { Profile } from './components/Profile';
+import { Notifications } from './components/Notifications';
 import { ProfileCard } from './components/ProfileCard';
 import { LoadingOverlay } from './components/LoadingOverlay';
 import { ToastContainer } from './components/Toast';
 import { I18nProvider, useI18n } from './lib/i18n';
 import { ProfileProvider, useProfile } from './lib/profileContext';
-import { ToastProvider } from './lib/toastContext';
+import { ToastProvider, useToast } from './lib/toastContext';
 import { listGames, getConfig } from './lib/api';
 import type { Game, Config } from './lib/types';
-import { Home, Settings as SettingsIcon, Plus } from 'lucide-react';
+import { Home, Settings as SettingsIcon, Plus, Bell } from 'lucide-react';
 import './App.css';
 
-type View = 'dashboard' | 'game' | 'settings' | 'profile';
+type View = 'dashboard' | 'game' | 'settings' | 'profile' | 'notifications';
 type Theme = 'light' | 'dark';
+
+function NotificationsBell({ onClick }: { onClick: () => void }) {
+  const { notifications, markAsRead } = useToast();
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  return (
+    <button
+      className="nav-item"
+      onClick={() => {
+        notifications.filter(n => !n.read).forEach(n => markAsRead(n.id));
+        onClick();
+      }}
+      title="Notifications"
+      style={{ position: 'relative' }}
+    >
+      <Bell size={20} />
+      {unreadCount > 0 && (
+        <span style={{
+          position: 'absolute',
+          top: '4px',
+          right: '4px',
+          minWidth: '16px',
+          height: '16px',
+          background: 'var(--error)',
+          color: 'white',
+          fontSize: '0.625rem',
+          fontWeight: 700,
+          borderRadius: '8px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '0 4px',
+          border: '2px solid var(--sidebar-bg)'
+        }}>
+          {unreadCount > 99 ? '99+' : unreadCount}
+        </span>
+      )}
+    </button>
+  );
+}
 
 function AppContent() {
   const { t } = useI18n();
@@ -183,6 +224,8 @@ function AppContent() {
             <span>{t('nav.home')}</span>
           </button>
 
+          <NotificationsBell onClick={() => setView('notifications')} />
+
           <button
             className={`nav-item ${view === 'settings' ? 'active' : ''}`}
             onClick={() => setView('settings')}
@@ -246,6 +289,10 @@ function AppContent() {
 
           {view === 'profile' && (
             <Profile onBack={() => setView('dashboard')} />
+          )}
+
+          {view === 'notifications' && (
+            <Notifications onBack={() => setView('dashboard')} />
           )}
         </div>
       </main>
