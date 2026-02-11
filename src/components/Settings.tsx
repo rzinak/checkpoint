@@ -38,6 +38,11 @@ export function Settings({ config, onBack, onConfigUpdate, theme, onThemeChange 
       return;
     }
 
+    if (backupPath.trim().length > 500) {
+      setError('Backup location path must be less than 500 characters');
+      return;
+    }
+
     setIsSaving(true);
     setError(null);
     setSuccess(false);
@@ -136,6 +141,7 @@ export function Settings({ config, onBack, onConfigUpdate, theme, onThemeChange 
             }}
             placeholder="/path/to/backup/folder"
             hint={t('settings.backupHint')}
+            maxLength={500}
           />
           <Button
             variant="secondary"

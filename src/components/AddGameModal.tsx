@@ -69,6 +69,20 @@ export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalP
       return;
     }
 
+    // Validate character limits
+    if (name.trim().length > 100) {
+      setError('Game name must be less than 100 characters');
+      return;
+    }
+    if (saveLocation.trim().length > 500) {
+      setError('Save location path must be less than 500 characters');
+      return;
+    }
+    if (exeName.trim().length > 100) {
+      setError('Executable name must be less than 100 characters');
+      return;
+    }
+
     setIsLoading(true);
     setLoading(true, t('loading.loading'));
     setError(null);
@@ -90,7 +104,7 @@ export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalP
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2>{t('addGame.title')}</h2>
           <button className="modal-close" onClick={onClose}>
@@ -165,6 +179,7 @@ export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalP
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t('addGame.namePlaceholder')}
+              maxLength={100}
               required
             />
 
@@ -176,6 +191,7 @@ export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalP
               onChange={(e) => setSaveLocation(e.target.value)}
               placeholder={t('addGame.saveLocationPlaceholder')}
               hint={t('addGame.saveLocationHint')}
+              maxLength={500}
               required
             />
             <Button
@@ -196,6 +212,7 @@ export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalP
               onChange={(e) => setExeName(e.target.value)}
               placeholder={t('addGame.executablePlaceholder')}
               hint={t('addGame.executableHint')}
+              maxLength={100}
             />
           </div>
 
