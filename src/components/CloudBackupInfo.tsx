@@ -40,6 +40,17 @@ export function CloudBackupInfo({ isOpen, onClose }: CloudBackupInfoProps) {
           </div>
 
           <div className="info-section">
+            <h4>Naming Your Saves</h4>
+            <p>Cloud saves are stored globally across all games, so use descriptive names you'll recognize later:</p>
+            <ul>
+              <li><strong>RDR2 - Chapter 3 - 2026-02-11</strong></li>
+              <li><strong>Elden Ring - Before Boss Fight</strong></li>
+              <li><strong>Cyberpunk 2077 - Act 2 Complete</strong></li>
+            </ul>
+            <p>If you delete and re-add a game later, you'll need to recognize your saves by their names in "View All".</p>
+          </div>
+
+          <div className="info-section">
             <h4>Sync Status</h4>
             <p>The sync indicators show:</p>
             <ul>
