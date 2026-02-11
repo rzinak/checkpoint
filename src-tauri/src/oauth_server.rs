@@ -34,13 +34,16 @@ static OAUTH_STATE: Lazy<Arc<Mutex<OAuthState>>> =
 
 #[tauri::command]
 pub async fn start_oauth_server() -> Result<u16, String> {
+    println!("start_oauth_server called");
     let mut state = OAUTH_STATE.lock().await;
     
     // Reset state for new OAuth flow
     state.reset();
+    println!("State reset complete");
     
     // Take ownership of the sender for use in the route handler
     let code_sender = Arc::new(Mutex::new(state.code_sender.take()));
+    println!("Sender taken and wrapped in Arc");
     
     // HTML response for the callback page
     let html = r#"<!DOCTYPE html>
@@ -81,7 +84,9 @@ pub async fn start_oauth_server() -> Result<u16, String> {
 </body>
 </html>"#;
 
-    let port = 1420u16;
+    // Use a different port than Vite dev server (1420)
+    // Try 9876 or find an available port
+    let port = 9876u16;
     let addr: std::net::SocketAddr = ([127, 0, 0, 1], port).into();
     
     // Build the route
@@ -91,18 +96,28 @@ pub async fn start_oauth_server() -> Result<u16, String> {
     let routes = warp::path("auth-callback.html")
         .and(warp::query::<std::collections::HashMap<String, String>>())
         .map(move |params: std::collections::HashMap<String, String>| {
+            println!("OAuth callback received! Params: {:?}", params);
+            
             // Check if we have a code parameter
             if let Some(code) = params.get("code") {
+                println!("Got code: {}", code);
                 // Try to send the code
                 let code = code.clone();
                 let sender = sender_clone.clone();
                 
                 tokio::spawn(async move {
+                    println!("Trying to send code through channel...");
                     let mut guard = sender.lock().await;
                     if let Some(tx) = guard.take() {
-                        let _ = tx.send(code);
+                        println!("Sending code...");
+                        let result = tx.send(code);
+                        println!("Send result: {:?}", result.is_ok());
+                    } else {
+                        println!("Sender already taken!");
                     }
                 });
+            } else {
+                println!("No code in params!");
             }
             
             warp::reply::html(html_response.clone())
@@ -128,19 +143,22 @@ pub async fn start_oauth_server() -> Result<u16, String> {
         running_clone.store(false, Ordering::SeqCst);
         
         // Also update the global state
-        let mut state = OAUTH_STATE.lock().await;
+        let state = OAUTH_STATE.lock().await;
         state.server_running.store(false, Ordering::SeqCst);
     });
 
+    println!("OAuth server started on port {}", port);
     Ok(port)
 }
 
 #[tauri::command]
 pub async fn wait_for_oauth_code() -> Result<Option<String>, String> {
+    println!("wait_for_oauth_code called");
     let mut state = OAUTH_STATE.lock().await;
     
     // Take the receiver
     if let Some(receiver) = state.code_receiver.take() {
+        println!("Got receiver, waiting for code...");
         // Drop the lock while waiting
         drop(state);
         
@@ -150,14 +168,20 @@ pub async fn wait_for_oauth_code() -> Result<Option<String>, String> {
             receiver
         ).await {
             Ok(Ok(code)) => {
+                println!("Received code successfully!");
                 Ok(Some(code))
             }
-            _ => {
-                // Timeout or error
+            Ok(Err(_)) => {
+                println!("Channel closed without sending code");
+                Ok(None)
+            }
+            Err(_) => {
+                println!("Timeout waiting for code");
                 Ok(None)
             }
         }
     } else {
+        println!("No receiver available!");
         Err("OAuth flow not started. Please call start_oauth_server first.".to_string())
     }
 }

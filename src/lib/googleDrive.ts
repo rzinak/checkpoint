@@ -3,7 +3,17 @@ const GOOGLE_TOKEN_ENDPOINT = 'https://oauth2.googleapis.com/token';
 const GOOGLE_DRIVE_ENDPOINT = 'https://www.googleapis.com/drive/v3';
 const GOOGLE_UPLOAD_ENDPOINT = 'https://www.googleapis.com/upload/drive/v3';
 
-const REDIRECT_URI = 'http://localhost:1420/auth-callback.html';
+// Port will be dynamically determined by the OAuth server
+// Default to 9876 (different from Vite dev server on 1420)
+let oauthPort = 9876;
+
+export function setOAuthPort(port: number) {
+  oauthPort = port;
+}
+
+function getRedirectUri(): string {
+  return `http://localhost:${oauthPort}/auth-callback.html`;
+}
 
 // Get OAuth credentials from environment variables (embedded at build time)
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -24,7 +34,7 @@ export async function initiateGoogleAuth(): Promise<string> {
   
   const params = new URLSearchParams({
     client_id: CLIENT_ID,
-    redirect_uri: REDIRECT_URI,
+    redirect_uri: getRedirectUri(),
     response_type: 'code',
     scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
     access_type: 'offline',
@@ -44,7 +54,7 @@ export async function exchangeCodeForTokens(code: string): Promise<{ access_toke
       code,
       client_id: CLIENT_ID,
       client_secret: CLIENT_SECRET,
-      redirect_uri: REDIRECT_URI,
+      redirect_uri: getRedirectUri(),
       grant_type: 'authorization_code'
     })
   });

@@ -1,5 +1,5 @@
 import { useProfile } from '../lib/profileContext';
-import { initiateGoogleAuth } from '../lib/googleDrive';
+import { initiateGoogleAuth, setOAuthPort } from '../lib/googleDrive';
 import { startOAuthServer, waitForOAuthCode, stopOAuthServer } from '../lib/api';
 import { User, LogOut, LogIn, Loader2 } from 'lucide-react';
 import { openUrl } from '@tauri-apps/plugin-opener';
@@ -17,9 +17,13 @@ export function ProfileCard({ onOpenProfile }: ProfileCardProps) {
     setIsLoggingIn(true);
     
     try {
-      // Step 1: Start the OAuth server
+      // Step 1: Start the OAuth server and get the port
       console.log('Starting OAuth server...');
-      await startOAuthServer();
+      const port = await startOAuthServer();
+      console.log('OAuth server started on port:', port);
+      
+      // Update the redirect URI with the actual port
+      setOAuthPort(port);
       
       // Step 2: Get the auth URL and open browser
       const authUrl = await initiateGoogleAuth();
