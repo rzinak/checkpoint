@@ -146,6 +146,9 @@ export function Settings({ config, onBack, onConfigUpdate, theme, onThemeChange 
           >
             {t('addGame.browse')}
           </Button>
+          <p className="settings-local-hint">
+            This folder is used for local backups only. Cloud backups are stored in your Google Drive.
+          </p>
         </div>
 
         <div style={{ marginTop: '1.5rem' }}>
