@@ -35,6 +35,7 @@ function NotificationsBell({ onClick }: { onClick: () => void }) {
       style={{ position: 'relative' }}
     >
       <Bell size={20} />
+      <span>Notifications</span>
       {unreadCount > 0 && (
         <span style={{
           position: 'absolute',

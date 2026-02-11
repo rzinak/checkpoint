@@ -1,4 +1,4 @@
-import { ArrowLeft, Bell, Check, Trash2, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Bell, /* Check, */ Trash2, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useToast, type Notification } from '../lib/toastContext';
 
 interface NotificationsProps {
@@ -6,7 +6,7 @@ interface NotificationsProps {
 }
 
 export function Notifications({ onBack }: NotificationsProps) {
-  const { notifications, markAsRead, markAllAsRead, clearAll, isLoading } = useToast();
+  const { notifications, markAsRead, /* markAllAsRead, */ clearAll, isLoading } = useToast();
 
   const getIcon = (type: Notification['type']) => {
     switch (type) {
@@ -57,6 +57,7 @@ export function Notifications({ onBack }: NotificationsProps) {
         </div>
         {notifications.length > 0 && (
           <div style={{ display: 'flex', gap: '0.5rem' }}>
+            {/*
             <button
               className="btn btn-secondary btn-small"
               onClick={markAllAsRead}
@@ -65,6 +66,7 @@ export function Notifications({ onBack }: NotificationsProps) {
               <Check size={16} />
               Mark all read
             </button>
+            */}
             <button
               className="btn btn-danger btn-small"
               onClick={clearAll}
