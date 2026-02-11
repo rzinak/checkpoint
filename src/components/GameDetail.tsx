@@ -17,6 +17,7 @@ import type { Game, Snapshot, CloudSyncState } from '../lib/types';
 import { ArrowLeft, Plus, RotateCcw, Trash2, Edit3, CheckCircle, AlertTriangle, Cloud, CloudUpload, CloudDownload, Loader2, Info, RefreshCw } from 'lucide-react';
 import { EditGameModal } from './EditGameModal';
 import { CloudBackupInfo } from './CloudBackupInfo';
+import { CloudBackupListModal } from './CloudBackupListModal';
 import { ConfirmModal } from './ConfirmModal';
 import { deleteCloudSnapshot } from '../lib/googleDrive';
 
@@ -31,7 +32,7 @@ interface GameDetailProps {
 export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoading }: GameDetailProps) {
   const { t } = useI18n();
   const { isAuthenticated, getValidAccessToken } = useProfile();
-  const { addToast } = useToast();
+  const { addToast, addNotification } = useToast();
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingSnapshot, setIsCreatingSnapshot] = useState(false);
@@ -52,6 +53,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
   const [isUploading, setIsUploading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isCloudInfoOpen, setIsCloudInfoOpen] = useState(false);
+  const [isCloudBackupListOpen, setIsCloudBackupListOpen] = useState(false);
   
   // Confirm modal states
   const [confirmModal, setConfirmModal] = useState<{
@@ -403,6 +405,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         sync_status: 'idle',
         last_upload: new Date().toISOString()
       });
+      addNotification('Cloud Upload Complete', `"${snapshot.name}" uploaded to cloud successfully`, 'success');
       addToast('Snapshot uploaded to cloud successfully', 'success');
       
       // Refresh the full cloud list
@@ -464,11 +467,22 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         uint8Array
       );
       setSnapshots([newSnapshot, ...snapshots]);
-      
+
+      // Update cloud snapshots state to mark this new snapshot as having a cloud backup
+      setCloudSnapshots(prev => {
+        const next = new Map(prev);
+        next.set(newSnapshot.id, {
+          id: latestSnapshot.id,
+          modifiedTime: latestSnapshot.modifiedTime
+        });
+        return next;
+      });
+
       setCloudSyncState({
         sync_status: 'idle',
         last_download: new Date().toISOString()
       });
+      addNotification('Cloud Download Complete', `"${latestSnapshot.name.replace('.zip', '')}" downloaded from cloud`, 'success');
       addToast('Snapshot downloaded from cloud successfully', 'success');
     } catch (err) {
       addToast(err instanceof Error ? err.message : 'Failed to download from cloud', 'error');
@@ -587,6 +601,14 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
               ) : (
                 <RefreshCw size={16} />
               )}
+            </button>
+            <button
+              className="btn btn-secondary btn-small"
+              onClick={() => setIsCloudBackupListOpen(true)}
+              title="View all cloud backups"
+            >
+              <Cloud size={16} />
+              <span>View All</span>
             </button>
           </div>
 
@@ -799,9 +821,19 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         />
       )}
 
-      <CloudBackupInfo 
-        isOpen={isCloudInfoOpen} 
-        onClose={() => setIsCloudInfoOpen(false)} 
+      <CloudBackupInfo
+        isOpen={isCloudInfoOpen}
+        onClose={() => setIsCloudInfoOpen(false)}
+      />
+
+      <CloudBackupListModal
+        isOpen={isCloudBackupListOpen}
+        onClose={() => setIsCloudBackupListOpen(false)}
+        onDownload={async (gameId, snapshotName, data) => {
+          const newSnapshot = await importSnapshot(gameId, snapshotName, data);
+          setSnapshots([newSnapshot, ...snapshots]);
+          addToast('Snapshot downloaded from cloud successfully', 'success');
+        }}
       />
 
       <ConfirmModal

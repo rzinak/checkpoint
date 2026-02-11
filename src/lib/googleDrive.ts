@@ -194,6 +194,49 @@ export async function listCloudSnapshots(accessToken: string, gameId: string): P
   return data.files || [];
 }
 
+// List all cloud snapshots across all games
+export async function listAllCloudSnapshots(accessToken: string): Promise<CloudBackupItem[]> {
+  // List all files in appDataFolder that look like snapshots (have "/" in the name indicating gameId/snapshotName)
+  const query = encodeURIComponent(`name contains '/' and trashed = false`);
+  const response = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/files?q=${query}&spaces=appDataFolder&fields=files(id,name,modifiedTime,size)`, {
+    headers: { Authorization: `Bearer ${accessToken}` }
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to list cloud backups');
+  }
+
+  const data = await response.json();
+  const files = data.files || [];
+
+  // Parse the file names to extract game and snapshot info
+  return files.map((file: { id: string; name: string; modifiedTime: string; size?: string }) => {
+    const nameParts = file.name.split('/');
+    const isSnapshot = nameParts.length === 2 && nameParts[1].endsWith('.zip');
+
+    return {
+      id: file.id,
+      name: file.name,
+      modifiedTime: file.modifiedTime,
+      size: file.size ? parseInt(file.size) : undefined,
+      gameId: isSnapshot ? nameParts[0] : undefined,
+      snapshotName: isSnapshot ? nameParts[1].replace('.zip', '') : undefined,
+      gameName: undefined // Would need metadata file to get this
+    };
+  }).filter((file: CloudBackupItem) => file.gameId); // Only show valid snapshots
+}
+
+export interface CloudBackupItem {
+  id: string;
+  name: string;
+  modifiedTime: string;
+  size?: number;
+  gameId?: string;
+  gameName?: string;
+  snapshotName?: string;
+  fileCount?: number;
+}
+
 // Delete a snapshot from cloud
 export async function deleteCloudSnapshot(accessToken: string, fileId: string): Promise<void> {
   const response = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/files/${fileId}`, {
