@@ -7,8 +7,10 @@ import { Settings } from './components/Settings';
 import { Profile } from './components/Profile';
 import { ProfileCard } from './components/ProfileCard';
 import { LoadingOverlay } from './components/LoadingOverlay';
+import { ToastContainer } from './components/Toast';
 import { I18nProvider, useI18n } from './lib/i18n';
 import { ProfileProvider, useProfile } from './lib/profileContext';
+import { ToastProvider } from './lib/toastContext';
 import { listGames, getConfig } from './lib/api';
 import type { Game, Config } from './lib/types';
 import { Home, Settings as SettingsIcon, Plus } from 'lucide-react';
@@ -255,6 +257,8 @@ function AppContent() {
           setLoading={setLoadingWithMessage}
         />
       )}
+
+      <ToastContainer />
     </div>
   );
 }
@@ -263,7 +267,9 @@ function App() {
   return (
     <I18nProvider>
       <ProfileProvider>
-        <AppContent />
+        <ToastProvider>
+          <AppContent />
+        </ToastProvider>
       </ProfileProvider>
     </I18nProvider>
   );

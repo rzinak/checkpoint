@@ -11,10 +11,14 @@ import {
 } from '../lib/api';
 import { useI18n } from '../lib/i18n';
 import { useProfile } from '../lib/profileContext';
+import { useToast } from '../lib/toastContext';
 import { uploadSnapshot, listCloudSnapshots, downloadSnapshot } from '../lib/googleDrive';
 import type { Game, Snapshot, CloudSyncState } from '../lib/types';
-import { ArrowLeft, Plus, RotateCcw, Trash2, Edit3, CheckCircle, AlertTriangle, Cloud, CloudUpload, CloudDownload, Loader2 } from 'lucide-react';
+import { ArrowLeft, Plus, RotateCcw, Trash2, Edit3, CheckCircle, AlertTriangle, Cloud, CloudUpload, CloudDownload, Loader2, Info, RefreshCw } from 'lucide-react';
 import { EditGameModal } from './EditGameModal';
+import { CloudBackupInfo } from './CloudBackupInfo';
+import { ConfirmModal } from './ConfirmModal';
+import { deleteCloudSnapshot } from '../lib/googleDrive';
 
 interface GameDetailProps {
   game: Game;
@@ -27,9 +31,9 @@ interface GameDetailProps {
 export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoading }: GameDetailProps) {
   const { t } = useI18n();
   const { isAuthenticated, getValidAccessToken } = useProfile();
+  const { addToast } = useToast();
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isCreatingSnapshot, setIsCreatingSnapshot] = useState(false);
   const [newSnapshotName, setNewSnapshotName] = useState('');
   const [isProcessRunningState, setIsProcessRunningState] = useState(false);
@@ -40,9 +44,27 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
   
   // Cloud sync states
   const [cloudSyncState, setCloudSyncState] = useState<CloudSyncState>({ sync_status: 'idle' });
-  const [backupDestination, setBackupDestination] = useState<'local' | 'cloud' | 'both'>('local');
+  const [backupDestination, setBackupDestination] = useState<'local' | 'cloud' | 'both'>(() => {
+    // Initialize from localStorage immediately
+    const saved = localStorage.getItem(`checkpoint-backup-dest-${game.id}`);
+    return (saved === 'local' || saved === 'cloud' || saved === 'both') ? saved : 'local';
+  });
   const [isUploading, setIsUploading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isCloudInfoOpen, setIsCloudInfoOpen] = useState(false);
+  
+  // Confirm modal states
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+    danger?: boolean;
+  }>({ isOpen: false, title: '', message: '', onConfirm: () => {} });
+  
+  // Cloud snapshots tracking
+  const [cloudSnapshots, setCloudSnapshots] = useState<Map<string, { id: string; modifiedTime: string }>>(new Map());
+  const [isLoadingCloudList, setIsLoadingCloudList] = useState(false);
 
   const checkProcess = useCallback(async () => {
     if (game.exe_name) {
@@ -58,11 +80,11 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
   const loadSnapshots = useCallback(async () => {
     try {
       setIsLoading(true);
-      setError(null);
+
       const data = await listSnapshots(game.id);
       setSnapshots(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('errors.failedLoadData'));
+      addToast(err instanceof Error ? err.message : t('errors.failedLoadData'), 'error');
     } finally {
       setIsLoading(false);
     }
@@ -76,9 +98,14 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
     return () => clearInterval(interval);
   }, [loadSnapshots, checkProcess]);
 
+  // Save backup destination when it changes
+  useEffect(() => {
+    console.log('Saving backup destination:', backupDestination, 'for game:', game.id);
+    localStorage.setItem(`checkpoint-backup-dest-${game.id}`, backupDestination);
+  }, [backupDestination, game.id]);
+
   const handleCreateSnapshot = async () => {
     setIsCreatingSnapshot(true);
-    setError(null);
     setLoading(true, t('loading.creatingSnapshot'));
 
     try {
@@ -89,9 +116,10 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       setSnapshots([snapshot, ...snapshots]);
       setNewSnapshotName('');
       setIsCreatingSnapshot(false);
+      addToast(t('gameDetail.snapshotCreated'), 'success');
     } catch (err) {
       console.log(err)
-      setError(err instanceof Error ? err.message : t('errors.failedCreateSnapshot'));
+      addToast(err instanceof Error ? err.message : t('errors.failedCreateSnapshot'), 'error');
       setIsCreatingSnapshot(false);
     } finally {
       setLoading(false, '');
@@ -100,67 +128,177 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
 
   const handleRestore = async (snapshotId: string) => {
     if (isProcessRunningState) {
-      setError(`${game.exe_name} ${t('gameDetail.gameRunning')}`);
+      addToast(`${game.exe_name} ${t('gameDetail.gameRunning')}`, 'warning');
       return;
     }
 
-    if (!confirm(t('gameDetail.confirmRestore'))) {
-      return;
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: t('gameDetail.restore'),
+      message: t('gameDetail.confirmRestore'),
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        setRestoreResult(null);
+        setLoading(true, t('loading.restoring'));
 
-    setError(null);
-    setRestoreResult(null);
-    setLoading(true, t('loading.restoring'));
-
-    try {
-      const result = await restoreSnapshot(snapshotId, game.id);
-      setRestoreResult({
-        success: result.success,
-        message: result.message
-      });
-      if (result.success) {
-        loadSnapshots();
+        try {
+          const result = await restoreSnapshot(snapshotId, game.id);
+          setRestoreResult({
+            success: result.success,
+            message: result.message
+          });
+          if (result.success) {
+            loadSnapshots();
+          }
+        } catch (err) {
+          addToast(err instanceof Error ? err.message : t('errors.failedRestore'), 'error');
+        } finally {
+          setLoading(false, '');
+        }
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t('errors.failedRestore'));
-    } finally {
-      setLoading(false, '');
-    }
+    });
   };
 
-  const handleDeleteSnapshot = async (snapshotId: string) => {
-    if (!confirm(t('gameDetail.confirmDeleteSnapshot'))) {
+  const handleDeleteSnapshot = (snapshotId: string) => {
+    setConfirmModal({
+      isOpen: true,
+      title: t('gameDetail.deleteSnapshot'),
+      message: t('gameDetail.confirmDeleteSnapshot'),
+      danger: true,
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        setLoading(true, t('loading.deleting'));
+
+        try {
+          await deleteSnapshot(snapshotId, game.id);
+          setSnapshots(snapshots.filter(s => s.id !== snapshotId));
+          addToast(t('gameDetail.snapshotDeleted'), 'success');
+        } catch (err) {
+          addToast(err instanceof Error ? err.message : t('errors.failedDeleteSnapshot'), 'error');
+        } finally {
+          setLoading(false, '');
+        }
+      }
+    });
+  };
+
+  const handleDeleteCloudSnapshot = (snapshot: Snapshot) => {
+    const cloudData = cloudSnapshots.get(snapshot.id);
+    if (!cloudData) {
+      addToast('This snapshot is not in the cloud', 'warning');
       return;
     }
 
-    setLoading(true, t('loading.deleting'));
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete from Cloud',
+      message: `Are you sure you want to delete "${snapshot.name}" from Google Drive? This cannot be undone.`,
+      danger: true,
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        setLoading(true, 'Deleting from cloud...');
 
-    try {
-      await deleteSnapshot(snapshotId, game.id);
-      setSnapshots(snapshots.filter(s => s.id !== snapshotId));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t('errors.failedDeleteSnapshot'));
-    } finally {
-      setLoading(false, '');
-    }
+        try {
+          const token = await getValidAccessToken();
+          if (!token) {
+            throw new Error('Not authenticated');
+          }
+          await deleteCloudSnapshot(token, cloudData.id);
+          setCloudSnapshots(prev => {
+            const next = new Map(prev);
+            next.delete(snapshot.id);
+            return next;
+          });
+          addToast('Snapshot deleted from cloud', 'success');
+        } catch (err) {
+          addToast(err instanceof Error ? err.message : 'Failed to delete from cloud', 'error');
+        } finally {
+          setLoading(false, '');
+        }
+      }
+    });
   };
 
-  const handleDeleteGame = async () => {
+  const handleDeleteGame = () => {
     const message = t('gameDetail.confirmDeleteGame').replace('{name}', game.name);
-    if (!confirm(message)) {
+    setConfirmModal({
+      isOpen: true,
+      title: t('gameDetail.deleteGame'),
+      message: message,
+      danger: true,
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        setLoading(true, t('loading.deleting'));
+
+        try {
+          await deleteGame(game.id);
+          onGameDeleted(game.id);
+        } catch (err) {
+          addToast(err instanceof Error ? err.message : t('errors.failedDeleteGame'), 'error');
+          setLoading(false, '');
+        }
+      }
+    });
+  };
+
+  // Load cloud snapshots and map to local snapshots
+  const loadCloudSnapshots = async () => {
+    if (!isAuthenticated) {
+      console.log('Not authenticated, skipping cloud load');
       return;
     }
-
-    setLoading(true, t('loading.deleting'));
-
+    
+    console.log('Loading cloud snapshots for game:', game.id);
+    console.log('Current snapshots:', snapshots.map(s => s.name));
+    
+    setIsLoadingCloudList(true);
     try {
-      await deleteGame(game.id);
-      onGameDeleted(game.id);
+      const token = await getValidAccessToken();
+      if (!token) {
+        console.log('No valid token');
+        return;
+      }
+      
+      const cloudFiles = await listCloudSnapshots(token, game.id);
+      console.log('Cloud files found:', cloudFiles);
+      
+      // Create new map but keep existing entries that we already know about
+      // This prevents the badge from disappearing briefly
+      setCloudSnapshots(prev => {
+        const cloudMap = new Map(prev); // Start with existing entries
+        
+        cloudFiles.forEach(file => {
+          console.log('Processing cloud file:', file.name);
+          // Extract snapshot name from file.name (format: "gameId/snapshotName.zip")
+          const nameParts = file.name.split('/');
+          if (nameParts.length === 2) {
+            const snapshotName = nameParts[1].replace('.zip', '');
+            console.log('Looking for snapshot with name:', snapshotName);
+            // Find matching local snapshot
+            const matchingSnapshot = snapshots.find(s => s.name === snapshotName);
+            if (matchingSnapshot) {
+              console.log('Found matching snapshot:', matchingSnapshot.id);
+              cloudMap.set(matchingSnapshot.id, { id: file.id, modifiedTime: file.modifiedTime });
+            } else {
+              console.log('No matching snapshot found for:', snapshotName);
+            }
+          }
+        });
+        
+        console.log('Cloud map created:', cloudMap);
+        return cloudMap;
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('errors.failedDeleteGame'));
-      setLoading(false, '');
+      console.error('Failed to load cloud snapshots:', err);
+    } finally {
+      setIsLoadingCloudList(false);
     }
   };
+
+  // Load cloud snapshots when snapshots change or auth changes
+  useEffect(() => {
+    loadCloudSnapshots();
+  }, [snapshots, isAuthenticated]);
 
   const handleRenameStart = (snapshot: Snapshot) => {
     setEditingSnapshot(snapshot.id);
@@ -180,13 +318,13 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       ));
       setEditingSnapshot(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('errors.failedRename'));
+      addToast(err instanceof Error ? err.message : t('errors.failedRename'), 'error');
     }
   };
 
   const handleUploadToCloud = async (snapshot: Snapshot) => {
     if (!isAuthenticated) {
-      setError('Please sign in with Google first');
+      addToast('Please sign in with Google first', 'warning');
       return;
     }
 
@@ -244,19 +382,33 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
 
       // Upload to Google Drive
       setLoading(true, 'Uploading to cloud...');
-      await uploadSnapshot(
+      const fileId = await uploadSnapshot(
         token,
         game.id,
         snapshot.name,
         zipBlob
       );
 
+      // Update cloud snapshots state immediately
+      setCloudSnapshots(prev => {
+        const next = new Map(prev);
+        next.set(snapshot.id, { 
+          id: fileId, 
+          modifiedTime: new Date().toISOString() 
+        });
+        return next;
+      });
+
       setCloudSyncState({
         sync_status: 'idle',
         last_upload: new Date().toISOString()
       });
+      addToast('Snapshot uploaded to cloud successfully', 'success');
+      
+      // Refresh the full cloud list
+      loadCloudSnapshots();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to upload to cloud');
+      addToast(err instanceof Error ? err.message : 'Failed to upload to cloud', 'error');
       setCloudSyncState({
         sync_status: 'error',
         error_message: err instanceof Error ? err.message : 'Upload failed'
@@ -269,7 +421,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
 
   const handleDownloadFromCloud = async () => {
     if (!isAuthenticated) {
-      setError('Please sign in with Google first');
+      addToast('Please sign in with Google first', 'warning');
       return;
     }
 
@@ -284,9 +436,12 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       }
 
       // List cloud snapshots
+      console.log('Downloading - looking for cloud snapshots for game:', game.id);
       const cloudSnapshots = await listCloudSnapshots(token, game.id);
+      console.log('Download - cloud snapshots found:', cloudSnapshots);
+      
       if (cloudSnapshots.length === 0) {
-        setError('No cloud snapshots found for this game');
+        addToast('No cloud snapshots found for this game', 'info');
         setCloudSyncState({ sync_status: 'idle' });
         return;
       }
@@ -314,8 +469,9 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         sync_status: 'idle',
         last_download: new Date().toISOString()
       });
+      addToast('Snapshot downloaded from cloud successfully', 'success');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to download from cloud');
+      addToast(err instanceof Error ? err.message : 'Failed to download from cloud', 'error');
       setCloudSyncState({
         sync_status: 'error',
         error_message: err instanceof Error ? err.message : 'Download failed'
@@ -383,6 +539,14 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
           <div className="cloud-sync-header">
             <Cloud size={18} />
             <h3>Cloud Backup</h3>
+            {isLoadingCloudList && <Loader2 size={16} className="spinner" />}
+            <button 
+              className="cloud-info-btn"
+              onClick={() => setIsCloudInfoOpen(true)}
+              title="How does this work?"
+            >
+              <Info size={16} />
+            </button>
           </div>
           
           <div className="backup-destination">
@@ -411,6 +575,18 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
                 <CloudDownload size={16} />
               )}
               <span>Download from Cloud</span>
+            </button>
+            <button
+              className="btn btn-secondary btn-small"
+              onClick={loadCloudSnapshots}
+              disabled={isLoadingCloudList}
+              title="Refresh cloud list"
+            >
+              {isLoadingCloudList ? (
+                <Loader2 size={16} className="spinner" />
+              ) : (
+                <RefreshCw size={16} />
+              )}
             </button>
           </div>
 
@@ -443,12 +619,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
           </div>
           <p className="cloud-login-text">Sign in with Google to enable cloud backup</p>
           <p className="cloud-login-hint">Click the profile card in the sidebar to sign in</p>
-        </div>
-      )}
-
-      {error && (
-        <div className="alert alert-error">
-          {error}
         </div>
       )}
 
@@ -556,6 +726,11 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
                   )}
                   <p>
                     {formatDate(snapshot.timestamp)} • {formatSize(snapshot.size)} • {snapshot.file_count} files
+                    {cloudSnapshots.has(snapshot.id) && (
+                      <span className="cloud-badge" title="Backed up to cloud">
+                        <Cloud size={12} /> Cloud
+                      </span>
+                    )}
                   </p>
                 </div>
                 <div className="snapshot-actions">
@@ -595,6 +770,16 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
                   >
                     <Trash2 size={16} />
                   </button>
+                  {cloudSnapshots.has(snapshot.id) && (
+                    <button
+                      className="btn btn-danger btn-small"
+                      onClick={() => handleDeleteCloudSnapshot(snapshot)}
+                      title="Delete from cloud"
+                      style={{ marginLeft: '0.25rem' }}
+                    >
+                      <Cloud size={16} />
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -613,6 +798,20 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
           setLoading={setLoading}
         />
       )}
+
+      <CloudBackupInfo 
+        isOpen={isCloudInfoOpen} 
+        onClose={() => setIsCloudInfoOpen(false)} 
+      />
+
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        danger={confirmModal.danger}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }

@@ -31,22 +31,22 @@ function checkConfig() {
 
 export async function initiateGoogleAuth(): Promise<string> {
   checkConfig();
-  
+
   const params = new URLSearchParams({
     client_id: CLIENT_ID,
     redirect_uri: getRedirectUri(),
     response_type: 'code',
-    scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
+    scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
     access_type: 'offline',
     prompt: 'consent'
   });
-  
+
   return `${GOOGLE_AUTH_ENDPOINT}?${params.toString()}`;
 }
 
 export async function exchangeCodeForTokens(code: string): Promise<{ access_token: string; refresh_token: string; expires_in: number }> {
   checkConfig();
-  
+
   const response = await fetch(GOOGLE_TOKEN_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -58,19 +58,19 @@ export async function exchangeCodeForTokens(code: string): Promise<{ access_toke
       grant_type: 'authorization_code'
     })
   });
-  
+
   if (!response.ok) {
     const errorText = await response.text();
     console.error('Token exchange failed:', errorText);
     throw new Error('Failed to exchange code for tokens');
   }
-  
+
   return response.json();
 }
 
 export async function refreshAccessToken(refreshToken: string): Promise<{ access_token: string; expires_in: number }> {
   checkConfig();
-  
+
   const response = await fetch(GOOGLE_TOKEN_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -81,11 +81,11 @@ export async function refreshAccessToken(refreshToken: string): Promise<{ access
       grant_type: 'refresh_token'
     })
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to refresh token');
   }
-  
+
   return response.json();
 }
 
@@ -93,11 +93,11 @@ export async function getUserInfo(accessToken: string): Promise<{ name: string; 
   const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
     headers: { Authorization: `Bearer ${accessToken}` }
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to get user info');
   }
-  
+
   return response.json();
 }
 
@@ -106,11 +106,11 @@ export async function getDriveStorageInfo(accessToken: string): Promise<{ used: 
   const response = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/about?fields=storageQuota`, {
     headers: { Authorization: `Bearer ${accessToken}` }
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to get storage info');
   }
-  
+
   const data = await response.json();
   return {
     used: parseInt(data.storageQuota.usage),
@@ -130,12 +130,12 @@ export async function uploadSnapshot(
     name: `${gameId}/${snapshotName}.zip`,
     parents: ['appDataFolder'] // Store in app-specific folder
   };
-  
+
   // Create multipart request
   const boundary = '-------314159265358979323846';
   const delimiter = "\r\n--" + boundary + "\r\n";
   const close_delim = "\r\n--" + boundary + "--";
-  
+
   const reader = new FileReader();
   const base64Data = await new Promise<string>((resolve) => {
     reader.onload = (e) => {
@@ -144,7 +144,7 @@ export async function uploadSnapshot(
     };
     reader.readAsDataURL(fileBlob);
   });
-  
+
   const multipartRequestBody =
     delimiter +
     'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
@@ -155,7 +155,7 @@ export async function uploadSnapshot(
     '\r\n' +
     base64Data +
     close_delim;
-  
+
   const response = await fetch(`${GOOGLE_UPLOAD_ENDPOINT}/files?uploadType=multipart`, {
     method: 'POST',
     headers: {
@@ -164,28 +164,46 @@ export async function uploadSnapshot(
     },
     body: multipartRequestBody
   });
-  
+
+  console.log('multipartrequestbody::', multipartRequestBody);
+  console.log('response:', response);
+
+
   if (!response.ok) {
     throw new Error('Failed to upload snapshot');
   }
-  
+
   const result = await response.json();
   return result.id;
 }
 
 // List snapshots for a game
 export async function listCloudSnapshots(accessToken: string, gameId: string): Promise<{ id: string; name: string; modifiedTime: string }[]> {
+  // Search in appDataFolder space for files with gameId prefix
   const query = encodeURIComponent(`name contains '${gameId}/' and trashed = false`);
-  const response = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/files?q=${query}&fields=files(id,name,modifiedTime)`, {
+  const response = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/files?q=${query}&spaces=appDataFolder&fields=files(id,name,modifiedTime)`, {
     headers: { Authorization: `Bearer ${accessToken}` }
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to list cloud snapshots');
   }
-  
+
   const data = await response.json();
-  return data.files;
+  console.log('Google Drive API response:', data);
+  return data.files || [];
+}
+
+// Delete a snapshot from cloud
+export async function deleteCloudSnapshot(accessToken: string, fileId: string): Promise<void> {
+  const response = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/files/${fileId}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${accessToken}` }
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete cloud snapshot');
+  }
 }
 
 // Download a snapshot
@@ -196,10 +214,10 @@ export async function downloadSnapshot(
   const response = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/files/${fileId}?alt=media`, {
     headers: { Authorization: `Bearer ${accessToken}` }
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to download snapshot');
   }
-  
+
   return response.blob();
 }
