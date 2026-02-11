@@ -12,9 +12,9 @@ import {
 import { useI18n } from '../lib/i18n';
 import { useProfile } from '../lib/profileContext';
 import { useToast } from '../lib/toastContext';
-import { uploadSnapshot, listCloudSnapshots, downloadSnapshot } from '../lib/googleDrive';
+import { uploadSnapshot, listCloudSnapshots, /* downloadSnapshot */ } from '../lib/googleDrive';
 import type { Game, Snapshot, CloudSyncState } from '../lib/types';
-import { ArrowLeft, Plus, RotateCcw, Trash2, Edit3, CheckCircle, AlertTriangle, Cloud, CloudUpload, CloudDownload, Loader2, Info, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Plus, RotateCcw, Trash2, Edit3, CheckCircle, AlertTriangle, Cloud, CloudUpload, /* CloudDownload, */ Loader2, Info, RefreshCw } from 'lucide-react';
 import { EditGameModal } from './EditGameModal';
 import { CloudBackupInfo } from './CloudBackupInfo';
 import { CloudBackupListModal } from './CloudBackupListModal';
@@ -52,7 +52,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
     return (saved === 'local' || saved === 'cloud' || saved === 'both') ? saved : 'local';
   });
   const [isUploading, setIsUploading] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
+  // const [isDownloading, setIsDownloading] = useState(false);
   const [isCloudInfoOpen, setIsCloudInfoOpen] = useState(false);
   const [isCloudBackupListOpen, setIsCloudBackupListOpen] = useState(false);
   
@@ -423,6 +423,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
     }
   };
 
+  /*
   const handleDownloadFromCloud = async () => {
     if (!isAuthenticated) {
       addToast('Please sign in with Google first', 'warning');
@@ -496,6 +497,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       setLoading(false, '');
     }
   };
+  */
 
   const formatSize = (bytes: number) => {
     if (bytes === 0) return '0 B';
@@ -579,6 +581,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
           </div>
 
           <div className="cloud-sync-actions">
+            {/*
             <button
               className="btn btn-secondary btn-small"
               onClick={handleDownloadFromCloud}
@@ -592,6 +595,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
               )}
               <span>Download from Cloud</span>
             </button>
+            */}
             <button
               className="btn btn-secondary btn-small"
               onClick={loadCloudSnapshots}

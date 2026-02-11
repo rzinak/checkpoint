@@ -18,9 +18,7 @@ export function GameCard({ game, onClick, style }: GameCardProps) {
     });
   };
 
-  const coverUrl = game.cover_image
-    ? `file://localhost/home/ren/checkpoint/${game.id}/${game.cover_image}`
-    : null;
+  const coverUrl = game.cover_image || null;
 
   return (
     <div className="game-card" onClick={onClick} style={style}>

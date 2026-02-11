@@ -70,6 +70,20 @@ export function EditGameModal({ game, onClose, onGameUpdated, setLoading }: Edit
       return;
     }
 
+    // Validate character limits
+    if (name.trim().length > 100) {
+      setError('Game name must be less than 100 characters');
+      return;
+    }
+    if (saveLocation.trim().length > 500) {
+      setError('Save location path must be less than 500 characters');
+      return;
+    }
+    if (exeName.trim().length > 100) {
+      setError('Executable name must be less than 100 characters');
+      return;
+    }
+
     setIsLoading(true);
     setLoading(true, t('loading.loading'));
     setError(null);
@@ -92,7 +106,7 @@ export function EditGameModal({ game, onClose, onGameUpdated, setLoading }: Edit
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Edit Game</h2>
           <button className="modal-close" onClick={onClose}>
@@ -169,6 +183,7 @@ export function EditGameModal({ game, onClose, onGameUpdated, setLoading }: Edit
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t('addGame.namePlaceholder')}
+              maxLength={100}
               required
             />
 
@@ -180,6 +195,7 @@ export function EditGameModal({ game, onClose, onGameUpdated, setLoading }: Edit
               onChange={(e) => setSaveLocation(e.target.value)}
               placeholder={t('addGame.saveLocationPlaceholder')}
               hint={t('addGame.saveLocationHint')}
+              maxLength={500}
               required
             />
             <Button
@@ -200,6 +216,7 @@ export function EditGameModal({ game, onClose, onGameUpdated, setLoading }: Edit
               onChange={(e) => setExeName(e.target.value)}
               placeholder={t('addGame.executablePlaceholder')}
               hint={t('addGame.executableHint')}
+              maxLength={100}
             />
           </div>
 
