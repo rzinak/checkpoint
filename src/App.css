@@ -851,6 +851,13 @@ body {
   color: var(--text-primary);
 }
 
+.settings-local-hint {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+  font-style: italic;
+}
+
 /* Theme Toggle */
 .theme-toggle {
   display: flex;
