@@ -94,6 +94,8 @@ export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalP
         exe_name: exeName.trim() || undefined,
         cover_image: coverImage || undefined,
       });
+      setIsLoading(false);
+      setLoading(false, '');
       onGameAdded(game);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('errors.failedAddGame'));
