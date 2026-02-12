@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { addGame, selectFolder } from '../lib/api';
 import { useI18n } from '../lib/i18n';
 import type { Game } from '../lib/types';
-import { X, FolderOpen, ImagePlus, Trash2 } from 'lucide-react';
+import { X, FolderOpen, ImagePlus } from 'lucide-react';
 import { Input, Button } from './ui';
 
 interface AddGameModalProps {
@@ -54,12 +54,14 @@ export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalP
     reader.readAsDataURL(file);
   };
 
+  /*
   const handleRemoveCover = () => {
     setCoverImage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
+  */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,56 +124,23 @@ export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalP
               </div>
             )}
 
-            <div className="cover-upload">
-              <label className="cover-upload-label">Cover Image (Optional)</label>
+            <div className="cover-upload" style={{ opacity: 0.5, pointerEvents: 'none' }}>
+              <label className="cover-upload-label">Cover Image <span style={{ fontSize: '0.75rem', color: 'var(--accent)', marginLeft: '0.5rem' }}>(soon!)</span></label>
               <input
                 type="file"
                 ref={fileInputRef}
                 onChange={handleFileSelect}
                 accept="image/png,image/jpeg"
                 style={{ display: 'none' }}
+                disabled
               />
 
-              {coverImage ? (
-                <div style={{ position: 'relative', display: 'inline-block' }}>
-                  <div className="cover-upload-preview">
-                    <img src={coverImage} alt="Cover preview" />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleRemoveCover}
-                    style={{
-                      position: 'absolute',
-                      top: '-8px',
-                      right: '-8px',
-                      background: 'var(--error)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '50%',
-                      width: '24px',
-                      height: '24px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      padding: 0,
-                    }}
-                  >
-                    <Trash2 size={14} />
-                  </button>
+              <div className="cover-upload-area" style={{ cursor: 'not-allowed' }}>
+                <div className="cover-upload-placeholder">
+                  <ImagePlus size={32} style={{ opacity: 0.4 }} />
+                  <p style={{ marginTop: '0.5rem', marginBottom: 0, opacity: 0.6 }}>Cover images coming soon</p>
                 </div>
-              ) : (
-                <div
-                  className="cover-upload-area"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <div className="cover-upload-placeholder">
-                    <ImagePlus size={32} />
-                    <p style={{ marginTop: '0.5rem', marginBottom: 0 }}>Click to upload cover</p>
-                  </div>
-                </div>
-              )}
-              <p className="cover-upload-hint">JPG or PNG, max 2MB, 3:4 ratio recommended</p>
+              </div>
             </div>
 
             <Input

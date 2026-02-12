@@ -70,7 +70,23 @@ pub async fn add_game(request: AddGameRequest, state: State<'_, AppState>) -> Re
 #[tauri::command]
 pub fn list_games(state: State<AppState>) -> Result<Vec<Game>, String> {
     let config = state.config.lock().map_err(|e| e.to_string())?;
-    Ok(config.games.clone())
+    let backup_location = config.backup_location.clone();
+    
+    let mut games = config.games.clone();
+    
+    // Convert relative cover paths to absolute paths
+    for game in &mut games {
+        if let Some(cover) = &game.cover_image {
+            if cover == "cover.png" {
+                let cover_path = std::path::Path::new(&backup_location)
+                    .join(&game.id)
+                    .join(cover);
+                game.cover_image = Some(cover_path.to_string_lossy().to_string());
+            }
+        }
+    }
+    
+    Ok(games)
 }
 
 #[tauri::command]
