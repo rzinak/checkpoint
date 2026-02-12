@@ -1,5 +1,6 @@
 import type { Game } from '../lib/types';
 import { Folder, Calendar, Gamepad2 } from 'lucide-react';
+import { useI18n } from '../lib/i18n';
 import type { CSSProperties } from 'react';
 
 interface GameCardProps {
@@ -9,9 +10,11 @@ interface GameCardProps {
 }
 
 export function GameCard({ game, onClick, style }: GameCardProps) {
+  const { t, language } = useI18n();
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    const locale = language === 'pt' ? 'pt-BR' : language === 'es' ? 'es-ES' : 'en-US';
+    return date.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -45,7 +48,7 @@ export function GameCard({ game, onClick, style }: GameCardProps) {
         </div>
         <div className="game-card-meta">
           <Calendar size={10} />
-          Added {formatDate(game.created_at)}
+          {t('gameCard.added')} {formatDate(game.created_at)}
         </div>
       </div>
     </div>

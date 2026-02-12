@@ -1,4 +1,5 @@
-import { ArrowLeft, Bell, /* Check, */ Trash2, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Bell, Trash2, Loader2 } from 'lucide-react';
+import { useI18n } from '../lib/i18n';
 import { useToast, type Notification } from '../lib/toastContext';
 
 interface NotificationsProps {
@@ -6,16 +7,17 @@ interface NotificationsProps {
 }
 
 export function Notifications({ onBack }: NotificationsProps) {
+  const { t, language } = useI18n();
   const { notifications, markAsRead, /* markAllAsRead, */ clearAll, isLoading } = useToast();
 
   const getIcon = (type: Notification['type']) => {
     switch (type) {
       case 'success':
-        return <CheckCircle size={18} style={{ color: 'var(--success)' }} />;
+        return <Bell size={18} style={{ color: 'var(--success)' }} />;
       case 'error':
-        return <AlertTriangle size={18} style={{ color: 'var(--error)' }} />;
+        return <Bell size={18} style={{ color: 'var(--error)' }} />;
       case 'warning':
-        return <AlertTriangle size={18} style={{ color: 'var(--warning)' }} />;
+        return <Bell size={18} style={{ color: 'var(--warning)' }} />;
       case 'info':
       default:
         return <Bell size={18} style={{ color: 'var(--accent)' }} />;
@@ -30,11 +32,12 @@ export function Notifications({ onBack }: NotificationsProps) {
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
 
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    if (minutes < 1) return t('time.justNow');
+    if (minutes < 60) return t('time.minutesAgo').replace('{minutes}', minutes.toString());
+    if (hours < 24) return t('time.hoursAgo').replace('{hours}', hours.toString());
+    if (days < 7) return t('time.daysAgo').replace('{days}', days.toString());
+    const locale = language === 'pt' ? 'pt-BR' : language === 'es' ? 'es-ES' : 'en-US';
+    return date.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -47,11 +50,11 @@ export function Notifications({ onBack }: NotificationsProps) {
         </button>
         <div style={{ flex: 1 }}>
           <h2 style={{ margin: 0, fontSize: '1.375rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-            Notifications
+            {t('notifications.title')}
           </h2>
           {unreadCount > 0 && (
             <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-              {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
+              {unreadCount} {unreadCount === 1 ? t('notifications.unreadSingular') : t('notifications.unreadPlural')}
             </p>
           )}
         </div>
@@ -73,7 +76,7 @@ export function Notifications({ onBack }: NotificationsProps) {
               disabled={notifications.length === 0}
             >
               <Trash2 size={16} />
-              Clear all
+              {t('notifications.clearAll')}
             </button>
           </div>
         )}
@@ -82,7 +85,7 @@ export function Notifications({ onBack }: NotificationsProps) {
       {isLoading ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '4rem', gap: '1rem' }}>
           <Loader2 size={32} className="spinner" style={{ color: 'var(--accent)' }} />
-          <p style={{ color: 'var(--text-secondary)' }}>Loading notifications...</p>
+          <p style={{ color: 'var(--text-secondary)' }}>{t('notifications.loading')}</p>
         </div>
       ) : notifications.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '4rem', gap: '1rem', textAlign: 'center' }}>
@@ -90,10 +93,10 @@ export function Notifications({ onBack }: NotificationsProps) {
             <Bell size={40} style={{ color: 'var(--text-tertiary)' }} />
           </div>
           <h3 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-            No Notifications
+            {t('notifications.noNotifications')}
           </h3>
           <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.875rem', color: 'var(--text-secondary)', maxWidth: '300px' }}>
-            You'll see notifications here when you upload or download cloud backups
+            {t('notifications.description')}
           </p>
         </div>
       ) : (

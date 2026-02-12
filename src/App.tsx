@@ -21,6 +21,7 @@ type View = 'dashboard' | 'game' | 'settings' | 'profile' | 'notifications';
 type Theme = 'light' | 'dark';
 
 function NotificationsBell({ onClick }: { onClick: () => void }) {
+  const { t } = useI18n();
   const { notifications, markAsRead } = useToast();
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -31,11 +32,11 @@ function NotificationsBell({ onClick }: { onClick: () => void }) {
         notifications.filter(n => !n.read).forEach(n => markAsRead(n.id));
         onClick();
       }}
-      title="Notifications"
+      title={t('notifications.title')}
       style={{ position: 'relative' }}
     >
       <Bell size={20} />
-      <span>Notifications</span>
+      <span>{t('notifications.title')}</span>
       {unreadCount > 0 && (
         <span style={{
           position: 'absolute',

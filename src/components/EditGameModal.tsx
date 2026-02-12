@@ -112,7 +112,7 @@ export function EditGameModal({ game, onClose, onGameUpdated, setLoading }: Edit
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>Edit Game</h2>
+          <h2>{t('editGame.title')}</h2>
           <button className="modal-close" onClick={onClose}>
             <X size={24} />
           </button>
@@ -127,7 +127,7 @@ export function EditGameModal({ game, onClose, onGameUpdated, setLoading }: Edit
             )}
 
             <div className="cover-upload" style={{ opacity: 0.5, pointerEvents: 'none' }}>
-              <label className="cover-upload-label">Cover Image <span style={{ fontSize: '0.75rem', color: 'var(--accent)', marginLeft: '0.5rem' }}>(soon!)</span></label>
+              <label className="cover-upload-label">{t('addGame.coverImage')} <span style={{ fontSize: '0.75rem', color: 'var(--accent)', marginLeft: '0.5rem' }}>({t('common.soon')})</span></label>
               <input
                 type="file"
                 ref={fileInputRef}
@@ -140,7 +140,7 @@ export function EditGameModal({ game, onClose, onGameUpdated, setLoading }: Edit
               <div className="cover-upload-area" style={{ cursor: 'not-allowed' }}>
                 <div className="cover-upload-placeholder">
                   <ImagePlus size={32} style={{ opacity: 0.4 }} />
-                  <p style={{ marginTop: '0.5rem', marginBottom: 0, opacity: 0.6 }}>Cover images coming soon</p>
+                  <p style={{ marginTop: '0.5rem', marginBottom: 0, opacity: 0.6 }}>{t('validation.coverImageSoon')}</p>
                 </div>
               </div>
             </div>

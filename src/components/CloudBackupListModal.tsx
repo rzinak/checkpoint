@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Cloud, Folder, FileText, Clock, Database, Loader2, Download, Trash2 } from 'lucide-react';
+import { useI18n } from '../lib/i18n';
 import { useProfile } from '../lib/profileContext';
 import { useToast } from '../lib/toastContext';
 import { ConfirmModal } from './ConfirmModal';
@@ -12,6 +13,7 @@ interface CloudBackupListModalProps {
 }
 
 export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBackupListModalProps) {
+  const { t, language } = useI18n();
   const { isAuthenticated, getValidAccessToken } = useProfile();
   const { addToast } = useToast();
   const [backups, setBackups] = useState<CloudBackupItem[]>([]);
@@ -52,11 +54,12 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    const locale = language === 'pt' ? 'pt-BR' : language === 'es' ? 'es-ES' : 'en-US';
+    return date.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
-    }) + ', ' + date.toLocaleTimeString('en-US', {
+    }) + ', ' + date.toLocaleTimeString(locale, {
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -123,7 +126,7 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
         <div className="modal-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Cloud size={20} />
-            <h2>Cloud Backups</h2>
+            <h2>{t('cloud.cloudBackups')}</h2>
           </div>
           <button className="modal-close" onClick={onClose}>
             <X size={20} />
@@ -134,16 +137,16 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
           {isLoading ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '3rem', gap: '1rem' }}>
               <Loader2 size={32} className="spinner" style={{ color: 'var(--accent)' }} />
-              <p style={{ color: 'var(--text-secondary)' }}>Loading cloud backups...</p>
+              <p style={{ color: 'var(--text-secondary)' }}>{t('cloud.loadingBackups')}</p>
             </div>
           ) : backups.length === 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '3rem', gap: '1rem', textAlign: 'center' }}>
               <div style={{ width: '64px', height: '64px', background: 'var(--bg-tertiary)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Cloud size={32} style={{ color: 'var(--text-tertiary)' }} />
               </div>
-              <h3 style={{ color: 'var(--text-primary)', margin: 0 }}>No Cloud Backups</h3>
+              <h3 style={{ color: 'var(--text-primary)', margin: 0 }}>{t('cloud.noBackups')}</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', margin: 0 }}>
-                Upload snapshots to the cloud to see them here
+                {t('cloud.uploadToSeeHere')}
               </p>
             </div>
           ) : (
@@ -209,7 +212,7 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
                       {backup.fileCount && (
                         <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                           <FileText size={12} />
-                          {backup.fileCount} files
+                          {backup.fileCount} {backup.fileCount === 1 ? t('cloud.file') : t('cloud.files')}
                         </span>
                       )}
                     </div>
@@ -220,7 +223,7 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
                       className="btn btn-secondary btn-small"
                       onClick={(e) => { e.stopPropagation(); handleDownload(backup); }}
                       disabled={selectedBackup?.id === backup.id}
-                      title="Download this backup"
+                      title={t('cloud.downloadBackup')}
                     >
                       {selectedBackup?.id === backup.id ? (
                         <Loader2 size={16} className="spinner" />
@@ -231,7 +234,7 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
                     <button
                       className="btn btn-danger btn-small"
                       onClick={(e) => { e.stopPropagation(); handleDelete(backup); }}
-                      title="Delete from cloud"
+                      title={t('cloud.deleteFromCloud')}
                     >
                       <Trash2 size={16} />
                     </button>
@@ -251,24 +254,24 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
           fontSize: '0.75rem',
           color: 'var(--text-secondary)'
         }}>
-          <span>{backups.length} backup{backups.length !== 1 ? 's' : ''}</span>
+          <span>{backups.length} {backups.length === 1 ? t('cloud.backupSingular') : t('cloud.backupPlural')}</span>
           <button
             className="btn btn-secondary btn-small"
             onClick={loadBackups}
             disabled={isLoading}
           >
             <Loader2 size={14} className={isLoading ? 'spinner' : ''} style={{ marginRight: '0.25rem' }} />
-            Refresh
+            {t('cloud.refresh')}
           </button>
         </div>
       </div>
 
       <ConfirmModal
         isOpen={confirmDelete.isOpen}
-        title="Delete Cloud Backup"
-        message={confirmDelete.backup ? `Are you sure you want to delete "${confirmDelete.backup.snapshotName || confirmDelete.backup.name}" from the cloud? This cannot be undone.` : ''}
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t('cloud.deleteCloudBackup')}
+        message={confirmDelete.backup ? t('cloud.confirmDelete').replace('{name}', confirmDelete.backup.snapshotName || confirmDelete.backup.name) : ''}
+        confirmText={t('cloud.delete')}
+        cancelText={t('addGame.cancel')}
         danger={true}
         onConfirm={confirmDeleteBackup}
         onCancel={() => setConfirmDelete({ isOpen: false, backup: null })}
