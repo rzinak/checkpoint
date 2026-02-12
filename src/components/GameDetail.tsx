@@ -131,7 +131,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       setSnapshots([snapshot, ...snapshots]);
       setNewSnapshotName('');
       setIsCreatingSnapshot(false);
-      addToast(t('gameDetail.snapshotCreated'), 'success');
+      addNotification(t('success.snapshotCreated'), t('success.snapshotCreated'), 'success');
     } catch (err) {
       console.log(err)
       addToast(err instanceof Error ? err.message : t('errors.failedCreateSnapshot'), 'error');
@@ -187,7 +187,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         try {
           await deleteSnapshot(snapshotId, game.id);
           setSnapshots(snapshots.filter(s => s.id !== snapshotId));
-          addToast(t('gameDetail.snapshotDeleted'), 'success');
+          addNotification(t('success.snapshotDeleted'), t('success.snapshotDeleted'), 'success');
         } catch (err) {
           addToast(err instanceof Error ? err.message : t('errors.failedDeleteSnapshot'), 'error');
         } finally {
