@@ -39,7 +39,7 @@ export function Dashboard({ games, onGameSelect, onRefresh }: DashboardProps) {
         </div>
       ) : (
         <div className="games-grid">
-          {games.map((game) => (
+          {[...games].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).map((game) => (
             <GameCard
               key={game.id}
               game={game}

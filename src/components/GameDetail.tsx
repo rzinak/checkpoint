@@ -116,6 +116,18 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         game_id: game.id,
         name: newSnapshotName || undefined,
       });
+      
+      // Automatically upload to cloud if backup destination is 'cloud' or 'both'
+      if ((backupDestination === 'cloud' || backupDestination === 'both') && isAuthenticated) {
+        setLoading(true, 'Uploading to cloud...');
+        try {
+          await handleUploadToCloud(snapshot);
+        } catch (uploadErr) {
+          console.error('Auto-upload to cloud failed:', uploadErr);
+          addToast('Snapshot created but cloud upload failed', 'warning');
+        }
+      }
+      
       setSnapshots([snapshot, ...snapshots]);
       setNewSnapshotName('');
       setIsCreatingSnapshot(false);
@@ -763,7 +775,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
                   </p>
                 </div>
                 <div className="snapshot-actions">
-                  {isAuthenticated && (
+                  {isAuthenticated && !cloudSnapshots.has(snapshot.id) && (
                     <button
                       className="btn btn-secondary btn-small"
                       onClick={() => handleUploadToCloud(snapshot)}
