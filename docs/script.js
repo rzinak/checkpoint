@@ -17,15 +17,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const mobileMenuBtn = document.getElementById('mobileMenuBtn');
   const mobileMenu = document.getElementById('mobileMenu');
+  const body = document.body;
+
+  const backdrop = document.createElement('div');
+  backdrop.className = 'mobile-menu-backdrop';
+  backdrop.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  `;
+  body.appendChild(backdrop);
+
+  function openMobileMenu() {
+    mobileMenu.classList.add('active');
+    backdrop.style.opacity = '1';
+    backdrop.style.visibility = 'visible';
+    body.style.overflow = 'hidden';
+  }
+
+  function closeMobileMenu() {
+    mobileMenu.classList.remove('active');
+    backdrop.style.opacity = '0';
+    backdrop.style.visibility = 'hidden';
+    body.style.overflow = '';
+  }
 
   mobileMenuBtn.addEventListener('click', () => {
-    mobileMenu.classList.toggle('active');
+    if (mobileMenu.classList.contains('active')) {
+      closeMobileMenu();
+    } else {
+      openMobileMenu();
+    }
   });
+
+  backdrop.addEventListener('click', closeMobileMenu);
 
   mobileMenu.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
-      mobileMenu.classList.remove('active');
+      closeMobileMenu();
     });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+      closeMobileMenu();
+    }
   });
 
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
