@@ -6,7 +6,9 @@
   "nav": {
     "home": "Inicio",
     "settings": "Ajustes",
-    "addGame": "Añadir Juego"
+    "addGame": "Añadir Juego",
+    "profile": "Perfil",
+    "notifications": "Notificaciones"
   },
   "dashboard": {
     "title": "Tus Juegos",
@@ -31,6 +33,7 @@
     "rename": "Renombrar",
     "restore": "Restaurar",
     "delete": "Eliminar",
+    "editGame": "Editar Juego",
     "snapshotNamePlaceholder": "Nombre del snapshot (opcional)",
     "cancel": "Cancelar",
     "create": "Crear",
@@ -52,7 +55,8 @@
     "executablePlaceholder": "ej: NBA2K16.exe",
     "executableHint": "Se usa para verificar si el juego está en ejecución antes de restaurar",
     "cancel": "Cancelar",
-    "add": "Añadir Juego"
+    "add": "Añadir Juego",
+    "coverImage": "Imagen de Portada"
   },
   "settings": {
     "title": "Ajustes",
@@ -74,7 +78,12 @@
     "creatingSnapshot": "Creando snapshot...",
     "restoring": "Restaurando partida...",
     "deleting": "Eliminando...",
-    "loading": "Cargando..."
+    "loading": "Cargando...",
+    "uploadingCloud": "Subiendo a la nube...",
+    "deletingCloud": "Eliminando de la nube...",
+    "preparingUpload": "Preparando subida...",
+    "readingFiles": "Leyendo archivos del snapshot...",
+    "creatingZip": "Creando archivo zip..."
   },
   "errors": {
     "requiredFields": "Por favor, completa todos los campos obligatorios",
@@ -87,10 +96,98 @@
     "failedRename": "Error al renombrar snapshot",
     "failedLoadData": "Error al cargar datos",
     "failedSelectFolder": "Error al seleccionar carpeta",
-    "failedSaveSettings": "Error al guardar ajustes"
+    "failedSaveSettings": "Error al guardar ajustes",
+    "failedUploadCloud": "Error al subir a la nube",
+    "failedDeleteCloud": "Error al eliminar de la nube",
+    "uploadFailed": "Subida fallida",
+    "notAuthenticated": "No autenticado",
+    "failedLoadStorage": "Error al cargar información de almacenamiento"
   },
   "success": {
     "settingsSaved": "¡Ajustes guardados correctamente!",
-    "restoreComplete": "Restauración completada correctamente"
+    "restoreComplete": "Restauración completada correctamente",
+    "snapshotCreated": "Snapshot creado correctamente",
+    "snapshotDeleted": "Snapshot eliminado correctamente"
+  },
+  "cloud": {
+    "title": "Backup en la Nube",
+    "uploadSuccess": "Snapshot subido a la nube correctamente",
+    "downloadSuccess": "Snapshot descargado de la nube correctamente",
+    "deleteSuccess": "Backup eliminado de la nube",
+    "uploadFailed": "Snapshot creado pero falló la subida a la nube",
+    "notInCloud": "Este snapshot no está en la nube",
+    "notAuthenticated": "Inicia sesión con Google primero",
+    "noSnapshots": "No se encontraron snapshots en la nube para este juego",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar \"{name}\" de la nube? Esto no se puede deshacer.",
+    "backupDestination": "Destino del Backup",
+    "localOnly": "Solo Local",
+    "cloudOnly": "Solo Nube",
+    "both": "Local & Nube",
+    "viewAll": "Ver Todos",
+    "howItWorks": "Cómo Funciona el Backup en la Nube",
+    "namingSaves": "Nombrando Tus Partidas",
+    "deleteFromCloud": "Eliminar de la Nube",
+    "uploadToCloud": "Subir a la nube",
+    "backedUp": "Backup en la nube",
+    "badge": "Nube",
+    "uploadComplete": "Subida a la Nube Completada",
+    "uploaded": "subido a la nube",
+    "syncing": "Sincronizando...",
+    "lastUploaded": "Última subida",
+    "refreshCloudList": "Actualizar lista de nube",
+    "viewAllCloudBackups": "Ver todos los backups en la nube",
+    "cloudBackups": "Backups en la Nube",
+    "loadingBackups": "Cargando backups en la nube...",
+    "noBackups": "Sin Backups en la Nube",
+    "uploadToSeeHere": "Sube snapshots a la nube para verlos aquí",
+    "file": "archivo",
+    "files": "archivos",
+    "downloadBackup": "Descargar este backup",
+    "backupSingular": "backup",
+    "backupPlural": "backups",
+    "refresh": "Actualizar",
+    "deleteCloudBackup": "Eliminar Backup de la Nube",
+    "delete": "Eliminar"
+  },
+  "profile": {
+    "notLoggedIn": "No conectado",
+    "login": "Iniciar sesión",
+    "signOut": "Cerrar sesión",
+    "storage": "Almacenamiento en la Nube",
+    "account": "Cuenta",
+    "confirmSignOut": "¿Estás seguro de que quieres cerrar sesión? Necesitarás iniciar sesión de nuevo para acceder a tus backups en la nube.",
+    "notSignedIn": "No Conectado",
+    "signInPrompt": "Inicia sesión con Google para habilitar funciones de backup en la nube.",
+    "loadingStorage": "Cargando información de almacenamiento...",
+    "used": "usado",
+    "total": "total"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "noNotifications": "Sin Notificaciones",
+    "description": "Verás notificaciones aquí cuando subas o descargues backups en la nube",
+    "loading": "Cargando notificaciones...",
+    "unreadSingular": "notificación no leída",
+    "unreadPlural": "notificaciones no leídas",
+    "clearAll": "Limpiar todo"
+  },
+  "validation": {
+    "nameMaxLength": "El nombre del juego debe tener menos de 100 caracteres",
+    "locationMaxLength": "La ruta de ubicación de guardado debe tener menos de 500 caracteres",
+    "exeMaxLength": "El nombre del ejecutable debe tener menos de 100 caracteres",
+    "localBackupOnly": "Esta carpeta se usa solo para backups locales. Los backups en la nube se almacenan en tu Google Drive.",
+    "coverImageSoon": "Imágenes de portada próximamente"
+  },
+  "common": {
+    "soon": "próximamente"
+  },
+  "time": {
+    "justNow": "Ahora mismo",
+    "minutesAgo": "{minutes}m atrás",
+    "hoursAgo": "{hours}h atrás",
+    "daysAgo": "{days}d atrás"
+  },
+  "editGame": {
+    "title": "Editar Juego"
   }
 }

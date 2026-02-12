@@ -6,7 +6,9 @@
   "nav": {
     "home": "Home",
     "settings": "Settings",
-    "addGame": "Add Game"
+    "addGame": "Add Game",
+    "profile": "Profile",
+    "notifications": "Notifications"
   },
   "dashboard": {
     "title": "Your Games",
@@ -31,6 +33,7 @@
     "rename": "Rename",
     "restore": "Restore",
     "delete": "Delete",
+    "editGame": "Edit Game",
     "snapshotNamePlaceholder": "Snapshot name (optional)",
     "cancel": "Cancel",
     "create": "Create",
@@ -52,7 +55,8 @@
     "executablePlaceholder": "e.g., NBA2K16.exe",
     "executableHint": "Used to check if the game is running before restore",
     "cancel": "Cancel",
-    "add": "Add Game"
+    "add": "Add Game",
+    "coverImage": "Cover Image"
   },
   "settings": {
     "title": "Settings",
@@ -74,7 +78,12 @@
     "creatingSnapshot": "Creating snapshot...",
     "restoring": "Restoring save...",
     "deleting": "Deleting...",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "uploadingCloud": "Uploading to cloud...",
+    "deletingCloud": "Deleting from cloud...",
+    "preparingUpload": "Preparing upload...",
+    "readingFiles": "Reading snapshot files...",
+    "creatingZip": "Creating zip archive..."
   },
   "errors": {
     "requiredFields": "Please fill in all required fields",
@@ -87,10 +96,98 @@
     "failedRename": "Failed to rename snapshot",
     "failedLoadData": "Failed to load data",
     "failedSelectFolder": "Failed to select folder",
-    "failedSaveSettings": "Failed to save settings"
+    "failedSaveSettings": "Failed to save settings",
+    "failedUploadCloud": "Failed to upload to cloud",
+    "failedDeleteCloud": "Failed to delete from cloud",
+    "uploadFailed": "Upload failed",
+    "notAuthenticated": "Not authenticated",
+    "failedLoadStorage": "Failed to load storage information"
   },
   "success": {
     "settingsSaved": "Settings saved successfully!",
-    "restoreComplete": "Restore completed successfully"
+    "restoreComplete": "Restore completed successfully",
+    "snapshotCreated": "Snapshot created successfully",
+    "snapshotDeleted": "Snapshot deleted successfully"
+  },
+  "cloud": {
+    "title": "Cloud Backup",
+    "uploadSuccess": "Snapshot uploaded to cloud successfully",
+    "downloadSuccess": "Snapshot downloaded from cloud successfully",
+    "deleteSuccess": "Backup deleted from cloud",
+    "uploadFailed": "Snapshot created but cloud upload failed",
+    "notInCloud": "This snapshot is not in the cloud",
+    "notAuthenticated": "Please sign in with Google first",
+    "noSnapshots": "No cloud snapshots found for this game",
+    "confirmDelete": "Are you sure you want to delete \"{name}\" from the cloud? This cannot be undone.",
+    "backupDestination": "Backup Destination",
+    "localOnly": "Local Only",
+    "cloudOnly": "Cloud Only",
+    "both": "Local & Cloud",
+    "viewAll": "View All",
+    "howItWorks": "How Cloud Backup Works",
+    "namingSaves": "Naming Your Saves",
+    "deleteFromCloud": "Delete from Cloud",
+    "uploadToCloud": "Upload to cloud",
+    "backedUp": "Backed up to cloud",
+    "badge": "Cloud",
+    "uploadComplete": "Cloud Upload Complete",
+    "uploaded": "uploaded to cloud",
+    "syncing": "Syncing...",
+    "lastUploaded": "Last uploaded",
+    "refreshCloudList": "Refresh cloud list",
+    "viewAllCloudBackups": "View all cloud backups",
+    "cloudBackups": "Cloud Backups",
+    "loadingBackups": "Loading cloud backups...",
+    "noBackups": "No Cloud Backups",
+    "uploadToSeeHere": "Upload snapshots to the cloud to see them here",
+    "file": "file",
+    "files": "files",
+    "downloadBackup": "Download this backup",
+    "backupSingular": "backup",
+    "backupPlural": "backups",
+    "refresh": "Refresh",
+    "deleteCloudBackup": "Delete Cloud Backup",
+    "delete": "Delete"
+  },
+  "profile": {
+    "notLoggedIn": "Not logged in",
+    "login": "Login",
+    "signOut": "Sign Out",
+    "storage": "Cloud Storage",
+    "account": "Account",
+    "confirmSignOut": "Are you sure you want to sign out? You'll need to sign in again to access your cloud backups.",
+    "notSignedIn": "Not Signed In",
+    "signInPrompt": "Sign in with Google to enable cloud backup features.",
+    "loadingStorage": "Loading storage info...",
+    "used": "used",
+    "total": "total"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "No Notifications",
+    "description": "You'll see notifications here when you upload or download cloud backups",
+    "loading": "Loading notifications...",
+    "unreadSingular": "unread notification",
+    "unreadPlural": "unread notifications",
+    "clearAll": "Clear all"
+  },
+  "validation": {
+    "nameMaxLength": "Game name must be less than 100 characters",
+    "locationMaxLength": "Save location path must be less than 500 characters",
+    "exeMaxLength": "Executable name must be less than 100 characters",
+    "localBackupOnly": "This folder is used for local backups only. Cloud backups are stored in your Google Drive.",
+    "coverImageSoon": "Cover images coming soon"
+  },
+  "common": {
+    "soon": "soon"
+  },
+  "time": {
+    "justNow": "Just now",
+    "minutesAgo": "{minutes}m ago",
+    "hoursAgo": "{hours}h ago",
+    "daysAgo": "{days}d ago"
+  },
+  "editGame": {
+    "title": "Edit Game"
   }
 }

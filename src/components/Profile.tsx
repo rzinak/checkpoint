@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useProfile } from '../lib/profileContext';
+import { useI18n } from '../lib/i18n';
 import { getDriveStorageInfo } from '../lib/googleDrive';
 import { ArrowLeft, User, Cloud, Database, LogOut, Loader2 } from 'lucide-react';
 import { ConfirmModal } from './ConfirmModal';
@@ -9,6 +10,7 @@ interface ProfileProps {
 }
 
 export function Profile({ onBack }: ProfileProps) {
+  const { t } = useI18n();
   const { profile, isAuthenticated, logout, getValidAccessToken } = useProfile();
   const [storageInfo, setStorageInfo] = useState<{ used: number; total: number } | null>(null);
   const [isLoadingStorage, setIsLoadingStorage] = useState(false);
@@ -53,17 +55,17 @@ export function Profile({ onBack }: ProfileProps) {
         <div className="profile-page-header">
           <button className="back-button" onClick={onBack}>
             <ArrowLeft size={16} />
-            Back
+            {t('gameDetail.back')}
           </button>
-          <h2>Profile</h2>
+          <h2>{t('nav.profile')}</h2>
         </div>
         <div className="profile-page-content">
           <div className="profile-not-authenticated">
             <div className="profile-icon-large">
               <User size={48} />
             </div>
-            <h3>Not Signed In</h3>
-            <p>Sign in with Google to enable cloud backup features.</p>
+            <h3>{t('profile.notSignedIn')}</h3>
+            <p>{t('profile.signInPrompt')}</p>
           </div>
         </div>
       </div>
@@ -75,9 +77,9 @@ export function Profile({ onBack }: ProfileProps) {
       <div className="profile-page-header">
         <button className="back-button" onClick={onBack}>
           <ArrowLeft size={16} />
-          Back
+          {t('gameDetail.back')}
         </button>
-        <h2>Profile</h2>
+        <h2>{t('nav.profile')}</h2>
       </div>
 
       <div className="profile-page-content">
@@ -100,13 +102,13 @@ export function Profile({ onBack }: ProfileProps) {
         <div className="profile-section">
           <div className="profile-section-header">
             <Cloud size={18} />
-            <h3>Cloud Storage</h3>
+            <h3>{t('profile.storage')}</h3>
           </div>
           
           {isLoadingStorage ? (
             <div className="profile-loading">
               <Loader2 size={24} className="spinner" />
-              <span>Loading storage info...</span>
+              <span>{t('profile.loadingStorage')}</span>
             </div>
           ) : storageInfo ? (
             <div className="storage-info">
@@ -117,12 +119,12 @@ export function Profile({ onBack }: ProfileProps) {
                 />
               </div>
               <div className="storage-stats">
-                <span>{formatBytes(storageInfo.used)} used</span>
-                <span>{formatBytes(storageInfo.total)} total</span>
+                <span>{formatBytes(storageInfo.used)} {t('profile.used')}</span>
+                <span>{formatBytes(storageInfo.total)} {t('profile.total')}</span>
               </div>
             </div>
           ) : (
-            <p className="profile-error">Failed to load storage information</p>
+            <p className="profile-error">{t('errors.failedLoadStorage')}</p>
           )}
         </div>
 
@@ -130,21 +132,21 @@ export function Profile({ onBack }: ProfileProps) {
         <div className="profile-section">
           <div className="profile-section-header">
             <Database size={18} />
-            <h3>Account</h3>
+            <h3>{t('profile.account')}</h3>
           </div>
           <button className="profile-action-btn profile-action-danger" onClick={handleLogout}>
             <LogOut size={18} />
-            <span>Sign Out</span>
+            <span>{t('profile.signOut')}</span>
           </button>
         </div>
       </div>
 
       <ConfirmModal
         isOpen={showLogoutConfirm}
-        title="Sign Out"
-        message="Are you sure you want to sign out? You'll need to sign in again to access your cloud backups."
-        confirmText="Sign Out"
-        cancelText="Cancel"
+        title={t('profile.signOut')}
+        message={t('profile.confirmSignOut')}
+        confirmText={t('profile.signOut')}
+        cancelText={t('addGame.cancel')}
         danger={true}
         onConfirm={() => {
           logout();

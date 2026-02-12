@@ -31,7 +31,7 @@ interface GameDetailProps {
 }
 
 export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoading }: GameDetailProps) {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const { isAuthenticated, getValidAccessToken } = useProfile();
   const { addToast, addNotification } = useToast();
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
@@ -119,12 +119,12 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       
       // Automatically upload to cloud if backup destination is 'cloud' or 'both'
       if ((backupDestination === 'cloud' || backupDestination === 'both') && isAuthenticated) {
-        setLoading(true, 'Uploading to cloud...');
+        setLoading(true, t('loading.uploadingCloud'));
         try {
           await handleUploadToCloud(snapshot);
         } catch (uploadErr) {
           console.error('Auto-upload to cloud failed:', uploadErr);
-          addToast('Snapshot created but cloud upload failed', 'warning');
+          addToast(t('cloud.uploadFailed'), 'warning');
         }
       }
       
@@ -200,18 +200,18 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
   const handleDeleteCloudSnapshot = (snapshot: Snapshot) => {
     const cloudData = cloudSnapshots.get(snapshot.id);
     if (!cloudData) {
-      addToast('This snapshot is not in the cloud', 'warning');
+      addToast(t('cloud.notInCloud'), 'warning');
       return;
     }
 
     setConfirmModal({
       isOpen: true,
-      title: 'Delete from Cloud',
-      message: `Are you sure you want to delete "${snapshot.name}" from Google Drive? This cannot be undone.`,
+      title: t('cloud.deleteFromCloud'),
+      message: t('cloud.confirmDelete').replace('{name}', snapshot.name),
       danger: true,
       onConfirm: async () => {
         setConfirmModal(prev => ({ ...prev, isOpen: false }));
-        setLoading(true, 'Deleting from cloud...');
+        setLoading(true, t('loading.deletingCloud'));
 
         try {
           const token = await getValidAccessToken();
@@ -224,9 +224,9 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
             next.delete(snapshot.id);
             return next;
           });
-          addToast('Snapshot deleted from cloud', 'success');
+          addToast(t('cloud.deleteSuccess'), 'success');
         } catch (err) {
-          addToast(err instanceof Error ? err.message : 'Failed to delete from cloud', 'error');
+          addToast(err instanceof Error ? err.message : t('errors.failedDeleteCloud'), 'error');
         } finally {
           setLoading(false, '');
         }
@@ -340,13 +340,13 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
 
   const handleUploadToCloud = async (snapshot: Snapshot) => {
     if (!isAuthenticated) {
-      addToast('Please sign in with Google first', 'warning');
+      addToast(t('cloud.notAuthenticated'), 'warning');
       return;
     }
 
     setIsUploading(true);
     setCloudSyncState({ sync_status: 'syncing' });
-    setLoading(true, 'Preparing upload...');
+    setLoading(true, t('loading.preparingUpload'));
 
     try {
       const token = await getValidAccessToken();
@@ -355,7 +355,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       }
 
       // Read the snapshot files and create a zip
-      setLoading(true, 'Reading snapshot files...');
+      setLoading(true, t('loading.readingFiles'));
       const { readDir, readFile } = await import('@tauri-apps/plugin-fs');
       const { join } = await import('@tauri-apps/api/path');
       
@@ -384,7 +384,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       await readDirectoryRecursive(snapshotPath);
       
       // Create zip using JSZip
-      setLoading(true, 'Creating zip archive...');
+      setLoading(true, t('loading.creatingZip'));
       const JSZip = (await import('jszip')).default;
       const zip = new JSZip();
       
@@ -397,7 +397,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       });
 
       // Upload to Google Drive
-      setLoading(true, 'Uploading to cloud...');
+      setLoading(true, t('loading.uploadingCloud'));
       const fileId = await uploadSnapshot(
         token,
         game.id,
@@ -419,16 +419,16 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         sync_status: 'idle',
         last_upload: new Date().toISOString()
       });
-      addNotification('Cloud Upload Complete', `"${snapshot.name}" uploaded to cloud successfully`, 'success');
-      addToast('Snapshot uploaded to cloud successfully', 'success');
+      addNotification(t('cloud.uploadComplete'), `"${snapshot.name}" ${t('cloud.uploaded')}`, 'success');
+      addToast(t('cloud.uploadSuccess'), 'success');
       
       // Refresh the full cloud list
       loadCloudSnapshots();
     } catch (err) {
-      addToast(err instanceof Error ? err.message : 'Failed to upload to cloud', 'error');
+      addToast(err instanceof Error ? err.message : t('errors.failedUploadCloud'), 'error');
       setCloudSyncState({
         sync_status: 'error',
-        error_message: err instanceof Error ? err.message : 'Upload failed'
+        error_message: err instanceof Error ? err.message : t('errors.uploadFailed')
       });
     } finally {
       setIsUploading(false);
@@ -522,7 +522,8 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
+    const locale = language === 'pt' ? 'pt-BR' : language === 'es' ? 'es-ES' : 'en-US';
+    return date.toLocaleString(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -568,26 +569,26 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         <div className="cloud-sync-section">
           <div className="cloud-sync-header">
             <Cloud size={18} />
-            <h3>Cloud Backup</h3>
+            <h3>{t('cloud.title')}</h3>
             {isLoadingCloudList && <Loader2 size={16} className="spinner" />}
             <button 
               className="cloud-info-btn"
               onClick={() => setIsCloudInfoOpen(true)}
-              title="How does this work?"
+              title={t('cloud.howItWorks')}
             >
               <Info size={16} />
             </button>
           </div>
           
           <div className="backup-destination">
-            <label>Backup Destination:</label>
+            <label>{t('cloud.backupDestination')}:</label>
             <Select
               value={backupDestination}
               onChange={(e) => setBackupDestination(e.target.value as 'local' | 'cloud' | 'both')}
               options={[
-                { value: 'local', label: 'Local Only' },
-                { value: 'cloud', label: 'Cloud Only' },
-                { value: 'both', label: 'Local & Cloud' }
+                { value: 'local', label: t('cloud.localOnly') },
+                { value: 'cloud', label: t('cloud.cloudOnly') },
+                { value: 'both', label: t('cloud.both') }
               ]}
               className="backup-destination-select"
             />
@@ -613,7 +614,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
               className="btn btn-secondary btn-small"
               onClick={loadCloudSnapshots}
               disabled={isLoadingCloudList}
-              title="Refresh cloud list"
+              title={t('cloud.refreshCloudList')}
             >
               {isLoadingCloudList ? (
                 <Loader2 size={16} className="spinner" />
@@ -624,17 +625,17 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
             <button
               className="btn btn-secondary btn-small"
               onClick={() => setIsCloudBackupListOpen(true)}
-              title="View all cloud backups"
+              title={t('cloud.viewAllCloudBackups')}
             >
               <Cloud size={16} />
-              <span>View All</span>
+              <span>{t('cloud.viewAll')}</span>
             </button>
           </div>
 
           {cloudSyncState.sync_status === 'syncing' && (
             <div className="cloud-sync-status syncing">
               <Loader2 size={14} className="spinner" />
-              <span>Syncing...</span>
+              <span>{t('cloud.syncing')}</span>
             </div>
           )}
           
@@ -648,7 +649,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
           {cloudSyncState.last_upload && (
             <div className="cloud-sync-status success">
               <CheckCircle size={14} />
-              <span>Last uploaded: {new Date(cloudSyncState.last_upload).toLocaleString()}</span>
+              <span>{t('cloud.lastUploaded')}: {new Date(cloudSyncState.last_upload).toLocaleString(language === 'pt' ? 'pt-BR' : language === 'es' ? 'es-ES' : 'en-US')}</span>
             </div>
           )}
         </div>
@@ -672,7 +673,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
               onClick={() => setIsEditModalOpen(true)}
             >
               <Edit3 size={16} style={{ marginRight: '0.25rem', verticalAlign: 'middle' }} />
-              Edit Game
+              {t('gameDetail.editGame')}
             </button>
             <button
               className="btn btn-danger btn-small"
@@ -766,10 +767,10 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
                     <h4>{snapshot.name}</h4>
                   )}
                   <p>
-                    {formatDate(snapshot.timestamp)} • {formatSize(snapshot.size)} • {snapshot.file_count} files
+                    {formatDate(snapshot.timestamp)} • {formatSize(snapshot.size)} • {snapshot.file_count} {snapshot.file_count === 1 ? t('cloud.file') : t('cloud.files')}
                     {cloudSnapshots.has(snapshot.id) && (
-                      <span className="cloud-badge" title="Backed up to cloud">
-                        <Cloud size={12} /> Cloud
+                      <span className="cloud-badge" title={t('cloud.backedUp')}>
+                        <Cloud size={12} /> {t('cloud.badge')}
                       </span>
                     )}
                   </p>
@@ -780,7 +781,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
                       className="btn btn-secondary btn-small"
                       onClick={() => handleUploadToCloud(snapshot)}
                       disabled={isUploading}
-                      title="Upload to cloud"
+                      title={t('cloud.uploadToCloud')}
                     >
                       {isUploading ? (
                         <Loader2 size={16} className="spinner" />
@@ -815,7 +816,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
                     <button
                       className="btn btn-danger btn-small"
                       onClick={() => handleDeleteCloudSnapshot(snapshot)}
-                      title="Delete from cloud"
+                      title={t('cloud.deleteFromCloud')}
                       style={{ marginLeft: '0.25rem' }}
                     >
                       <Cloud size={16} />
