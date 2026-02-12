@@ -44,12 +44,13 @@ export function Notifications({ onBack }: NotificationsProps) {
 
   return (
     <div className="notifications-page">
-      <div className="notifications-header" style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div className="notifications-header" style={{ marginBottom: '1.5rem' }}>
         <button className="back-button" onClick={onBack}>
           <ArrowLeft size={18} />
+          {t('gameDetail.back')}
         </button>
         <div style={{ flex: 1 }}>
-          <h2 style={{ margin: 0, fontSize: '1.375rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+          <h2 style={{ margin: 0, fontSize: '1.125rem', fontWeight: 700, color: 'var(--text-primary)' }}>
             {t('notifications.title')}
           </h2>
           {unreadCount > 0 && (
@@ -59,7 +60,7 @@ export function Notifications({ onBack }: NotificationsProps) {
           )}
         </div>
         {notifications.length > 0 && (
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
             {/*
             <button
               className="btn btn-secondary btn-small"

@@ -75,7 +75,7 @@ export function Settings({ config, onBack, onConfigUpdate, theme, onThemeChange 
         {t('gameDetail.back')}
       </button>
 
-      <h2 style={{ marginBottom: '2rem', fontSize: '1.75rem', fontWeight: 700 }}>{t('settings.title')}</h2>
+      <h2 style={{ marginBottom: '1rem', fontSize: '1.125rem', fontWeight: 700 }}>{t('settings.title')}</h2>
 
       {error && (
         <div className="alert alert-error" style={{ marginBottom: '1rem' }}>

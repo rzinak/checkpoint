@@ -421,7 +421,6 @@ pub fn import_snapshot(
     fs::create_dir_all(&snapshot_dir)
         .map_err(|e| format!("Failed to create snapshot directory: {}", e))?;
 
-    // Extract zip file
     let cursor = Cursor::new(file_data);
     let mut archive =
         ZipArchive::new(cursor).map_err(|e| format!("Failed to read zip archive: {}", e))?;

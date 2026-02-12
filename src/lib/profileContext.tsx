@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { UserProfile } from './types';
 import { refreshAccessToken, getUserInfo } from './googleDrive';
-// initiateGoogleAuth is imported dynamically when needed
 
 interface ProfileContextType {
   profile: UserProfile | null;
@@ -48,7 +47,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       const { exchangeCodeForTokens } = await import('./googleDrive');
       const tokens = await exchangeCodeForTokens(code);
       const userInfo = await getUserInfo(tokens.access_token);
-      
+
       const newProfile: UserProfile = {
         mode: 'google',
         name: userInfo.name,
@@ -58,7 +57,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         refresh_token: tokens.refresh_token,
         token_expires_at: Date.now() + (tokens.expires_in * 1000)
       };
-      
+
       setProfile(newProfile);
     } catch (error) {
       console.error('Login failed:', error);
@@ -78,7 +77,6 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       return null;
     }
 
-    // Check if token is expired or will expire in next 5 minutes
     if (profile.token_expires_at && profile.token_expires_at < Date.now() + (5 * 60 * 1000)) {
       if (profile.refresh_token) {
         try {
