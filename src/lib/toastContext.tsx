@@ -86,9 +86,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       const updated = [newNotification, ...prev];
       return updated.slice(0, MAX_NOTIFICATIONS);
     });
-
-    addToast(message, type);
-  }, [addToast]);
+  }, []);
 
   const markAsRead = useCallback((id: string) => {
     setNotifications((prev) =>
