@@ -43,7 +43,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
   const [editingSnapshot, setEditingSnapshot] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  
+
   // Cloud sync states
   const [cloudSyncState, setCloudSyncState] = useState<CloudSyncState>({ sync_status: 'idle' });
   const [backupDestination, setBackupDestination] = useState<'local' | 'cloud' | 'both'>(() => {
@@ -55,7 +55,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
   // const [isDownloading, setIsDownloading] = useState(false);
   const [isCloudInfoOpen, setIsCloudInfoOpen] = useState(false);
   const [isCloudBackupListOpen, setIsCloudBackupListOpen] = useState(false);
-  
+
   // Confirm modal states
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
@@ -63,8 +63,8 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
     message: string;
     onConfirm: () => void;
     danger?: boolean;
-  }>({ isOpen: false, title: '', message: '', onConfirm: () => {} });
-  
+  }>({ isOpen: false, title: '', message: '', onConfirm: () => { } });
+
   // Cloud snapshots tracking
   const [cloudSnapshots, setCloudSnapshots] = useState<Map<string, { id: string; modifiedTime: string }>>(new Map());
   const [isLoadingCloudList, setIsLoadingCloudList] = useState(false);
@@ -116,7 +116,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         game_id: game.id,
         name: newSnapshotName || undefined,
       });
-      
+
       // Automatically upload to cloud if backup destination is 'cloud' or 'both'
       if ((backupDestination === 'cloud' || backupDestination === 'both') && isAuthenticated) {
         setLoading(true, t('loading.uploadingCloud'));
@@ -127,11 +127,16 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
           addToast(t('cloud.uploadFailed'), 'warning');
         }
       }
-      
+
       setSnapshots([snapshot, ...snapshots]);
       setNewSnapshotName('');
       setIsCreatingSnapshot(false);
-      addToast(t('gameDetail.snapshotCreated'), 'success');
+      addToast(t('success.snapshotCreated'), 'success');
+      addNotification(
+        t('success.snapshotCreated'),
+        `"${snapshot.name}" - ${game.name}`,
+        'success'
+      );
     } catch (err) {
       console.log(err)
       addToast(err instanceof Error ? err.message : t('errors.failedCreateSnapshot'), 'error');
@@ -175,6 +180,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
   };
 
   const handleDeleteSnapshot = (snapshotId: string) => {
+    const snapshotToDelete = snapshots.find(s => s.id === snapshotId);
     setConfirmModal({
       isOpen: true,
       title: t('gameDetail.deleteSnapshot'),
@@ -187,7 +193,12 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         try {
           await deleteSnapshot(snapshotId, game.id);
           setSnapshots(snapshots.filter(s => s.id !== snapshotId));
-          addToast(t('gameDetail.snapshotDeleted'), 'success');
+          addToast(t('success.snapshotDeleted'), 'success');
+          addNotification(
+            t('success.snapshotDeleted'),
+            `"${snapshotToDelete?.name || snapshotId}" - ${game.name}`,
+            'success'
+          );
         } catch (err) {
           addToast(err instanceof Error ? err.message : t('errors.failedDeleteSnapshot'), 'error');
         } finally {
@@ -225,6 +236,11 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
             return next;
           });
           addToast(t('cloud.deleteSuccess'), 'success');
+          addNotification(
+            t('cloud.deleteSuccess'),
+            `"${snapshot.name}" - ${game.name}`,
+            'success'
+          );
         } catch (err) {
           addToast(err instanceof Error ? err.message : t('errors.failedDeleteCloud'), 'error');
         } finally {
@@ -263,10 +279,10 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       console.log('Not authenticated, skipping cloud load');
       return;
     }
-    
+
     console.log('Loading cloud snapshots for game:', game.id);
     console.log('Current snapshots:', snapshots.map(s => s.name));
-    
+
     setIsLoadingCloudList(true);
     try {
       const token = await getValidAccessToken();
@@ -274,15 +290,15 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         console.log('No valid token');
         return;
       }
-      
+
       const cloudFiles = await listCloudSnapshots(token, game.id);
       console.log('Cloud files found:', cloudFiles);
-      
+
       // Create new map but keep existing entries that we already know about
       // This prevents the badge from disappearing briefly
       setCloudSnapshots(prev => {
         const cloudMap = new Map(prev); // Start with existing entries
-        
+
         cloudFiles.forEach(file => {
           console.log('Processing cloud file:', file.name);
           // Extract snapshot name from file.name (format: "gameId/snapshotName.zip")
@@ -300,7 +316,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
             }
           }
         });
-        
+
         console.log('Cloud map created:', cloudMap);
         return cloudMap;
       });
@@ -358,20 +374,20 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       setLoading(true, t('loading.readingFiles'));
       const { readDir, readFile } = await import('@tauri-apps/plugin-fs');
       const { join } = await import('@tauri-apps/api/path');
-      
+
       // Get snapshot directory path
       const snapshotPath = snapshot.path;
-      
+
       // Read all files in the snapshot directory recursively
       const files: { path: string; content: Uint8Array }[] = [];
-      
+
       async function readDirectoryRecursive(dirPath: string, relativePath: string = '') {
         const entries = await readDir(dirPath);
-        
+
         for (const entry of entries) {
           const entryRelativePath = relativePath ? `${relativePath}/${entry.name}` : entry.name;
           const entryFullPath = await join(dirPath, entry.name);
-          
+
           if (entry.isDirectory) {
             await readDirectoryRecursive(entryFullPath, entryRelativePath);
           } else if (entry.isFile && entry.name !== '.checkpoint-meta.json') {
@@ -380,18 +396,18 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
           }
         }
       }
-      
+
       await readDirectoryRecursive(snapshotPath);
-      
+
       // Create zip using JSZip
       setLoading(true, t('loading.creatingZip'));
       const JSZip = (await import('jszip')).default;
       const zip = new JSZip();
-      
+
       for (const file of files) {
         zip.file(file.path, file.content);
       }
-      
+
       const zipBlob = await zip.generateAsync({ type: 'blob' }, (metadata: { percent: number }) => {
         setLoading(true, `Creating zip... ${Math.round(metadata.percent)}%`);
       });
@@ -408,9 +424,9 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       // Update cloud snapshots state immediately
       setCloudSnapshots(prev => {
         const next = new Map(prev);
-        next.set(snapshot.id, { 
-          id: fileId, 
-          modifiedTime: new Date().toISOString() 
+        next.set(snapshot.id, {
+          id: fileId,
+          modifiedTime: new Date().toISOString()
         });
         return next;
       });
@@ -419,9 +435,9 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         sync_status: 'idle',
         last_upload: new Date().toISOString()
       });
-      addNotification(t('cloud.uploadComplete'), `"${snapshot.name}" ${t('cloud.uploaded')}`, 'success');
       addToast(t('cloud.uploadSuccess'), 'success');
-      
+      addNotification(t('cloud.uploadComplete'), `"${snapshot.name}" - ${game.name}`, 'success');
+
       // Refresh the full cloud list
       loadCloudSnapshots();
     } catch (err) {
@@ -497,8 +513,8 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         sync_status: 'idle',
         last_download: new Date().toISOString()
       });
-      addNotification('Cloud Download Complete', `"${latestSnapshot.name.replace('.zip', '')}" downloaded from cloud`, 'success');
-      addToast('Snapshot downloaded from cloud successfully', 'success');
+      addToast(t('cloud.downloadSuccess'), 'success');
+      addNotification(t('cloud.downloadSuccess'), `"${latestSnapshot.name.replace('.zip', '')}" - ${game.name}`, 'success');
     } catch (err) {
       addToast(err instanceof Error ? err.message : 'Failed to download from cloud', 'error');
       setCloudSyncState({
@@ -571,7 +587,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
             <Cloud size={18} />
             <h3>{t('cloud.title')}</h3>
             {isLoadingCloudList && <Loader2 size={16} className="spinner" />}
-            <button 
+            <button
               className="cloud-info-btn"
               onClick={() => setIsCloudInfoOpen(true)}
               title={t('cloud.howItWorks')}
@@ -579,7 +595,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
               <Info size={16} />
             </button>
           </div>
-          
+
           <div className="backup-destination">
             <label>{t('cloud.backupDestination')}:</label>
             <Select
@@ -638,14 +654,14 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
               <span>{t('cloud.syncing')}</span>
             </div>
           )}
-          
+
           {cloudSyncState.sync_status === 'error' && cloudSyncState.error_message && (
             <div className="cloud-sync-status error">
               <AlertTriangle size={14} />
               <span>{cloudSyncState.error_message}</span>
             </div>
           )}
-          
+
           {cloudSyncState.last_upload && (
             <div className="cloud-sync-status success">
               <CheckCircle size={14} />
