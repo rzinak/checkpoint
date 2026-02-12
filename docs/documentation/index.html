@@ -62,7 +62,6 @@
 
   <main class="main-content">
     <div class="content">
-      <!-- USER GUIDE -->
       <section id="quickstart">
         <h1>Checkpoint Documentation</h1>
         <p class="lead">
@@ -160,7 +159,6 @@
         </div>
       </section>
 
-      <!-- TECHNICAL SECTION -->
       <section id="tech-stack">
         <h2>Technical Details</h2>
         
@@ -239,12 +237,16 @@
           <li><code>https://www.googleapis.com/auth/drive.appdata</code> - Access appDataFolder only</li>
           <li>No access to your photos, documents, or other Drive files</li>
         </ul>
-        
+
         <h3>Data Flow</h3>
-        <pre><code>Your Computer → ZIP → Google Drive API → appDataFolder
-                                    ↓
-                              Your Google Drive
-                              (hidden from view)</code></pre>
+        <pre><code>Your Computer
+     ↓
+Create ZIP
+     ↓
+Google Drive API (encrypted transfer)
+     ↓
+Your Google Drive
+(stored in appDataFolder - hidden from main view)</code></pre>
         
         <h3>Why We Can't See Your Data</h3>
         <ul>
