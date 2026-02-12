@@ -1,205 +1,100 @@
 # Checkpoint
 
-A save game backup tool for local games. Built with Tauri, React, and Rust.
+**Never lose your game progress again.**
+
+Checkpoint is a save game backup tool for local games. Create timestamped backups (snapshots) of your save files, switch between different saves instantly, and protect your progress from corruption or accidents.
 
 ## Features
 
-- **Game Management**: Add games with their save locations
-- **Snapshots**: Create timestamped backups of your save games
-- **Restore**: Restore any snapshot with automatic backup of current save
-- **Process Detection**: Prevents restore while game is running
-- **Cross-Platform**: Works on Windows, Linux, and macOS
+- **One-Click Snapshots** - Create timestamped backups with a single click
+- **Instant Restore** - Switch between saves in seconds  
+- **Google Drive Cloud Backup** - Back up saves to your own Google Drive
+- **100% Private** - Your data stays on your device. We have zero access to your saves or Google Drive
+- **Smart Protection** - Automatically backs up current save before restoring
+- **Process Detection** - Prevents restore while game is running
+- **Cross-Platform** - Windows, Linux, and macOS support
 
-## Tech Stack
+## Your Data, Your Control
 
-- **Frontend**: React + TypeScript + Vite
-- **Backend**: Rust + Tauri
-- **UI Components**: Lucide React icons
-- **Process Checking**: sysinfo crate
+Checkpoint is built with privacy as the foundation:
 
-## Prerequisites
+- **No Account Required** - Use locally without creating any account
+- **Zero Server Access** - We don't have servers, we can't see your saves
+- **Google Drive = Your Drive** - Cloud backups go directly to your personal Google Drive, not our servers
+- **Local-First** - Everything works offline. Cloud is optional
+- **Open Source** - Full transparency. Check the code yourself
 
-### Linux (Ubuntu/Debian)
-
-```bash
-sudo apt update
-sudo apt install -y \
-  libwebkit2gtk-4.1-dev \
-  libgtk-3-dev \
-  libayatana-appindicator3-dev \
-  librsvg2-dev \
-  patchelf \
-  pkg-config \
-  build-essential
-```
-
-### Linux (Fedora)
-
-```bash
-sudo dnf install -y \
-  gtk3-devel \
-  webkit2gtk4.1-devel \
-  libayatana-appindicator-gtk3-devel \
-  librsvg2-devel \
-  patchelf \
-  pkgconf-pkg-config \
-  gcc-c++
-```
-
-### Linux (Arch)
-
-```bash
-sudo pacman -S --needed \
-  gtk3 \
-  webkit2gtk-4.1 \
-  libayatana-appindicator \
-  librsvg \
-  patchelf \
-  pkgconf \
-  base-devel
-```
+## Download
 
 ### Windows
+- Download `checkpoint.exe` (portable - no installation needed)
+- Or use the `.msi` installer
 
-No additional dependencies needed. Just install:
-- [Rust](https://rustup.rs/)
-- [Node.js](https://nodejs.org/)
+### Linux
+- **Ubuntu/Debian**: `checkpoint_0.1.0_amd64.deb`
+- **Fedora**: `checkpoint-0.1.0-1.x86_64.rpm`  
+- **Arch**: Available on AUR
+- **Universal**: AppImage works on any distro
 
 ### macOS
+- Download `Checkpoint_0.1.0.dmg`
+- Drag to Applications folder
 
-```bash
-# Install Xcode Command Line Tools
-xcode-select --install
-```
+[View All Releases](https://github.com/rzinak/checkpoint/releases)
 
-## Development Setup
+## Quick Start
 
-```bash
-# Clone the repository
-git clone <repository-url>
-cd checkpoint
+1. **Add Your First Game**
+   - Click "Add Game" button
+   - Enter game name
+   - Select save folder location
+   - Click "Add Game"
 
-# Install dependencies
-npm install
+2. **Create a Snapshot**
+   - Click on your game card
+   - Click "Create Snapshot"
+   - Give it a name (e.g., "Before Boss Fight")
+   - Choose backup destination: Local, Cloud, or Both
 
-# Run in development mode
-npm run tauri-dev
+3. **Restore a Save**
+   - Click the restore button on any snapshot
+   - Current save is automatically backed up first
+   - Game must not be running
 
-# Build for production
-npm run tauri-build
-```
+4. **Enable Cloud Backup** (Optional)
+   - Sign in with Google in the Profile section
+   - Set backup destination to "Cloud" or "Both"
+   - Snapshots automatically upload to your Google Drive
+   - Access your saves from any device
 
-## Building Binaries
+## How Cloud Backup Works
 
-Builds are platform-specific. Run the build command on the target platform:
+- **Your Google Drive**: Backups are stored in a hidden app folder in your Google Drive (appDataFolder)
+- **Not Visible**: These files don't clutter your main Drive view
+- **Private**: Only this app can access them
+- **Cross-Device**: Log in on another computer to access your cloud saves
+- **Manual Control**: You choose when to upload. No automatic syncing.
 
-```bash
-npm run tauri-build
-```
+## System Requirements
 
-Binaries will be in `src-tauri/target/release/bundle/`
+- **Windows**: Windows 10 or later
+- **Linux**: Any modern distro with GTK3
+- **macOS**: macOS 10.15 or later
 
-### Linux Output
-- `.deb` package
-- `.rpm` package
-- Binary executable
+## Support
 
-### Windows Output
-- `.exe` portable executable
-- `.msi` installer
-
-### macOS Output
-- `.app` bundle
-- `.dmg` installer
-
-To build for multiple platforms, use GitHub Actions or build on each platform separately.
-
-## Usage
-
-1. **Add a Game**: Click the + button and enter:
-   - Game name (e.g., "Elden Ring")
-   - Save location (path to your save folder)
-   - Executable name (optional, for process checking)
-
-2. **Create Snapshot**: Select a game and click "Create Snapshot"
-
-3. **Restore**: Select a snapshot and click the restore button
-   - Current save will be backed up automatically before restoring
-   - Restore is blocked if the game is running
-
-4. **Settings**: Change backup location in the settings page
-
-## Directory Structure
-
-```
-checkpoint/
-├── src/                    # React frontend
-│   ├── components/         # React components
-│   ├── lib/               # API and types
-│   ├── App.tsx            # Main app component
-│   └── main.tsx           # Entry point
-├── src-tauri/             # Rust backend
-│   ├── src/               # Rust source files
-│   ├── capabilities/      # Tauri permissions
-│   ├── Cargo.toml         # Rust dependencies
-│   └── tauri.conf.json    # Tauri configuration
-└── package.json           # Node.js dependencies
-```
-
-## Configuration
-
-Configuration is stored in:
-- **Linux/macOS**: `~/.config/checkpoint/config.json`
-- **Windows**: `%APPDATA%\checkpoint\config.json`
-
-Backups are stored in:
-- **Linux/macOS**: `~/checkpoint/` by default
-- **Windows**: `C:\Users\<username>\checkpoint\` by default
-
-The backup location is configurable in settings.
-
-## Development Notes
-
-### Interface Naming
-
-React interfaces use snake_case to match Rust structs:
-- `game_id` (not `gameId`)
-- `save_location` (not `saveLocation`)
-- `exe_name` (not `exeName`)
-- `created_at` (not `createdAt`)
-
-This ensures proper serialization between TypeScript and Rust.
-
-### Permissions
-
-The app uses Tauri v2's capability system for security. Permissions are defined in `src-tauri/capabilities/main.json`:
-- File system access (read/write in home directory)
-- Dialog access (folder picker)
-- Process access (checking if game is running)
-
-## Troubleshooting
-
-### Build fails with missing system libraries
-
-Make sure you installed all prerequisites for your platform (see Prerequisites section above).
-
-### App crashes on startup
-
-Check the terminal output for errors. Common issues:
-- Missing permissions in capabilities
-- Incorrect plugin configuration
-
-### Cannot select folder in dialog
-
-Ensure the dialog permissions are properly configured in `capabilities/main.json`.
+- **Documentation**: [Full Documentation](https://checkpoint-savegame.github.io/docs)
+- **Issues**: [GitHub Issues](https://github.com/rzinak/checkpoint/issues)
+- **Website**: [checkpoint-savegame.github.io](https://checkpoint-savegame.github.io)
 
 ## License
 
-MIT License - Open source project
+MIT License - Open source, free forever
 
 ## Contributing
 
-Contributions are welcome. Please ensure:
-- Code follows the existing style
-- TypeScript interfaces match Rust struct names (snake_case)
-- Test on your local setup before submitting
+Contributions welcome! See the [Developer Documentation](https://checkpoint-savegame.github.io/docs) for technical details.
+
+---
+
+**Checkpoint** - Because your progress matters

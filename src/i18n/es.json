@@ -1,21 +1,21 @@
 {
   "app": {
     "name": "Checkpoint",
-    "tagline": "Gestor de Partidas Guardadas"
+    "tagline": "Gestor de partidas guardadas"
   },
   "nav": {
     "home": "Inicio",
     "settings": "Ajustes",
-    "addGame": "Añadir Juego",
+    "addGame": "Añadir juego",
     "profile": "Perfil",
     "notifications": "Notificaciones"
   },
   "dashboard": {
-    "title": "Tus Juegos",
+    "title": "Tus juegos",
     "emptyState": {
       "title": "¿Listo para hacer backup de tus partidas?",
       "description": "Añade tu primer juego para empezar a crear snapshots de tus archivos de guardado. Nunca pierdas el progreso.",
-      "button": "Añadir Tu Primer Juego"
+      "button": "Añadir tu primer juego"
     },
     "refresh": "Actualizar"
   },
@@ -24,17 +24,17 @@
     "snapshots": "snapshots"
   },
   "gameDetail": {
-    "back": "Volver a Juegos",
-    "saveLocation": "Ubicación de Guardado",
+    "back": "Volver a juegos",
+    "saveLocation": "Ubicación de guardado",
     "executable": "Ejecutable",
     "snapshots": "Snapshots",
-    "createSnapshot": "Crear Snapshot",
-    "deleteGame": "Eliminar Juego",
+    "createSnapshot": "Crear snapshot",
+    "deleteGame": "Eliminar juego",
     "rename": "Renombrar",
     "restore": "Restaurar",
     "delete": "Eliminar",
-    "editGame": "Editar Juego",
-    "deleteSnapshot": "Eliminar Snapshot",
+    "editGame": "Editar juego",
+    "deleteSnapshot": "Eliminar snapshot",
     "snapshotNamePlaceholder": "Nombre del snapshot (opcional)",
     "cancel": "Cancelar",
     "create": "Crear",
@@ -45,31 +45,31 @@
     "confirmDeleteGame": "¿Estás seguro de que quieres eliminar {name}? Esto también eliminará todos los snapshots."
   },
   "addGame": {
-    "title": "Añadir Nuevo Juego",
-    "name": "Nombre del Juego",
+    "title": "Añadir nuevo juego",
+    "name": "Nombre del juego",
     "namePlaceholder": "ej: NBA 2K16",
-    "saveLocation": "Ubicación de Guardado",
+    "saveLocation": "Ubicación de guardado",
     "saveLocationPlaceholder": "/ruta/a/carpeta/de/guardado",
     "browse": "Examinar",
     "saveLocationHint": "La carpeta donde se almacenan tus partidas guardadas",
-    "executable": "Nombre del Ejecutable (opcional)",
+    "executable": "Nombre del ejecutable (opcional)",
     "executablePlaceholder": "ej: NBA2K16.exe",
     "executableHint": "Se usa para verificar si el juego está en ejecución antes de restaurar",
     "cancel": "Cancelar",
-    "add": "Añadir Juego",
-    "coverImage": "Imagen de Portada"
+    "add": "Añadir juego",
+    "coverImage": "Imagen de portada"
   },
   "settings": {
     "title": "Ajustes",
     "appearance": "Apariencia",
     "theme": "Tema",
-    "lightMode": "Modo Claro",
-    "darkMode": "Modo Oscuro",
+    "lightMode": "Modo claro",
+    "darkMode": "Modo oscuro",
     "language": "Idioma",
-    "backupLocation": "Ubicación de Backup",
-    "backupFolder": "Carpeta de Backup",
+    "backupLocation": "Ubicación de backup",
+    "backupFolder": "Carpeta de backup",
     "backupHint": "Todos los snapshots de juegos se almacenarán en esta carpeta",
-    "save": "Guardar Ajustes",
+    "save": "Guardar ajustes",
     "saving": "Guardando...",
     "about": "Acerca de",
     "version": "Checkpoint v0.1.0",
@@ -111,7 +111,7 @@
     "snapshotDeleted": "Snapshot eliminado correctamente"
   },
   "cloud": {
-    "title": "Backup en la Nube",
+    "title": "Backup en la nube",
     "uploadSuccess": "Snapshot subido a la nube correctamente",
     "downloadSuccess": "Snapshot descargado de la nube correctamente",
     "deleteSuccess": "Backup eliminado de la nube",
@@ -120,27 +120,27 @@
     "notAuthenticated": "Inicia sesión con Google primero",
     "noSnapshots": "No se encontraron snapshots en la nube para este juego",
     "confirmDelete": "¿Estás seguro de que quieres eliminar \"{name}\" de la nube? Esto no se puede deshacer.",
-    "backupDestination": "Destino del Backup",
-    "localOnly": "Solo Local",
-    "cloudOnly": "Solo Nube",
+    "backupDestination": "Destino del backup",
+    "localOnly": "Solo local",
+    "cloudOnly": "Solo nube",
     "both": "Local & nube",
-    "viewAll": "Ver Todos",
-    "howItWorks": "Cómo Funciona el Backup en la nube",
-    "namingSaves": "Nombrando Tus Partidas",
+    "viewAll": "Ver todos",
+    "howItWorks": "Cómo funciona el backup en la nube",
+    "namingSaves": "Nombrando tus partidas",
     "deleteFromCloud": "Eliminar de la nube",
     "uploadToCloud": "Subir a la nube",
     "backedUp": "Backup en la nube",
     "badge": "nube",
-    "uploadComplete": "Subida a la Nube Completada",
+    "uploadComplete": "Subida a la nube completada",
     "uploaded": "subido a la nube",
     "downloadSuccess": "Snapshot descargado de la nube correctamente",
     "syncing": "Sincronizando...",
     "lastUploaded": "Última subida",
     "refreshCloudList": "Actualizar lista de nube",
     "viewAllCloudBackups": "Ver todos los backups en la nube",
-    "cloudBackups": "Backups en la Nube",
+    "cloudBackups": "Backups en la nube",
     "loadingBackups": "Cargando backups en la nube...",
-    "noBackups": "Sin Backups en la Nube",
+    "noBackups": "Sin backups en la nube",
     "uploadToSeeHere": "Sube snapshots a la nube para verlos aquí",
     "file": "archivo",
     "files": "archivos",
@@ -148,17 +148,41 @@
     "backupSingular": "backup",
     "backupPlural": "backups",
     "refresh": "Actualizar",
-    "deleteCloudBackup": "Eliminar Backup de la Nube",
-    "delete": "Eliminar"
+    "deleteCloudBackup": "Eliminar backup de la nube",
+    "delete": "Eliminar",
+    "lastDownloaded": "Última descarga",
+    "errorMessages": "Mensajes de error"
+  },
+  "cloudInfo": {
+    "chooseWhere": "Elige dónde se almacenan tus partidas guardadas:",
+    "localOnlyDesc": "Las partidas se quedan solo en esta computadora",
+    "cloudOnlyDesc": "Las partidas van solo a Google Drive (acceso desde cualquier lugar)",
+    "bothDesc": "Las partidas van a ambos (recomendado para seguridad)",
+    "uploadTitle": "Subir a la nube",
+    "uploadDesc": "Haz clic en el ícono de nube al lado de cualquier partida para subirla a Google Drive. Tus partidas se almacenan en una carpeta oculta de la app, así que no desordenarán tu Drive principal.",
+    "downloadTitle": "Descargar de la nube",
+    "downloadDesc": "Haz clic en \"Descargar de la Nube\" para obtener tu última partida en la nube. Esto crea una nueva copia local que puedes restaurar.",
+    "namingDesc": "Las partidas en la nube se almacenan globalmente entre todos los juegos, así que usa nombres descriptivos que reconocerás después:",
+    "example1": "RDR2 - Capítulo 3 - 2026-02-11",
+    "example2": "Elden Ring - Antes del Jefe",
+    "example3": "Cyberpunk 2077 - Acto 2 Completado",
+    "namingNote": "Si eliminas y vuelves a agregar un juego después, necesitarás reconocer tus partidas por sus nombres en \"Ver todos\".",
+    "syncTitle": "Estado de Sincronización",
+    "syncDesc": "Los indicadores de sincronización muestran:",
+    "lastUploadedDesc": "Cuándo hiciste el último backup en la nube",
+    "lastDownloadedDesc": "Cuándo restauraste por última vez de la nube",
+    "errorMessagesDesc": "Si algo sale mal",
+    "noteTitle": "Nota:",
+    "noteDesc": "Las subidas son manuales - tú decides cuándo hacer backup. No sincronizamos automáticamente para darte control total sobre tus partidas."
   },
   "profile": {
     "notLoggedIn": "No conectado",
     "login": "Iniciar sesión",
     "signOut": "Cerrar sesión",
-    "storage": "Almacenamiento en la Nube",
+    "storage": "Almacenamiento en la nube",
     "account": "Cuenta",
     "confirmSignOut": "¿Estás seguro de que quieres cerrar sesión? Necesitarás iniciar sesión de nuevo para acceder a tus backups en la nube.",
-    "notSignedIn": "No Conectado",
+    "notSignedIn": "No conectado",
     "signInPrompt": "Inicia sesión con Google para habilitar funciones de backup en la nube.",
     "loadingStorage": "Cargando información de almacenamiento...",
     "used": "usado",
@@ -166,7 +190,7 @@
   },
   "notifications": {
     "title": "Notificaciones",
-    "noNotifications": "Sin Notificaciones",
+    "noNotifications": "Sin notificaciones",
     "description": "Verás notificaciones aquí cuando subas o descargues backups en la nube",
     "loading": "Cargando notificaciones...",
     "unreadSingular": "notificación no leída",
@@ -190,6 +214,6 @@
     "daysAgo": "{days}d atrás"
   },
   "editGame": {
-    "title": "Editar Juego"
+    "title": "Editar juego"
   }
 }

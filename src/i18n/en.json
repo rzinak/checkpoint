@@ -149,7 +149,31 @@
     "backupPlural": "backups",
     "refresh": "Refresh",
     "deleteCloudBackup": "Delete Cloud Backup",
-    "delete": "Delete"
+    "delete": "Delete",
+    "lastDownloaded": "Last downloaded",
+    "errorMessages": "Error messages"
+  },
+  "cloudInfo": {
+    "chooseWhere": "Choose where your game saves are stored:",
+    "localOnlyDesc": "Saves stay on this computer only",
+    "cloudOnlyDesc": "Saves go to Google Drive only (access from anywhere)",
+    "bothDesc": "Saves go to both (recommended for safety)",
+    "uploadTitle": "Upload to Cloud",
+    "uploadDesc": "Click the cloud icon next to any save to upload it to Google Drive. Your saves are stored in a hidden app folder, so they won't clutter your main Drive.",
+    "downloadTitle": "Download from Cloud",
+    "downloadDesc": "Click \"Download from Cloud\" to get your latest cloud save. This creates a new local copy you can restore from.",
+    "namingDesc": "Cloud saves are stored globally across all games, so use descriptive names you'll recognize later:",
+    "example1": "RDR2 - Chapter 3 - 2026-02-11",
+    "example2": "Elden Ring - Before Boss Fight",
+    "example3": "Cyberpunk 2077 - Act 2 Complete",
+    "namingNote": "If you delete and re-add a game later, you'll need to recognize your saves by their names in \"View All\".",
+    "syncTitle": "Sync Status",
+    "syncDesc": "The sync indicators show:",
+    "lastUploadedDesc": "When you last backed up to cloud",
+    "lastDownloadedDesc": "When you last restored from cloud",
+    "errorMessagesDesc": "If something goes wrong",
+    "noteTitle": "Note:",
+    "noteDesc": "Uploads are manual - you decide when to back up. We don't auto-sync to give you full control over your saves."
   },
   "profile": {
     "notLoggedIn": "Not logged in",
