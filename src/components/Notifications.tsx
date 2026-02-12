@@ -71,9 +71,14 @@ export function Notifications({ onBack }: NotificationsProps) {
             </button>
             */}
             <button
-              className="btn btn-danger btn-small"
+              className="btn btn-small"
               onClick={clearAll}
               disabled={notifications.length === 0}
+              style={{
+                background: 'var(--accent)',
+                color: 'white',
+                border: 'none'
+              }}
             >
               <Trash2 size={16} />
               {t('notifications.clearAll')}

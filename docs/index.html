@@ -4,27 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkpoint - Save Game Manager</title>
-  <meta name="description" content="Never lose your game progress again. Checkpoint is a simple, powerful save game backup tool for local games.">
+  <meta name="description" content="Never lose your game progress again. Checkpoint is a powerful save game backup tool with Google Drive integration. 100% private, open source.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Navigation -->
   <nav class="navbar">
-    <div class="container">
-      <div class="nav-brand">
+    <div class="nav-container">
+      <a href="#" class="nav-brand">
         <div class="logo">
-          <!-- LOGO HERE -->
-          <div class="logo-icon">C</div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
         </div>
         <span class="brand-text">Checkpoint</span>
-      </div>
+      </a>
       <div class="nav-links">
         <a href="#features">Features</a>
-        <a href="#how-it-works">How It Works</a>
-        <a href="#download">Download</a>
+        <a href="#cloud">Cloud Backup</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#download" class="nav-cta">Download</a>
         <a href="https://github.com/rzinak/checkpoint" target="_blank" class="github-link">
           <i data-lucide="github"></i>
         </a>
@@ -39,24 +42,30 @@
     </div>
   </nav>
 
+  <!-- Mobile Menu -->
   <div class="mobile-menu" id="mobileMenu">
     <a href="#features">Features</a>
-    <a href="#how-it-works">How It Works</a>
-    <a href="#download">Download</a>
-    <a href="https://github.com/rzinak/checkpoint" target="_blank">GitHub</a>
+    <a href="#cloud">Cloud Backup</a>
+    <a href="#privacy">Privacy</a>
+    <a href="#download" class="mobile-cta">Download</a>
   </div>
 
+  <!-- Hero Section -->
   <section class="hero">
-    <div class="container">
+    <div class="hero-container">
       <div class="hero-content">
-
+        <div class="hero-badge">
+          <i data-lucide="shield-check"></i>
+          <span>100% Private & Open Source</span>
+        </div>
         <h1 class="hero-title">
           Never Lose Your<br>
           <span class="gradient-text">Game Progress</span>
         </h1>
         <p class="hero-description">
-          Checkpoint is a simple, powerful save game backup tool for local games. 
-          Create snapshots, switch between saves, and protect your progress with ease.
+          Checkpoint is a powerful save game backup tool for local games. Create snapshots, 
+          back up to your own Google Drive, and restore saves instantly. 
+          <strong>Your data stays yours.</strong>
         </p>
         <div class="hero-buttons">
           <a href="#download" class="btn btn-primary">
@@ -65,10 +74,23 @@
           </a>
           <a href="https://github.com/rzinak/checkpoint" target="_blank" class="btn btn-secondary">
             <i data-lucide="github"></i>
-            View on GitHub
+            View Source
           </a>
         </div>
-
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-number">Cross-Platform</span>
+            <span class="stat-label">Windows • Linux • macOS</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">Open Source</span>
+            <span class="stat-label">MIT License</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">Zero Tracking</span>
+            <span class="stat-label">100% Private</span>
+          </div>
+        </div>
       </div>
       <div class="hero-visual">
         <div class="app-preview">
@@ -96,6 +118,9 @@
                       <div class="card-title"></div>
                       <div class="card-meta"></div>
                     </div>
+                    <div class="cloud-badge-mock">
+                      <i data-lucide="cloud"></i>
+                    </div>
                   </div>
                   <div class="game-card-mock">
                     <div class="card-cover"></div>
@@ -108,18 +133,32 @@
               </div>
             </div>
           </div>
+          <div class="floating-badge cloud-feature">
+            <i data-lucide="cloud"></i>
+            <span>Google Drive</span>
+          </div>
+          <div class="floating-badge private-feature">
+            <i data-lucide="lock"></i>
+            <span>100% Private</span>
+          </div>
         </div>
       </div>
     </div>
+    <div class="hero-scroll">
+      <a href="#features">
+        <i data-lucide="chevron-down"></i>
+      </a>
+    </div>
   </section>
 
+  <!-- Features Section -->
   <section class="features" id="features">
     <div class="container">
       <div class="section-header">
         <span class="section-badge">Features</span>
         <h2 class="section-title">Everything You Need</h2>
         <p class="section-description">
-          Simple yet powerful features to manage your game saves
+          Powerful features designed to protect your game saves with complete privacy
         </p>
       </div>
       <div class="features-grid">
@@ -127,15 +166,23 @@
           <div class="feature-icon">
             <i data-lucide="save"></i>
           </div>
-          <h3>Automatic Snapshots</h3>
-          <p>Create timestamped backups of your save files with a single click. Keep multiple versions organized.</p>
+          <h3>One-Click Snapshots</h3>
+          <p>Create timestamped backups instantly. Name them "Before Boss Fight" or "Good Ending" to remember exactly what they contain.</p>
+        </div>
+        <div class="feature-card featured">
+          <div class="feature-badge">Popular</div>
+          <div class="feature-icon accent">
+            <i data-lucide="cloud"></i>
+          </div>
+          <h3>Google Drive Backup</h3>
+          <p>Back up saves directly to your personal Google Drive. Access your saves from any device. Your Drive, your data.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
             <i data-lucide="rotate-ccw"></i>
           </div>
           <h3>Instant Restore</h3>
-          <p>Switch between saves instantly. Perfect for trying different game paths or recovering from mistakes.</p>
+          <p>Switch between saves in seconds. Perfect for trying different game paths or recovering from mistakes.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
@@ -146,135 +193,233 @@
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <i data-lucide="image"></i>
-          </div>
-          <h3>Game Covers</h3>
-          <p>Upload custom cover images for your games. Beautiful visual organization.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">
             <i data-lucide="monitor"></i>
           </div>
           <h3>Cross-Platform</h3>
-          <p>Available for Windows, Linux, and macOS. Your saves go where you go.</p>
+          <p>Use on Windows, Linux, and macOS. Your saves work across all your computers.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <i data-lucide="lock"></i>
+            <i data-lucide="code-2"></i>
           </div>
-          <h3>Process Detection</h3>
-          <p>Prevents restore while game is running. Smart safety checks protect your data.</p>
+          <h3>Open Source</h3>
+          <p>Full transparency. Check the code, contribute, or fork it. MIT licensed.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="how-it-works" id="how-it-works">
+  <!-- Cloud Backup Section -->
+  <section class="cloud-section" id="cloud">
     <div class="container">
-      <div class="section-header">
-        <span class="section-badge">Simple</span>
-        <h2 class="section-title">How It Works</h2>
-        <p class="section-description">
-          Get started in three easy steps
-        </p>
-      </div>
-      <div class="steps">
-        <div class="step">
-          <div class="step-number">1</div>
-          <div class="step-content">
-            <h3>Add Your Game</h3>
-            <p>Tell Checkpoint where your save files are located. Add an optional cover image for easy identification.</p>
+      <div class="cloud-content">
+        <div class="cloud-text">
+          <span class="section-badge">Cloud Backup</span>
+          <h2>Your Saves.<br>Your Google Drive.</h2>
+          <p class="cloud-description">
+            Enable cloud backup to store your saves in your personal Google Drive. 
+            Access them from any computer. Your data never touches our servers.
+          </p>
+          <div class="cloud-features">
+            <div class="cloud-feature-item">
+              <i data-lucide="check-circle"></i>
+              <span>Stores in hidden app folder (doesn't clutter your Drive)</span>
+            </div>
+            <div class="cloud-feature-item">
+              <i data-lucide="check-circle"></i>
+              <span>Only you can access your saves</span>
+            </div>
+            <div class="cloud-feature-item">
+              <i data-lucide="check-circle"></i>
+              <span>Manual uploads - you control when</span>
+            </div>
+            <div class="cloud-feature-item">
+              <i data-lucide="check-circle"></i>
+              <span>Cross-device access</span>
+            </div>
           </div>
         </div>
-        <div class="step-arrow">
-          <i data-lucide="arrow-right"></i>
-        </div>
-        <div class="step">
-          <div class="step-number">2</div>
-          <div class="step-content">
-            <h3>Create Snapshots</h3>
-            <p>Click "Create Snapshot" anytime to save your current progress. Name it whatever you want.</p>
+        <div class="cloud-visual">
+          <div class="cloud-flow">
+            <div class="flow-item">
+              <div class="flow-icon">
+                <i data-lucide="monitor"></i>
+              </div>
+              <span>Your Computer</span>
+            </div>
+            <div class="flow-arrow">
+              <i data-lucide="arrow-right"></i>
+            </div>
+            <div class="flow-item encrypted">
+              <div class="flow-icon">
+                <i data-lucide="lock"></i>
+              </div>
+              <span>Encrypted Transfer</span>
+            </div>
+            <div class="flow-arrow">
+              <i data-lucide="arrow-right"></i>
+            </div>
+            <div class="flow-item">
+              <div class="flow-icon">
+                <i data-lucide="cloud"></i>
+              </div>
+              <span>Your Google Drive</span>
+            </div>
           </div>
-        </div>
-        <div class="step-arrow">
-          <i data-lucide="arrow-right"></i>
-        </div>
-        <div class="step">
-          <div class="step-number">3</div>
-          <div class="step-content">
-            <h3>Restore Anytime</h3>
-            <p>Select any snapshot and click restore. Your save is instantly back to that point.</p>
-          </div>
+          <p class="cloud-note">
+            <i data-lucide="info"></i>
+            Backups are stored in Google's appDataFolder - hidden from your main Drive view
+          </p>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="download" id="download">
+  <!-- Privacy Section -->
+  <section class="privacy-section" id="privacy">
     <div class="container">
-      <div class="section-header">
-        <span class="section-badge">Get Started</span>
-        <h2 class="section-title">Download Checkpoint</h2>
-        <p class="section-description">
-          Available for all major platforms.
-        </p>
-      </div>
-      <div class="download-grid">
-        <a href="#" class="download-card">
-          <div class="download-icon">
-            <i data-lucide="monitor"></i>
+      <div class="privacy-content">
+        <div class="privacy-header">
+          <span class="section-badge">Privacy First</span>
+          <h2>We Can't See Your Saves.<br>Even If We Wanted To.</h2>
+          <p class="privacy-lead">
+            Checkpoint is built with privacy as the foundation. Your game saves are yours alone.
+          </p>
+        </div>
+        <div class="privacy-grid">
+          <div class="privacy-card">
+            <div class="privacy-icon">
+              <i data-lucide="eye-off"></i>
+            </div>
+            <h3>No Account Needed</h3>
+            <p>Use Checkpoint locally without creating any account. No email, no password, no tracking.</p>
           </div>
-          <h3>Windows</h3>
-          <p>.exe Installer</p>
-          <span class="download-btn">Download</span>
-        </a>
-        <a href="#" class="download-card">
-          <div class="download-icon">
-            <i data-lucide="laptop"></i>
+          <div class="privacy-card">
+            <div class="privacy-icon">
+              <i data-lucide="server-off"></i>
+            </div>
+            <h3>Zero Server Access</h3>
+            <p>We don't have servers. Your saves never pass through our infrastructure. Cloud backups go directly to Google.</p>
           </div>
-          <h3>Linux</h3>
-          <p>.deb / .rpm</p>
-          <span class="download-btn">Download</span>
-        </a>
-        <a href="#" class="download-card">
-          <div class="download-icon">
-            <i data-lucide="apple"></i>
+          <div class="privacy-card">
+            <div class="privacy-icon">
+              <i data-lucide="lock"></i>
+            </div>
+            <h3>Your Drive, Your Data</h3>
+            <p>Cloud backups are stored in your personal Google Drive. We have zero access to read, modify, or delete your files.</p>
           </div>
-          <h3>macOS</h3>
-          <p>.dmg</p>
-          <span class="download-btn">Download</span>
-        </a>
-      </div>
-      <div class="download-note">
-        <i data-lucide="info"></i>
-        <p>Latest version: v0.1.0 | <a href="https://github.com/rzinak/checkpoint/releases">View all releases</a></p>
+          <div class="privacy-card">
+            <div class="privacy-icon">
+              <i data-lucide="file-code"></i>
+            </div>
+            <h3>Open Source</h3>
+            <p>Full transparency. Check the code yourself. No hidden trackers, no analytics, no nonsense.</p>
+          </div>
+        </div>
+        <div class="privacy-statement">
+          <div class="statement-icon">
+            <i data-lucide="shield-check"></i>
+          </div>
+          <p>
+            <strong>Our Promise:</strong> Checkpoint will never collect your game data, 
+            save files, or personal information. Your privacy is not negotiable.
+          </p>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- Download Section -->
+  <section class="download-section" id="download">
+    <div class="container">
+      <div class="download-content">
+        <div class="download-header">
+          <span class="section-badge">Download</span>
+          <h2>Ready to Protect Your Saves?</h2>
+          <p class="download-description">
+            Free, open source, and always will be. Choose your platform and start backing up.
+          </p>
+        </div>
+        <div class="download-grid">
+          <div class="download-card">
+            <div class="download-icon">
+              <i data-lucide="laptop"></i>
+            </div>
+            <h3>Windows</h3>
+            <p>Windows 10 or later</p>
+            <a href="#" class="btn btn-download">
+              <i data-lucide="download"></i>
+              Download .exe
+            </a>
+            <span class="download-meta">Portable or Installer</span>
+          </div>
+          <div class="download-card">
+            <div class="download-icon">
+              <i data-lucide="terminal"></i>
+            </div>
+            <h3>Linux</h3>
+            <p>Any modern distro</p>
+            <a href="#" class="btn btn-download">
+              <i data-lucide="download"></i>
+              Download
+            </a>
+            <span class="download-meta">.deb • .rpm • AppImage</span>
+          </div>
+          <div class="download-card">
+            <div class="download-icon">
+              <i data-lucide="apple"></i>
+            </div>
+            <h3>macOS</h3>
+            <p>macOS 10.15 or later</p>
+            <a href="#" class="btn btn-download">
+              <i data-lucide="download"></i>
+              Download .dmg
+            </a>
+            <span class="download-meta">Intel & Apple Silicon</span>
+          </div>
+        </div>
+        <div class="download-footer">
+          <a href="https://github.com/rzinak/checkpoint/releases" target="_blank" class="all-releases">
+            <i data-lucide="external-link"></i>
+            View All Releases on GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
   <footer class="footer">
     <div class="container">
       <div class="footer-content">
         <div class="footer-brand">
           <div class="logo">
-            <div class="logo-icon">C</div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
           </div>
-          <span>Checkpoint</span>
+          <div class="footer-info">
+            <h4>Checkpoint</h4>
+            <p>Because your progress matters</p>
+          </div>
         </div>
         <div class="footer-links">
-          <a href="https://github.com/rzinak/checkpoint">GitHub</a>
-          <a href="./documentation/index.html" target="_blank">Documentation</a>
-          <a href="#">Report Issue</a>
+          <a href="documentation/index.html">Documentation</a>
+          <a href="https://github.com/rzinak/checkpoint" target="_blank">GitHub</a>
+          <a href="https://github.com/rzinak/checkpoint/issues" target="_blank">Issues</a>
+        </div>
+        <div class="footer-legal">
+          <span>MIT License</span>
+          <span class="separator">•</span>
+          <span>Open Source</span>
         </div>
       </div>
-      
-      <div class="footer-bottom">
-        <p>© 2026 Checkpoint</p>
-      </div>
-
     </div>
   </footer>
 
   <script src="script.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
 </body>
 </html>

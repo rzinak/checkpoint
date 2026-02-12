@@ -44,7 +44,7 @@ function NotificationsBell({ onClick }: { onClick: () => void }) {
           right: '4px',
           minWidth: '16px',
           height: '16px',
-          background: 'var(--error)',
+          background: 'var(--accent)',
           color: 'white',
           fontSize: '0.625rem',
           fontWeight: 700,
@@ -266,6 +266,7 @@ function AppContent() {
               games={games}
               onGameSelect={handleGameSelect}
               onRefresh={loadData}
+              onAddGame={() => setIsAddModalOpen(true)}
             />
           )}
 

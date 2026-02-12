@@ -7,9 +7,10 @@ interface DashboardProps {
   games: Game[];
   onGameSelect: (game: Game) => void;
   onRefresh: () => void;
+  onAddGame: () => void;
 }
 
-export function Dashboard({ games, onGameSelect, onRefresh }: DashboardProps) {
+export function Dashboard({ games, onGameSelect, onRefresh, onAddGame }: DashboardProps) {
   const { t } = useI18n();
 
   return (
@@ -32,7 +33,7 @@ export function Dashboard({ games, onGameSelect, onRefresh }: DashboardProps) {
           </div>
           <h3>{t('dashboard.emptyState.title')}</h3>
           <p>{t('dashboard.emptyState.description')}</p>
-          <button className="empty-state-btn">
+          <button className="empty-state-btn" onClick={onAddGame}>
             <Plus size={20} />
             {t('dashboard.emptyState.button')}
           </button>

@@ -1,21 +1,21 @@
 {
   "app": {
     "name": "Checkpoint",
-    "tagline": "Gerenciador de Saves"
+    "tagline": "Gerenciador de saves"
   },
   "nav": {
     "home": "Início",
     "settings": "Configurações",
-    "addGame": "Adicionar Jogo",
+    "addGame": "Adicionar jogo",
     "profile": "Perfil",
     "notifications": "Notificações"
   },
   "dashboard": {
-    "title": "Seus Jogos",
+    "title": "Seus jogos",
     "emptyState": {
       "title": "Pronto para fazer backup dos seus saves?",
       "description": "Adicione seu primeiro jogo para começar a criar snapshots dos seus arquivos de save. Nunca mais perca progresso.",
-      "button": "Adicionar Seu Primeiro Jogo"
+      "button": "Adicionar seu primeiro jogo"
     },
     "refresh": "Atualizar"
   },
@@ -24,17 +24,17 @@
     "snapshots": "snapshots"
   },
   "gameDetail": {
-    "back": "Voltar aos Jogos",
-    "saveLocation": "Local do Save",
+    "back": "Voltar aos jogos",
+    "saveLocation": "Local do save",
     "executable": "Executável",
     "snapshots": "Snapshots",
-    "createSnapshot": "Criar Snapshot",
-    "deleteGame": "Excluir Jogo",
+    "createSnapshot": "Criar snapshot",
+    "deleteGame": "Excluir jogo",
     "rename": "Renomear",
     "restore": "Restaurar",
     "delete": "Excluir",
-    "editGame": "Editar Jogo",
-    "deleteSnapshot": "Excluir Snapshot",
+    "editGame": "Editar jogo",
+    "deleteSnapshot": "Excluir snapshot",
     "snapshotNamePlaceholder": "Nome do snapshot (opcional)",
     "cancel": "Cancelar",
     "create": "Criar",
@@ -45,31 +45,31 @@
     "confirmDeleteGame": "Tem certeza que deseja excluir {name}? Isso também excluirá todos os snapshots."
   },
   "addGame": {
-    "title": "Adicionar Novo Jogo",
-    "name": "Nome do Jogo",
+    "title": "Adicionar novo jogo",
+    "name": "Nome do jogo",
     "namePlaceholder": "ex: NBA 2K16",
-    "saveLocation": "Local do Save",
+    "saveLocation": "Local do save",
     "saveLocationPlaceholder": "/caminho/para/pasta/de/save",
     "browse": "Procurar",
     "saveLocationHint": "A pasta onde seus saves do jogo são armazenados",
-    "executable": "Nome do Executável (opcional)",
+    "executable": "Nome do executável (opcional)",
     "executablePlaceholder": "ex: NBA2K16.exe",
     "executableHint": "Usado para verificar se o jogo está em execução antes de restaurar",
     "cancel": "Cancelar",
-    "add": "Adicionar Jogo",
-    "coverImage": "Imagem de Capa"
+    "add": "Adicionar jogo",
+    "coverImage": "Imagem de capa"
   },
   "settings": {
     "title": "Configurações",
     "appearance": "Aparência",
     "theme": "Tema",
-    "lightMode": "Modo Claro",
-    "darkMode": "Modo Escuro",
+    "lightMode": "Modo claro",
+    "darkMode": "Modo escuro",
     "language": "Idioma",
-    "backupLocation": "Local de Backup",
-    "backupFolder": "Pasta de Backup",
+    "backupLocation": "Local de backup",
+    "backupFolder": "Pasta de backup",
     "backupHint": "Todos os snapshots de jogos serão armazenados nesta pasta",
-    "save": "Salvar Configurações",
+    "save": "Salvar configurações",
     "saving": "Salvando...",
     "about": "Sobre",
     "version": "Checkpoint v0.1.0",
@@ -111,7 +111,7 @@
     "snapshotDeleted": "Snapshot excluído com sucesso"
   },
   "cloud": {
-    "title": "Backup na Nuvem",
+    "title": "Backup na nuvem",
     "uploadSuccess": "Snapshot enviado para nuvem com sucesso",
     "downloadSuccess": "Snapshot baixado da nuvem com sucesso",
     "deleteSuccess": "Backup excluído da nuvem",
@@ -120,27 +120,27 @@
     "notAuthenticated": "Faça login com Google primeiro",
     "noSnapshots": "Nenhum snapshot na nuvem encontrado para este jogo",
     "confirmDelete": "Tem certeza que deseja excluir \"{name}\" da nuvem? Isso não pode ser desfeito.",
-    "backupDestination": "Destino do Backup",
-    "localOnly": "Apenas Local",
-    "cloudOnly": "Apenas Nuvem",
+    "backupDestination": "Destino do backup",
+    "localOnly": "Apenas local",
+    "cloudOnly": "Apenas nuvem",
     "both": "Local & nuvem",
-    "viewAll": "Ver Todos",
-    "howItWorks": "Como Funciona o Backup na nuvem",
-    "namingSaves": "Nomeando Seus Saves",
+    "viewAll": "Ver todos",
+    "howItWorks": "Como funciona o backup na nuvem",
+    "namingSaves": "Nomeando seus saves",
     "deleteFromCloud": "Excluir da nuvem",
     "uploadToCloud": "Enviar para nuvem",
     "backedUp": "Backup na nuvem",
     "badge": "nuvem",
-    "uploadComplete": "Upload para Nuvem Concluído",
+    "uploadComplete": "Upload para nuvem concluído",
     "uploaded": "enviado para nuvem",
     "downloadSuccess": "Snapshot baixado da nuvem com sucesso",
     "syncing": "Sincronizando...",
     "lastUploaded": "Último envio",
     "refreshCloudList": "Atualizar lista da nuvem",
     "viewAllCloudBackups": "Ver todos os backups na nuvem",
-    "cloudBackups": "Backups na Nuvem",
+    "cloudBackups": "Backups na nuvem",
     "loadingBackups": "Carregando backups na nuvem...",
-    "noBackups": "Sem Backups na Nuvem",
+    "noBackups": "Sem Backups na nuvem",
     "uploadToSeeHere": "Envie snapshots para a nuvem para vê-los aqui",
     "file": "arquivo",
     "files": "arquivos",
@@ -148,17 +148,41 @@
     "backupSingular": "backup",
     "backupPlural": "backups",
     "refresh": "Atualizar",
-    "deleteCloudBackup": "Excluir Backup da Nuvem",
-    "delete": "Excluir"
+    "deleteCloudBackup": "Excluir backup da nuvem",
+    "delete": "Excluir",
+    "lastDownloaded": "Último download",
+    "errorMessages": "Mensagens de erro"
+  },
+  "cloudInfo": {
+    "chooseWhere": "Escolha onde seus saves de jogo são armazenados:",
+    "localOnlyDesc": "Saves ficam apenas neste computador",
+    "cloudOnlyDesc": "Saves vão para o Google Drive apenas (acesso de qualquer lugar)",
+    "bothDesc": "Saves vão para ambos (recomendado para segurança)",
+    "uploadTitle": "Enviar para nuvem",
+    "uploadDesc": "Clique no ícone de nuvem ao lado de qualquer save para enviá-lo ao Google Drive. Seus saves são armazenados em uma pasta oculta do app, então não vão bagunçar seu Drive principal.",
+    "downloadTitle": "Baixar da nuvem",
+    "downloadDesc": "Clique em \"Baixar da Nuvem\" para obter seu último save na nuvem. Isso cria uma nova cópia local que você pode restaurar.",
+    "namingDesc": "Saves na nuvem são armazenados globalmente entre todos os jogos, então use nomes descritivos que você reconhecerá depois:",
+    "example1": "RDR2 - Capítulo 3 - 2026-02-11",
+    "example2": "Elden Ring - Antes do Chefão",
+    "example3": "Cyberpunk 2077 - Ato 2 Completo",
+    "namingNote": "Se você excluir e readicionar um jogo depois, precisará reconhecer seus saves pelos nomes em \"Ver Todos\".",
+    "syncTitle": "Status de sincronização",
+    "syncDesc": "Os indicadores de sincronização mostram:",
+    "lastUploadedDesc": "Quando você fez o último backup na nuvem",
+    "lastDownloadedDesc": "Quando você restaurou pela última vez da nuvem",
+    "errorMessagesDesc": "Se algo der errado",
+    "noteTitle": "Nota:",
+    "noteDesc": "Uploads são manuais - você decide quando fazer backup. Não sincronizamos automaticamente para dar controle total sobre seus saves."
   },
   "profile": {
     "notLoggedIn": "Não logado",
     "login": "Login",
     "signOut": "Sair",
-    "storage": "Armazenamento na Nuvem",
+    "storage": "Armazenamento na nuvem",
     "account": "Conta",
     "confirmSignOut": "Tem certeza que deseja sair? Você precisará fazer login novamente para acessar seus backups na nuvem.",
-    "notSignedIn": "Não Logado",
+    "notSignedIn": "Não logado",
     "signInPrompt": "Faça login com Google para habilitar recursos de backup na nuvem.",
     "loadingStorage": "Carregando informações de armazenamento...",
     "used": "usado",
@@ -166,7 +190,7 @@
   },
   "notifications": {
     "title": "Notificações",
-    "noNotifications": "Sem Notificações",
+    "noNotifications": "Sem notificações",
     "description": "Você verá notificações aqui ao enviar ou baixar backups na nuvem",
     "loading": "Carregando notificações...",
     "unreadSingular": "notificação não lida",
@@ -190,6 +214,6 @@
     "daysAgo": "{days}d atrás"
   },
   "editGame": {
-    "title": "Editar Jogo"
+    "title": "Editar jogo"
   }
 }
