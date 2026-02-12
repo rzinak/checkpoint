@@ -96,6 +96,8 @@ export function EditGameModal({ game, onClose, onGameUpdated, setLoading }: Edit
         exe_name: exeName.trim() || undefined,
         cover_image: coverImage || undefined,
       });
+      setIsLoading(false);
+      setLoading(false, '');
       onGameUpdated(updatedGame);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('errors.failedAddGame'));

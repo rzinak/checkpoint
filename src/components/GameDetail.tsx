@@ -235,6 +235,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
 
         try {
           await deleteGame(game.id);
+          setLoading(false, '');
           onGameDeleted(game.id);
         } catch (err) {
           addToast(err instanceof Error ? err.message : t('errors.failedDeleteGame'), 'error');
