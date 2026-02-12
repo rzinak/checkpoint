@@ -72,7 +72,6 @@ export function EditGameModal({ game, onClose, onGameUpdated, setLoading }: Edit
       return;
     }
 
-    // Validate character limits
     if (name.trim().length > 100) {
       setError('Game name must be less than 100 characters');
       return;

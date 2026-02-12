@@ -44,10 +44,8 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
   const [editName, setEditName] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  // Cloud sync states
   const [cloudSyncState, setCloudSyncState] = useState<CloudSyncState>({ sync_status: 'idle' });
   const [backupDestination, setBackupDestination] = useState<'local' | 'cloud' | 'both'>(() => {
-    // Initialize from localStorage immediately
     const saved = localStorage.getItem(`checkpoint-backup-dest-${game.id}`);
     return (saved === 'local' || saved === 'cloud' || saved === 'both') ? saved : 'local';
   });
@@ -56,7 +54,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
   const [isCloudInfoOpen, setIsCloudInfoOpen] = useState(false);
   const [isCloudBackupListOpen, setIsCloudBackupListOpen] = useState(false);
 
-  // Confirm modal states
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
     title: string;
@@ -65,7 +62,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
     danger?: boolean;
   }>({ isOpen: false, title: '', message: '', onConfirm: () => { } });
 
-  // Cloud snapshots tracking
   const [cloudSnapshots, setCloudSnapshots] = useState<Map<string, { id: string; modifiedTime: string }>>(new Map());
   const [isLoadingCloudList, setIsLoadingCloudList] = useState(false);
 
@@ -101,7 +97,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
     return () => clearInterval(interval);
   }, [loadSnapshots, checkProcess]);
 
-  // Save backup destination when it changes
   useEffect(() => {
     console.log('Saving backup destination:', backupDestination, 'for game:', game.id);
     localStorage.setItem(`checkpoint-backup-dest-${game.id}`, backupDestination);
@@ -117,7 +112,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         name: newSnapshotName || undefined,
       });
 
-      // Automatically upload to cloud if backup destination is 'cloud' or 'both'
       if ((backupDestination === 'cloud' || backupDestination === 'both') && isAuthenticated) {
         setLoading(true, t('loading.uploadingCloud'));
         try {
@@ -273,7 +267,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
     });
   };
 
-  // Load cloud snapshots and map to local snapshots
   const loadCloudSnapshots = async () => {
     if (!isAuthenticated) {
       console.log('Not authenticated, skipping cloud load');
@@ -294,19 +287,15 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       const cloudFiles = await listCloudSnapshots(token, game.id);
       console.log('Cloud files found:', cloudFiles);
 
-      // Create new map but keep existing entries that we already know about
-      // This prevents the badge from disappearing briefly
       setCloudSnapshots(prev => {
-        const cloudMap = new Map(prev); // Start with existing entries
+        const cloudMap = new Map(prev);
 
         cloudFiles.forEach(file => {
           console.log('Processing cloud file:', file.name);
-          // Extract snapshot name from file.name (format: "gameId/snapshotName.zip")
           const nameParts = file.name.split('/');
           if (nameParts.length === 2) {
             const snapshotName = nameParts[1].replace('.zip', '');
             console.log('Looking for snapshot with name:', snapshotName);
-            // Find matching local snapshot
             const matchingSnapshot = snapshots.find(s => s.name === snapshotName);
             if (matchingSnapshot) {
               console.log('Found matching snapshot:', matchingSnapshot.id);
@@ -327,7 +316,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
     }
   };
 
-  // Load cloud snapshots when snapshots change or auth changes
   useEffect(() => {
     loadCloudSnapshots();
   }, [snapshots, isAuthenticated]);
@@ -370,15 +358,12 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         throw new Error('Failed to get valid access token');
       }
 
-      // Read the snapshot files and create a zip
       setLoading(true, t('loading.readingFiles'));
       const { readDir, readFile } = await import('@tauri-apps/plugin-fs');
       const { join } = await import('@tauri-apps/api/path');
 
-      // Get snapshot directory path
       const snapshotPath = snapshot.path;
 
-      // Read all files in the snapshot directory recursively
       const files: { path: string; content: Uint8Array }[] = [];
 
       async function readDirectoryRecursive(dirPath: string, relativePath: string = '') {
@@ -399,7 +384,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
 
       await readDirectoryRecursive(snapshotPath);
 
-      // Create zip using JSZip
       setLoading(true, t('loading.creatingZip'));
       const JSZip = (await import('jszip')).default;
       const zip = new JSZip();
@@ -412,7 +396,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         setLoading(true, `Creating zip... ${Math.round(metadata.percent)}%`);
       });
 
-      // Upload to Google Drive
       setLoading(true, t('loading.uploadingCloud'));
       const fileId = await uploadSnapshot(
         token,
@@ -421,7 +404,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         zipBlob
       );
 
-      // Update cloud snapshots state immediately
       setCloudSnapshots(prev => {
         const next = new Map(prev);
         next.set(snapshot.id, {
@@ -438,7 +420,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       addToast(t('cloud.uploadSuccess'), 'success');
       addNotification(t('cloud.uploadComplete'), `"${snapshot.name}" - ${game.name}`, 'success');
 
-      // Refresh the full cloud list
       loadCloudSnapshots();
     } catch (err) {
       addToast(err instanceof Error ? err.message : t('errors.failedUploadCloud'), 'error');
@@ -469,7 +450,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         throw new Error('Failed to get valid access token');
       }
 
-      // List cloud snapshots
       console.log('Downloading - looking for cloud snapshots for game:', game.id);
       const cloudSnapshots = await listCloudSnapshots(token, game.id);
       console.log('Download - cloud snapshots found:', cloudSnapshots);
@@ -480,7 +460,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         return;
       }
 
-      // For now, download the most recent one
       const latestSnapshot = cloudSnapshots.sort((a, b) => 
         new Date(b.modifiedTime).getTime() - new Date(a.modifiedTime).getTime()
       )[0];
@@ -488,7 +467,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       setLoading(true, 'Downloading from cloud...');
       const blob = await downloadSnapshot(token, latestSnapshot.id);
 
-      // Create a new local snapshot from the downloaded file
       const arrayBuffer = await blob.arrayBuffer();
       const uint8Array = new Uint8Array(arrayBuffer);
       
@@ -499,7 +477,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       );
       setSnapshots([newSnapshot, ...snapshots]);
 
-      // Update cloud snapshots state to mark this new snapshot as having a cloud backup
       setCloudSnapshots(prev => {
         const next = new Map(prev);
         next.set(newSnapshot.id, {
@@ -580,7 +557,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         </div>
       )}
 
-      {/* Cloud Sync Section */}
       {isAuthenticated ? (
         <div className="cloud-sync-section">
           <div className="cloud-sync-header">

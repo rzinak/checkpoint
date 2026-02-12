@@ -107,24 +107,22 @@ function AppContent() {
     loadData();
   }, []);
 
-  // Handle OAuth deep link callback
   useEffect(() => {
     const handleDeepLink = async (urls: string[] | null) => {
       if (!urls || urls.length === 0) return;
-      
+
       try {
         const url = new URL(urls[0]);
-        
-        // Check if this is an auth callback
+
         if (url.protocol === 'checkpoint:' && url.host === 'auth') {
           const code = url.searchParams.get('code');
           const error = url.searchParams.get('error');
-          
+
           if (error) {
             setError('Google sign-in failed: ' + error);
             return;
           }
-          
+
           if (code) {
             try {
               setIsLoading(true);
@@ -142,15 +140,13 @@ function AppContent() {
         console.error('Failed to handle deep link:', err);
       }
     };
-    
-    // Listen for deep links while app is running
+
     const unlistenPromise = onOpenUrl(handleDeepLink);
-    
-    // Also check if app was opened with a deep link
+
     getCurrent().then(handleDeepLink).catch(err => {
       console.error('Failed to get initial deep link:', err);
     });
-    
+
     return () => {
       unlistenPromise.then(unlisten => unlisten());
     };

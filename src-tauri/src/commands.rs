@@ -71,10 +71,9 @@ pub async fn add_game(request: AddGameRequest, state: State<'_, AppState>) -> Re
 pub fn list_games(state: State<AppState>) -> Result<Vec<Game>, String> {
     let config = state.config.lock().map_err(|e| e.to_string())?;
     let backup_location = config.backup_location.clone();
-    
+
     let mut games = config.games.clone();
-    
-    // Convert relative cover paths to absolute paths
+
     for game in &mut games {
         if let Some(cover) = &game.cover_image {
             if cover == "cover.png" {
@@ -85,7 +84,7 @@ pub fn list_games(state: State<AppState>) -> Result<Vec<Game>, String> {
             }
         }
     }
-    
+
     Ok(games)
 }
 

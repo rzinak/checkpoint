@@ -83,7 +83,6 @@ export function Profile({ onBack }: ProfileProps) {
       </div>
 
       <div className="profile-page-content">
-        {/* User Info Card */}
         <div className="profile-card-large">
           <div className="profile-avatar-large">
             {profile?.avatar_url ? (
@@ -98,13 +97,12 @@ export function Profile({ onBack }: ProfileProps) {
           </div>
         </div>
 
-        {/* Storage Info Card */}
         <div className="profile-section">
           <div className="profile-section-header">
             <Cloud size={18} />
             <h3>{t('profile.storage')}</h3>
           </div>
-          
+
           {isLoadingStorage ? (
             <div className="profile-loading">
               <Loader2 size={24} className="spinner" />
@@ -113,7 +111,7 @@ export function Profile({ onBack }: ProfileProps) {
           ) : storageInfo ? (
             <div className="storage-info">
               <div className="storage-bar-container">
-                <div 
+                <div
                   className="storage-bar-used"
                   style={{ width: `${(storageInfo.used / storageInfo.total) * 100}%` }}
                 />
@@ -128,7 +126,6 @@ export function Profile({ onBack }: ProfileProps) {
           )}
         </div>
 
-        {/* Account Actions */}
         <div className="profile-section">
           <div className="profile-section-header">
             <Database size={18} />
@@ -155,6 +152,6 @@ export function Profile({ onBack }: ProfileProps) {
         }}
         onCancel={() => setShowLogoutConfirm(false)}
       />
-    </div>
+    </div >
   );
 }

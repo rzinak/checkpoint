@@ -15,7 +15,7 @@ function getRedirectUri(): string {
   return `http://localhost:${oauthPort}/auth-callback.html`;
 }
 
-// Get OAuth credentials from environment variables (embedded at build time)
+// OAuth credentials are embedded at build time
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const CLIENT_SECRET = import.meta.env.VITE_GOOGLE_CLIENT_SECRET;
 
@@ -118,20 +118,17 @@ export async function getDriveStorageInfo(accessToken: string): Promise<{ used: 
   };
 }
 
-// Upload a snapshot
 export async function uploadSnapshot(
   accessToken: string,
   gameId: string,
   snapshotName: string,
   fileBlob: Blob
 ): Promise<string> {
-  // Create file metadata
   const metadata = {
     name: `${gameId}/${snapshotName}.zip`,
-    parents: ['appDataFolder'] // Store in app-specific folder
+    parents: ['appDataFolder']
   };
 
-  // Create multipart request
   const boundary = '-------314159265358979323846';
   const delimiter = "\r\n--" + boundary + "\r\n";
   const close_delim = "\r\n--" + boundary + "--";
@@ -177,9 +174,7 @@ export async function uploadSnapshot(
   return result.id;
 }
 
-// List snapshots for a game
 export async function listCloudSnapshots(accessToken: string, gameId: string): Promise<{ id: string; name: string; modifiedTime: string }[]> {
-  // Search in appDataFolder space for files with gameId prefix
   const query = encodeURIComponent(`name contains '${gameId}/' and trashed = false`);
   const response = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/files?q=${query}&spaces=appDataFolder&fields=files(id,name,modifiedTime)`, {
     headers: { Authorization: `Bearer ${accessToken}` }
@@ -194,9 +189,7 @@ export async function listCloudSnapshots(accessToken: string, gameId: string): P
   return data.files || [];
 }
 
-// List all cloud snapshots across all games
 export async function listAllCloudSnapshots(accessToken: string): Promise<CloudBackupItem[]> {
-  // List all files in appDataFolder that look like snapshots (have "/" in the name indicating gameId/snapshotName)
   const query = encodeURIComponent(`name contains '/' and trashed = false`);
   const response = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/files?q=${query}&spaces=appDataFolder&fields=files(id,name,modifiedTime,size)`, {
     headers: { Authorization: `Bearer ${accessToken}` }
@@ -209,7 +202,6 @@ export async function listAllCloudSnapshots(accessToken: string): Promise<CloudB
   const data = await response.json();
   const files = data.files || [];
 
-  // Parse the file names to extract game and snapshot info
   return files.map((file: { id: string; name: string; modifiedTime: string; size?: string }) => {
     const nameParts = file.name.split('/');
     const isSnapshot = nameParts.length === 2 && nameParts[1].endsWith('.zip');
@@ -221,9 +213,9 @@ export async function listAllCloudSnapshots(accessToken: string): Promise<CloudB
       size: file.size ? parseInt(file.size) : undefined,
       gameId: isSnapshot ? nameParts[0] : undefined,
       snapshotName: isSnapshot ? nameParts[1].replace('.zip', '') : undefined,
-      gameName: undefined // Would need metadata file to get this
+      gameName: undefined
     };
-  }).filter((file: CloudBackupItem) => file.gameId); // Only show valid snapshots
+  }).filter((file: CloudBackupItem) => file.gameId);
 }
 
 export interface CloudBackupItem {
@@ -237,7 +229,6 @@ export interface CloudBackupItem {
   fileCount?: number;
 }
 
-// Delete a snapshot from cloud
 export async function deleteCloudSnapshot(accessToken: string, fileId: string): Promise<void> {
   const response = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/files/${fileId}`, {
     method: 'DELETE',
@@ -249,7 +240,6 @@ export async function deleteCloudSnapshot(accessToken: string, fileId: string): 
   }
 }
 
-// Download a snapshot
 export async function downloadSnapshot(
   accessToken: string,
   fileId: string

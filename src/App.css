@@ -4,7 +4,6 @@
   padding: 0;
 }
 
-/* Global form element reset to prevent native OS styling */
 input,
 select,
 textarea,
@@ -263,7 +262,6 @@ body {
   font-size: 0.75rem;
 }
 
-/* Dashboard Styles */
 .dashboard {
   animation: fadeIn 0.3s ease;
 }
@@ -310,7 +308,6 @@ body {
   gap: 1rem;
 }
 
-/* Empty State */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -364,7 +361,6 @@ body {
   background: var(--accent-hover);
 }
 
-/* Game Card Styles with Cover */
 .game-card {
   background: var(--bg-secondary);
   border: 1px solid var(--border);
@@ -443,7 +439,6 @@ body {
   color: var(--text-secondary);
 }
 
-/* Modal Styles */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -545,7 +540,6 @@ body {
   margin-top: 0.375rem;
 }
 
-/* Cover Upload */
 .cover-upload {
   margin-bottom: 1rem;
 }
@@ -666,7 +660,6 @@ body {
   cursor: not-allowed;
 }
 
-/* Game Detail Styles */
 .game-detail {
   animation: fadeIn 0.3s ease;
 }
@@ -758,6 +751,7 @@ body {
 .snapshot-actions {
   display: flex;
   gap: 0.25rem;
+  margin-left: .5rem;
 }
 
 .btn-small {
@@ -766,9 +760,9 @@ body {
 }
 
 .btn-success {
-  background: var(--success);
+  background: var(--accent);
   color: white;
-  border-color: var(--success);
+  border-color: var(--accent);
 }
 
 .btn-success:hover {
@@ -795,7 +789,6 @@ body {
   background: rgba(249, 166, 58, 0.1);
 }
 
-/* Alert Styles */
 .alert {
   padding: 0.75rem;
   border-radius: 6px;
@@ -824,7 +817,6 @@ body {
   color: var(--success);
 }
 
-/* Settings Styles */
 .settings {
   width: 100%;
   animation: fadeIn 0.3s ease;
@@ -833,7 +825,7 @@ body {
 .settings h2 {
   font-size: 1.125rem;
   font-weight: 700;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .settings-section {
@@ -858,7 +850,11 @@ body {
   font-style: italic;
 }
 
-/* Theme Toggle */
+.notifications-page {
+  width: 100%;
+  animation: fadeIn 0.3s ease;
+}
+
 .theme-toggle {
   display: flex;
   align-items: center;
@@ -906,11 +902,15 @@ body {
   transform: translateX(20px);
 }
 
-/* Language Selector - Fixed for dark mode */
+.language-selector .custom-form-group {
+  margin-bottom: 0;
+}
+
 .language-selector {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  vertical-align: middle;
 }
 
 .language-select {
@@ -934,13 +934,11 @@ body {
   box-shadow: 0 0 0 2px var(--accent-light);
 }
 
-/* Ensure select options are readable in both themes */
 .language-select option {
   background-color: var(--bg-secondary);
   color: var(--text-primary);
 }
 
-/* Dark mode specific fixes for select */
 [data-theme="dark"] .language-select {
   background-color: var(--bg-tertiary);
   color: var(--text-primary);
@@ -951,7 +949,6 @@ body {
   color: var(--text-primary);
 }
 
-/* Loading Overlay */
 .loading-overlay {
   position: fixed;
   inset: 0;
@@ -986,7 +983,6 @@ body {
   font-weight: 500;
 }
 
-/* Scrollbar Styles */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -1005,7 +1001,6 @@ body {
   background: var(--text-tertiary);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .sidebar {
     width: 64px;
@@ -1028,7 +1023,6 @@ body {
   }
 }
 
-/* Profile Card Styles */
 .profile-card {
   margin-top: 0.75rem;
   padding: 0.625rem;
@@ -1137,7 +1131,6 @@ body {
   color: var(--error);
 }
 
-/* Compact Login Button */
 .profile-login-compact {
   width: 100%;
   display: flex;
@@ -1183,17 +1176,16 @@ body {
   animation: spin 0.8s linear infinite;
 }
 
-/* Profile Page Styles */
 .profile-page {
   animation: fadeIn 0.3s ease;
 }
 
 .profile-page-header {
-  margin-bottom: 1.5rem;
+  margin-bottom: .75rem;
 }
 
 .profile-page-header h2 {
-  font-size: 1.375rem;
+    font-size: 1.125rem;
   font-weight: 700;
   margin-top: 0.75rem;
 }
@@ -1332,6 +1324,9 @@ body {
 .profile-action-danger {
   color: var(--error);
   border-color: rgba(237, 66, 69, 0.3);
+  background: var(--bg-secondary);
+  width: fit-content;
+  max-height: 34px;
 }
 
 .profile-action-danger:hover {
@@ -1374,7 +1369,6 @@ body {
   font-size: 0.8125rem;
 }
 
-/* Cloud Sync Section Styles */
 .cloud-sync-section {
   background: var(--bg-secondary);
   border: 1px solid var(--border);
@@ -1408,6 +1402,10 @@ body {
   font-size: 0.8125rem;
   color: var(--text-secondary);
   font-weight: 500;
+}
+
+.backup-destination .custom-form-group {
+  margin-bottom: 0;
 }
 
 .backup-destination-select {
@@ -1496,7 +1494,6 @@ body {
   font-size: 0.75rem;
 }
 
-/* Profile Manual Code Input */
 .profile-card-manual {
   flex-direction: column;
   padding: 0.75rem;
@@ -1546,7 +1543,6 @@ body {
   color: var(--text-secondary);
 }
 
-/* Cloud Info Button */
 .cloud-info-btn {
   background: transparent;
   border: none;
@@ -1566,7 +1562,6 @@ body {
   color: var(--text-secondary);
 }
 
-/* Cloud Backup Info Modal */
 .info-modal {
   max-width: 500px;
 }
@@ -1624,7 +1619,6 @@ body {
   margin: 0;
 }
 
-/* Cloud Badge */
 .cloud-badge {
   display: inline-flex;
   align-items: center;
@@ -1639,7 +1633,6 @@ body {
   border: 1px solid rgba(74, 124, 89, 0.3);
 }
 
-/* Toast Notifications */
 .toast-container {
   position: fixed;
   top: 1rem;
@@ -1757,7 +1750,6 @@ body {
   }
 }
 
-/* Confirm Modal */
 .confirm-modal {
   max-width: 450px;
 }
@@ -1805,7 +1797,6 @@ body {
   border-radius: 0 0 12px 12px;
 }
 
-/* Cloud Backup List Modal */
 .cloud-backup-list-modal {
   max-width: 600px;
 }
@@ -1815,9 +1806,6 @@ body {
   background: var(--bg-tertiary);
 }
 
-/* ==================== CUSTOM UI COMPONENTS ==================== */
-
-/* Form Group */
 .custom-form-group {
   margin-bottom: 1rem;
 }
@@ -1844,7 +1832,6 @@ body {
   margin-top: 0.375rem;
 }
 
-/* Custom Input */
 .custom-input {
   width: 100%;
   padding: 0.5rem 0.625rem;
@@ -1879,7 +1866,6 @@ body {
   color: var(--text-tertiary);
 }
 
-/* Custom Select */
 .custom-select-wrapper {
   position: relative;
   width: 100%;
@@ -1926,7 +1912,6 @@ body {
   pointer-events: none;
 }
 
-/* Custom Button */
 .custom-btn {
   display: inline-flex;
   align-items: center;
@@ -1947,7 +1932,6 @@ body {
   cursor: not-allowed;
 }
 
-/* Button Sizes */
 .custom-btn-sm {
   padding: 0.375rem 0.75rem;
   font-size: 0.75rem;
@@ -1963,7 +1947,6 @@ body {
   font-size: 0.9375rem;
 }
 
-/* Button Variants */
 .custom-btn-primary {
   background: var(--accent);
   color: white;
@@ -2008,12 +1991,10 @@ body {
   color: var(--text-primary);
 }
 
-/* Button Full Width */
 .custom-btn-full {
   width: 100%;
 }
 
-/* Button Loading State */
 .custom-btn-loading {
   cursor: wait;
 }
@@ -2032,7 +2013,6 @@ body {
   height: 100%;
 }
 
-/* Button Icons */
 .custom-btn-icon-left,
 .custom-btn-icon-right {
   display: flex;

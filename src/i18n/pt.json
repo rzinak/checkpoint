@@ -14,7 +14,7 @@
     "title": "Seus jogos",
     "emptyState": {
       "title": "Pronto para fazer backup dos seus saves?",
-      "description": "Adicione seu primeiro jogo para começar a criar snapshots dos seus arquivos de save. Nunca mais perca progresso.",
+      "description": "Adicione seu primeiro jogo para começar a criar snapshots dos seus arquivos de save. Nunca mais perca seu progresso.",
       "button": "Adicionar seu primeiro jogo"
     },
     "refresh": "Atualizar"

@@ -71,7 +71,6 @@ export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalP
       return;
     }
 
-    // Validate character limits
     if (name.trim().length > 100) {
       setError('Game name must be less than 100 characters');
       return;

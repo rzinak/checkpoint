@@ -1,10 +1,9 @@
-use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
-use tokio::sync::{oneshot, Mutex};
 use once_cell::sync::Lazy;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
+use tokio::sync::{oneshot, Mutex};
 use warp::Filter;
 
-// Global state for OAuth flow
 struct OAuthState {
     code_sender: Option<oneshot::Sender<String>>,
     code_receiver: Option<oneshot::Receiver<String>>,
@@ -20,7 +19,7 @@ impl OAuthState {
             server_running: AtomicBool::new(false),
         }
     }
-    
+
     fn reset(&mut self) {
         let (tx, rx) = oneshot::channel();
         self.code_sender = Some(tx);
@@ -29,23 +28,20 @@ impl OAuthState {
     }
 }
 
-static OAUTH_STATE: Lazy<Arc<Mutex<OAuthState>>> = 
+static OAUTH_STATE: Lazy<Arc<Mutex<OAuthState>>> =
     Lazy::new(|| Arc::new(Mutex::new(OAuthState::new())));
 
 #[tauri::command]
 pub async fn start_oauth_server() -> Result<u16, String> {
     println!("start_oauth_server called");
     let mut state = OAUTH_STATE.lock().await;
-    
-    // Reset state for new OAuth flow
+
     state.reset();
     println!("State reset complete");
-    
-    // Take ownership of the sender for use in the route handler
+
     let code_sender = Arc::new(Mutex::new(state.code_sender.take()));
     println!("Sender taken and wrapped in Arc");
-    
-    // HTML response for the callback page
+
     let html = r#"<!DOCTYPE html>
 <html>
 <head>
@@ -84,27 +80,25 @@ pub async fn start_oauth_server() -> Result<u16, String> {
 </body>
 </html>"#;
 
-    // Use a different port than Vite dev server (1420)
-    // Try 9876 or find an available port
+    // gotta use a different port than vite dev server (1420)
+    // we try 9876 or find an available port
     let port = 9876u16;
     let addr: std::net::SocketAddr = ([127, 0, 0, 1], port).into();
-    
+
     // Build the route
     let html_response = html.to_string();
     let sender_clone = code_sender.clone();
-    
+
     let routes = warp::path("auth-callback.html")
         .and(warp::query::<std::collections::HashMap<String, String>>())
         .map(move |params: std::collections::HashMap<String, String>| {
             println!("OAuth callback received! Params: {:?}", params);
-            
-            // Check if we have a code parameter
+
             if let Some(code) = params.get("code") {
                 println!("Got code: {}", code);
-                // Try to send the code
                 let code = code.clone();
                 let sender = sender_clone.clone();
-                
+
                 tokio::spawn(async move {
                     println!("Trying to send code through channel...");
                     let mut guard = sender.lock().await;
@@ -119,30 +113,22 @@ pub async fn start_oauth_server() -> Result<u16, String> {
             } else {
                 println!("No code in params!");
             }
-            
+
             warp::reply::html(html_response.clone())
         });
 
-    // Mark server as running
     state.server_running.store(true, Ordering::SeqCst);
-    
-    // Spawn the server
+
     let running_flag = Arc::new(AtomicBool::new(true));
     let running_clone = running_flag.clone();
-    
+
     tokio::spawn(async move {
         let (_, server) = warp::serve(routes).bind_ephemeral(addr);
-        
-        // Run server with 5 minute timeout
-        let _result = tokio::time::timeout(
-            tokio::time::Duration::from_secs(300),
-            server
-        ).await;
-        
-        // Clean up when server stops
+
+        let _result = tokio::time::timeout(tokio::time::Duration::from_secs(300), server).await;
+
         running_clone.store(false, Ordering::SeqCst);
-        
-        // Also update the global state
+
         let state = OAUTH_STATE.lock().await;
         state.server_running.store(false, Ordering::SeqCst);
     });
@@ -155,18 +141,12 @@ pub async fn start_oauth_server() -> Result<u16, String> {
 pub async fn wait_for_oauth_code() -> Result<Option<String>, String> {
     println!("wait_for_oauth_code called");
     let mut state = OAUTH_STATE.lock().await;
-    
-    // Take the receiver
+
     if let Some(receiver) = state.code_receiver.take() {
         println!("Got receiver, waiting for code...");
-        // Drop the lock while waiting
         drop(state);
-        
-        // Wait for up to 5 minutes
-        match tokio::time::timeout(
-            tokio::time::Duration::from_secs(300),
-            receiver
-        ).await {
+
+        match tokio::time::timeout(tokio::time::Duration::from_secs(300), receiver).await {
             Ok(Ok(code)) => {
                 println!("Received code successfully!");
                 Ok(Some(code))
