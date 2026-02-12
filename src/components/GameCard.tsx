@@ -18,7 +18,7 @@ export function GameCard({ game, onClick, style }: GameCardProps) {
     });
   };
 
-  const coverUrl = game.cover_image || null;
+  const coverUrl = game.cover_image ? `file://${game.cover_image}` : null;
 
   return (
     <div className="game-card" onClick={onClick} style={style}>

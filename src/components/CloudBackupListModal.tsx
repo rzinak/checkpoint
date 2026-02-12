@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, Cloud, Folder, FileText, Clock, Database, Loader2, Download, Trash2 } from 'lucide-react';
 import { useProfile } from '../lib/profileContext';
 import { useToast } from '../lib/toastContext';
+import { ConfirmModal } from './ConfirmModal';
 import { listAllCloudSnapshots, downloadSnapshot, deleteCloudSnapshot, type CloudBackupItem } from '../lib/googleDrive';
 
 interface CloudBackupListModalProps {
@@ -16,6 +17,7 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
   const [backups, setBackups] = useState<CloudBackupItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedBackup, setSelectedBackup] = useState<CloudBackupItem | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{ isOpen: boolean; backup: CloudBackupItem | null }>({ isOpen: false, backup: null });
 
   useEffect(() => {
     if (isOpen && isAuthenticated) {
@@ -90,10 +92,12 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
     }
   };
 
-  const handleDelete = async (backup: CloudBackupItem) => {
-    if (!confirm(`Are you sure you want to delete "${backup.snapshotName || backup.name}" from the cloud? This cannot be undone.`)) {
-      return;
-    }
+  const handleDelete = (backup: CloudBackupItem) => {
+    setConfirmDelete({ isOpen: true, backup });
+  };
+
+  const confirmDeleteBackup = async () => {
+    if (!confirmDelete.backup) return;
 
     try {
       const token = await getValidAccessToken();
@@ -101,11 +105,13 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
         throw new Error('Not authenticated');
       }
 
-      await deleteCloudSnapshot(token, backup.id);
-      setBackups(backups.filter(b => b.id !== backup.id));
+      await deleteCloudSnapshot(token, confirmDelete.backup.id);
+      setBackups(backups.filter(b => b.id !== confirmDelete.backup!.id));
       addToast('Backup deleted from cloud', 'success');
     } catch (err) {
       addToast(err instanceof Error ? err.message : 'Failed to delete backup', 'error');
+    } finally {
+      setConfirmDelete({ isOpen: false, backup: null });
     }
   };
 
@@ -256,6 +262,17 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
           </button>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={confirmDelete.isOpen}
+        title="Delete Cloud Backup"
+        message={confirmDelete.backup ? `Are you sure you want to delete "${confirmDelete.backup.snapshotName || confirmDelete.backup.name}" from the cloud? This cannot be undone.` : ''}
+        confirmText="Delete"
+        cancelText="Cancel"
+        danger={true}
+        onConfirm={confirmDeleteBackup}
+        onCancel={() => setConfirmDelete({ isOpen: false, backup: null })}
+      />
     </div>
   );
 }
