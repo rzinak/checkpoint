@@ -39,7 +39,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
   const [isCreatingSnapshot, setIsCreatingSnapshot] = useState(false);
   const [newSnapshotName, setNewSnapshotName] = useState('');
   const [isProcessRunningState, setIsProcessRunningState] = useState(false);
-  const [restoreResult, setRestoreResult] = useState<{ success: boolean; message: string } | null>(null);
+
   const [editingSnapshot, setEditingSnapshot] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -146,23 +146,28 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       return;
     }
 
+    const snapshotToRestore = snapshots.find(s => s.id === snapshotId);
+
     setConfirmModal({
       isOpen: true,
       title: t('gameDetail.restore'),
       message: t('gameDetail.confirmRestore'),
       onConfirm: async () => {
         setConfirmModal(prev => ({ ...prev, isOpen: false }));
-        setRestoreResult(null);
         setLoading(true, t('loading.restoring'));
 
         try {
           const result = await restoreSnapshot(snapshotId, game.id);
-          setRestoreResult({
-            success: result.success,
-            message: result.message
-          });
           if (result.success) {
+            addToast(t('success.restoreComplete'), 'success');
+            addNotification(
+              t('success.restoreComplete'),
+              `"${snapshotToRestore?.name || snapshotId}" - ${game.name}`,
+              'success'
+            );
             loadSnapshots();
+          } else {
+            addToast(result.message, 'error');
           }
         } catch (err) {
           addToast(err instanceof Error ? err.message : t('errors.failedRestore'), 'error');
@@ -543,17 +548,6 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         <div className="alert alert-warning">
           <AlertTriangle size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
           {game.exe_name} {t('gameDetail.gameRunning')}
-        </div>
-      )}
-
-      {restoreResult && (
-        <div className={`alert ${restoreResult.success ? 'alert-success' : 'alert-error'}`}>
-          {restoreResult.success ? (
-            <CheckCircle size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-          ) : (
-            <AlertTriangle size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-          )}
-          {restoreResult.message}
         </div>
       )}
 

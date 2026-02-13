@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 interface ConfirmModalProps {
@@ -21,10 +22,20 @@ export function ConfirmModal({
   onCancel,
   danger = false
 }: ConfirmModalProps) {
+  const [mouseDownOnOverlay, setMouseDownOnOverlay] = useState(false);
+
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onCancel}>
+    <div
+      className="modal-overlay"
+      onMouseDown={(e) => setMouseDownOnOverlay(e.target === e.currentTarget)}
+      onMouseUp={(e) => {
+        if (mouseDownOnOverlay && e.target === e.currentTarget) {
+          onCancel();
+        }
+      }}
+    >
       <div className="modal-content confirm-modal" onClick={(e) => e.stopPropagation()}>
         <div className="confirm-header">
           <AlertTriangle size={24} className={danger ? 'text-error' : 'text-warning'} />
