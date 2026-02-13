@@ -20,6 +20,7 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
   const [isLoading, setIsLoading] = useState(false);
   const [selectedBackup, setSelectedBackup] = useState<CloudBackupItem | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{ isOpen: boolean; backup: CloudBackupItem | null }>({ isOpen: false, backup: null });
+  const [mouseDownOnOverlay, setMouseDownOnOverlay] = useState(false);
 
   useEffect(() => {
     if (isOpen && isAuthenticated) {
@@ -121,7 +122,15 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div
+      className="modal-overlay"
+      onMouseDown={(e) => setMouseDownOnOverlay(e.target === e.currentTarget)}
+      onMouseUp={(e) => {
+        if (mouseDownOnOverlay && e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div className="modal-content cloud-backup-list-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px' }}>
         <div className="modal-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

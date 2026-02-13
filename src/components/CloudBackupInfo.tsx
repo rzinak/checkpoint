@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { X } from 'lucide-react';
 import { useI18n } from '../lib/i18n';
 
@@ -8,11 +9,20 @@ interface CloudBackupInfoProps {
 
 export function CloudBackupInfo({ isOpen, onClose }: CloudBackupInfoProps) {
   const { t } = useI18n();
+  const [mouseDownOnOverlay, setMouseDownOnOverlay] = useState(false);
 
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div
+      className="modal-overlay"
+      onMouseDown={(e) => setMouseDownOnOverlay(e.target === e.currentTarget)}
+      onMouseUp={(e) => {
+        if (mouseDownOnOverlay && e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div className="modal-content info-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h3>{t('cloud.howItWorks')}</h3>

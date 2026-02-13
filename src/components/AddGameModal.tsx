@@ -19,6 +19,7 @@ export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalP
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mouseDownOnOverlay, setMouseDownOnOverlay] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleBrowse = async () => {
@@ -106,7 +107,15 @@ export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalP
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div
+      className="modal-overlay"
+      onMouseDown={(e) => setMouseDownOnOverlay(e.target === e.currentTarget)}
+      onMouseUp={(e) => {
+        if (mouseDownOnOverlay && e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2>{t('addGame.title')}</h2>
@@ -165,6 +174,7 @@ export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalP
               required
             />
             <Button
+              type="button"
               variant="secondary"
               size="sm"
               leftIcon={<FolderOpen size={16} />}
