@@ -15,19 +15,32 @@ import { ToastProvider, useToast } from './lib/toastContext';
 import { listGames, getConfig } from './lib/api';
 import type { Game, Config } from './lib/types';
 import { Home, Settings as SettingsIcon, Plus, Bell } from 'lucide-react';
+
+function AddGameFAB({ onClick, title }: { onClick: () => void; title: string }) {
+  return (
+    <button
+      className="fab-add-game"
+      onClick={onClick}
+      title={title}
+      aria-label={title}
+    >
+      <Plus size={24} />
+    </button>
+  );
+}
 import './App.css';
 
 type View = 'dashboard' | 'game' | 'settings' | 'profile' | 'notifications';
 type Theme = 'light' | 'dark';
 
-function NotificationsBell({ onClick }: { onClick: () => void }) {
+function NotificationsBell({ onClick, isActive }: { onClick: () => void; isActive?: boolean }) {
   const { t } = useI18n();
   const { notifications, markAsRead } = useToast();
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
     <button
-      className="nav-item"
+      className={`nav-item ${isActive ? 'active' : ''}`}
       onClick={() => {
         notifications.filter(n => !n.read).forEach(n => markAsRead(n.id));
         onClick();
@@ -222,8 +235,13 @@ function AppContent() {
             <span>{t('nav.home')}</span>
           </button>
 
-          <NotificationsBell onClick={() => setView('notifications')} />
+          <NotificationsBell
+            onClick={() => setView('notifications')}
+            isActive={view === 'notifications'}
+          />
+        </nav>
 
+        <div className="sidebar-bottom-nav">
           <button
             className={`nav-item ${view === 'settings' ? 'active' : ''}`}
             onClick={() => setView('settings')}
@@ -232,20 +250,9 @@ function AppContent() {
             <SettingsIcon size={20} />
             <span>{t('nav.settings')}</span>
           </button>
-        </nav>
 
-        <div className="sidebar-footer">
-          <button
-            className="sidebar-add-btn"
-            onClick={() => setIsAddModalOpen(true)}
-            title={t('nav.addGame') as string}
-          >
-            <Plus size={24} />
-            <span>{t('nav.addGame')}</span>
-          </button>
+          <ProfileCard onOpenProfile={() => setView('profile')} />
         </div>
-
-        <ProfileCard onOpenProfile={() => setView('profile')} />
       </aside>
 
       <main className="main-content">
@@ -294,6 +301,8 @@ function AppContent() {
             <Notifications onBack={() => setView('dashboard')} />
           )}
         </div>
+
+        {view === 'dashboard' && <AddGameFAB onClick={() => setIsAddModalOpen(true)} title={t('nav.addGame')} />}
       </main>
 
       {isAddModalOpen && (

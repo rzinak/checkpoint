@@ -5,6 +5,7 @@ import { User, Loader2 } from 'lucide-react';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { useState } from 'react';
 import { ConfirmModal } from './ConfirmModal';
+import { useI18n } from '../lib/i18n';
 
 interface ProfileCardProps {
   onOpenProfile: () => void;
@@ -14,6 +15,7 @@ export function ProfileCard({ onOpenProfile }: ProfileCardProps) {
   const { profile, isAuthenticated, logout, isLoading, loginWithGoogle } = useProfile();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const { t } = useI18n();
 
   const handleLogin = async () => {
     setIsLoggingIn(true);
@@ -56,7 +58,7 @@ export function ProfileCard({ onOpenProfile }: ProfileCardProps) {
           className="profile-login-compact"
           onClick={handleLogin}
           disabled={isLoggingIn}
-          title="Sign in with Google"
+          title={t('profile.googleLogin')}
         >
           {isLoggingIn ? (
             <Loader2 size={16} className="spinner" />

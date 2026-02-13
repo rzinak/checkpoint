@@ -118,7 +118,7 @@ export function Notifications({ onBack }: NotificationsProps) {
                 borderRadius: '8px',
                 padding: '1rem',
                 display: 'flex',
-                alignItems: 'flex-start',
+                alignItems: 'center',
                 gap: '0.75rem',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',

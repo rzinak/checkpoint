@@ -576,10 +576,9 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
             <label>{t('cloud.backupDestination')}:</label>
             <Select
               value={backupDestination}
-              onChange={(e) => setBackupDestination(e.target.value as 'local' | 'cloud' | 'both')}
+              onChange={(e) => setBackupDestination(e.target.value as 'local' | 'both')}
               options={[
                 { value: 'local', label: t('cloud.localOnly') },
-                { value: 'cloud', label: t('cloud.cloudOnly') },
                 { value: 'both', label: t('cloud.both') }
               ]}
               className="backup-destination-select"
@@ -768,7 +767,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
                   </p>
                 </div>
                 <div className="snapshot-actions">
-                  {isAuthenticated && !cloudSnapshots.has(snapshot.id) && (
+                  {isAuthenticated && !cloudSnapshots.has(snapshot.id) && backupDestination !== 'local' && (
                     <button
                       className="btn btn-secondary btn-small"
                       onClick={() => handleUploadToCloud(snapshot)}

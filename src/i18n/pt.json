@@ -24,7 +24,7 @@
     "snapshots": "snapshots"
   },
   "gameDetail": {
-    "back": "Voltar aos jogos",
+    "back": "Voltar ao início",
     "saveLocation": "Local do save",
     "executable": "Executável",
     "snapshots": "Snapshots",
@@ -130,7 +130,7 @@
     "deleteFromCloud": "Excluir da nuvem",
     "uploadToCloud": "Enviar para nuvem",
     "backedUp": "Backup na nuvem",
-    "badge": "nuvem",
+    "badge": "Nuvem",
     "uploadComplete": "Upload para nuvem concluído",
     "uploaded": "enviado para nuvem",
     "downloadSuccess": "Snapshot baixado da nuvem com sucesso",
@@ -186,7 +186,8 @@
     "signInPrompt": "Faça login com Google para habilitar recursos de backup na nuvem.",
     "loadingStorage": "Carregando informações de armazenamento...",
     "used": "usado",
-    "total": "total"
+    "total": "total",
+    "googleLogin": "Entrar com o Google"
   },
   "notifications": {
     "title": "Notificações",
