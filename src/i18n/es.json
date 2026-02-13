@@ -17,7 +17,18 @@
       "description": "Añade tu primer juego para empezar a crear snapshots de tus archivos de guardado. Nunca pierdas el progreso.",
       "button": "Añadir tu primer juego"
     },
-    "refresh": "Actualizar"
+    "refresh": "Actualizar",
+    "search": {
+      "placeholder": "Buscar juegos..."
+    },
+    "sort": {
+      "dateDesc": "Más reciente primero",
+      "dateAsc": "Más antiguo primero",
+      "nameAsc": "Nombre A-Z",
+      "nameDesc": "Nombre Z-A"
+    },
+    "noResults": "No se encontraron juegos",
+    "noResultsDesc": "Intenta ajustar tus términos de búsqueda"
   },
   "gameCard": {
     "added": "Añadido",

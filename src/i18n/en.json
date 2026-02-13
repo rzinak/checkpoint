@@ -17,7 +17,18 @@
       "description": "Add your first game to start creating snapshots of your save files. Never lose progress again.",
       "button": "Add Your First Game"
     },
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "search": {
+      "placeholder": "Search games..."
+    },
+    "sort": {
+      "dateDesc": "Newest first",
+      "dateAsc": "Oldest first",
+      "nameAsc": "Name A-Z",
+      "nameDesc": "Name Z-A"
+    },
+    "noResults": "No games found",
+    "noResultsDesc": "Try adjusting your search terms"
   },
   "gameCard": {
     "added": "Added",
