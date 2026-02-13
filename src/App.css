@@ -290,6 +290,11 @@ body {
   gap: 1rem;
 }
 
+.dashboard-header h2 {
+  line-height: 0;
+  padding: 0;
+}
+
 .dashboard-controls {
   display: flex;
   align-items: center;
@@ -1643,7 +1648,6 @@ body {
   color: var(--text-tertiary);
   cursor: pointer;
   padding: 0.25rem;
-  margin-left: 0.5rem;
   border-radius: 4px;
   display: flex;
   align-items: center;
