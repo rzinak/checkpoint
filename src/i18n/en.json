@@ -24,7 +24,7 @@
     "snapshots": "snapshots"
   },
   "gameDetail": {
-    "back": "Back to Games",
+    "back": "Back to home",
     "saveLocation": "Save Location",
     "executable": "Executable",
     "snapshots": "Snapshots",
@@ -186,7 +186,8 @@
     "signInPrompt": "Sign in with Google to enable cloud backup features.",
     "loadingStorage": "Loading storage info...",
     "used": "used",
-    "total": "total"
+    "total": "total",
+    "googleLogin": "Sign in with Google"
   },
   "notifications": {
     "title": "Notifications",
