@@ -17,7 +17,18 @@
       "description": "Adicione seu primeiro jogo para começar a criar snapshots dos seus arquivos de save. Nunca mais perca seu progresso.",
       "button": "Adicionar seu primeiro jogo"
     },
-    "refresh": "Atualizar"
+    "refresh": "Atualizar",
+    "search": {
+      "placeholder": "Buscar jogos..."
+    },
+    "sort": {
+      "dateDesc": "Mais recente primeiro",
+      "dateAsc": "Mais antigo primeiro",
+      "nameAsc": "Nome A-Z",
+      "nameDesc": "Nome Z-A"
+    },
+    "noResults": "Nenhum jogo encontrado",
+    "noResultsDesc": "Tente ajustar os termos de busca"
   },
   "gameCard": {
     "added": "Adicionado",

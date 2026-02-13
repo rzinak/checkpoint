@@ -287,6 +287,80 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
+}
+
+.dashboard-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.625rem;
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 200px;
+  padding: 0.5rem 0.625rem 0.5rem 2rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  transition: all 0.15s ease;
+  height: 36px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.search-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.sort-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.sort-select {
+  width: auto;
+  min-width: 160px;
+  padding: 0.5rem 2rem 0.5rem 0.625rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  appearance: none;
+  height: 36px;
+}
+
+.sort-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.sort-icon {
+  position: absolute;
+  right: 0.625rem;
+  color: var(--text-tertiary);
+  pointer-events: none;
 }
 
 .dashboard-header h2 {
@@ -296,6 +370,8 @@ body {
 }
 
 .refresh-btn {
+  height: 36px;
+  width: 36px;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
   color: var(--text-secondary);
