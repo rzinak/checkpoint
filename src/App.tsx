@@ -51,23 +51,7 @@ function NotificationsBell({ onClick, isActive }: { onClick: () => void; isActiv
       <Bell size={20} />
       <span>{t('notifications.title')}</span>
       {unreadCount > 0 && (
-        <span style={{
-          position: 'absolute',
-          top: '4px',
-          right: '4px',
-          minWidth: '16px',
-          height: '16px',
-          background: 'var(--accent)',
-          color: 'white',
-          fontSize: '0.625rem',
-          fontWeight: 700,
-          borderRadius: '8px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '0 4px',
-          border: '2px solid var(--sidebar-bg)'
-        }}>
+        <span className="notification-badge">
           {unreadCount > 99 ? '99+' : unreadCount}
         </span>
       )}
