@@ -1,4 +1,4 @@
-import { ArrowLeft, Bell, Trash2, Loader2 } from 'lucide-react';
+import { ArrowLeft, Bell, Trash2, Loader2, X } from 'lucide-react';
 import { useI18n } from '../lib/i18n';
 import { useToast, type Notification } from '../lib/toastContext';
 
@@ -8,7 +8,7 @@ interface NotificationsProps {
 
 export function Notifications({ onBack }: NotificationsProps) {
   const { t, language } = useI18n();
-  const { notifications, markAsRead, /* markAllAsRead, */ clearAll, isLoading } = useToast();
+  const { notifications, markAsRead, /* markAllAsRead, */ clearAll, removeNotification, isLoading } = useToast();
 
   const getIcon = (type: Notification['type']) => {
     switch (type) {
@@ -61,25 +61,10 @@ export function Notifications({ onBack }: NotificationsProps) {
         </div>
         {notifications.length > 0 && (
           <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-            {/*
             <button
-              className="btn btn-secondary btn-small"
-              onClick={markAllAsRead}
-              disabled={unreadCount === 0}
-            >
-              <Check size={16} />
-              Mark all read
-            </button>
-            */}
-            <button
-              className="btn btn-small"
+              className="btn btn-small clear-all-btn"
               onClick={clearAll}
               disabled={notifications.length === 0}
-              style={{
-                background: 'var(--accent)',
-                color: 'white',
-                border: 'none'
-              }}
             >
               <Trash2 size={16} />
               {t('notifications.clearAll')}
@@ -118,11 +103,12 @@ export function Notifications({ onBack }: NotificationsProps) {
                 borderRadius: '8px',
                 padding: '1rem',
                 display: 'flex',
-                alignItems: 'center',
+                alignItems: 'flex-start',
                 gap: '0.75rem',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
-                borderLeft: notification.read ? '3px solid var(--border)' : `3px solid var(${notification.type === 'error' ? '--error' : notification.type === 'warning' ? '--warning' : notification.type === 'success' ? '--success' : '--accent'})`
+                borderLeft: notification.read ? '3px solid var(--border)' : `3px solid var(${notification.type === 'error' ? '--error' : notification.type === 'warning' ? '--warning' : notification.type === 'success' ? '--success' : '--accent'})`,
+                position: 'relative'
               }}
             >
               <div style={{
@@ -133,35 +119,46 @@ export function Notifications({ onBack }: NotificationsProps) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                flexShrink: 0
+                flexShrink: 0,
+                marginTop: '2px'
               }}>
                 {getIcon(notification.type)}
               </div>
 
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                  <h4 style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                  <h4 style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', paddingRight: '28px' }}>
                     {notification.title}
                   </h4>
+                </div>
+                <p style={{ margin: 0, fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.4, marginBottom: '0.25rem' }}>
+                  {notification.message}
+                </p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>
                     {formatTime(notification.timestamp)}
                   </span>
+                  {!notification.read && (
+                    <div style={{
+                      width: '8px',
+                      height: '8px',
+                      background: 'var(--accent)',
+                      borderRadius: '50%'
+                    }} />
+                  )}
                 </div>
-                <p style={{ margin: 0, fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
-                  {notification.message}
-                </p>
               </div>
 
-              {!notification.read && (
-                <div style={{
-                  width: '8px',
-                  height: '8px',
-                  background: 'var(--accent)',
-                  borderRadius: '50%',
-                  flexShrink: 0,
-                  marginTop: '6px'
-                }} />
-              )}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeNotification(notification.id);
+                }}
+                className="notification-close-btn"
+                title="Delete notification"
+              >
+                <X size={16} />
+              </button>
             </div>
           ))}
         </div>

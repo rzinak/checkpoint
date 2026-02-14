@@ -974,6 +974,45 @@ body {
   animation: fadeIn 0.3s ease;
 }
 
+.clear-all-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  transition: all 0.15s ease;
+}
+
+.clear-all-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.notification-close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  opacity: 0.6;
+}
+
+.notification-close-btn:hover {
+  color: var(--error);
+  background: var(--bg-tertiary);
+  opacity: 1;
+}
+
+.notification-item:hover .notification-close-btn {
+  opacity: 1;
+}
+
 .theme-toggle {
   display: flex;
   align-items: center;
