@@ -23,6 +23,7 @@ interface ToastContextType {
   removeToast: (id: string) => void;
   notifications: Notification[];
   addNotification: (title: string, message: string, type: ToastType) => void;
+  removeNotification: (id: string) => void;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
   clearAll: () => void;
@@ -102,6 +103,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setNotifications([]);
   }, []);
 
+  const removeNotification = useCallback((id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  }, []);
+
   return (
     <ToastContext.Provider
       value={{
@@ -110,6 +115,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         removeToast,
         notifications,
         addNotification,
+        removeNotification,
         markAsRead,
         markAllAsRead,
         clearAll,
