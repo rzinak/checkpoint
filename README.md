@@ -12,7 +12,7 @@ Checkpoint is a save game backup tool for local games. Create timestamped backup
 - **100% Private** - Your data stays on your device. We have zero access to your saves or Google Drive
 - **Smart Protection** - Automatically backs up current save before restoring
 - **Process Detection** - Prevents restore while game is running
-- **Cross-Platform** - Windows, Linux, and macOS support
+- **Cross-Platform** - Windows and Linux support
 
 ## Your Data, Your Control
 
@@ -35,10 +35,6 @@ Checkpoint is built with privacy as the foundation:
 - **Fedora**: `checkpoint-0.1.0-1.x86_64.rpm`  
 - **Arch**: Available on AUR
 - **Universal**: AppImage works on any distro
-
-### macOS
-- Download `Checkpoint_0.1.0.dmg`
-- Drag to Applications folder
 
 [View All Releases](https://github.com/rzinak/checkpoint/releases)
 
@@ -79,13 +75,12 @@ Checkpoint is built with privacy as the foundation:
 
 - **Windows**: Windows 10 or later
 - **Linux**: Any modern distro with GTK3
-- **macOS**: macOS 10.15 or later
 
 ## Support
 
-- **Documentation**: [Full Documentation](https://checkpoint-savegame.github.io/docs)
+- **Documentation**: [Full Documentation](https://checkpoint-save.vercel.app/documentation/index.html)
 - **Issues**: [GitHub Issues](https://github.com/rzinak/checkpoint/issues)
-- **Website**: [checkpoint-savegame.github.io](https://checkpoint-savegame.github.io)
+- **Website**: [checkpoint-save.vercel.app](https://checkpoint-save.vercel.app/index.html)
 
 ## License
 
@@ -93,8 +88,4 @@ MIT License - Open source, free forever
 
 ## Contributing
 
-Contributions welcome! See the [Developer Documentation](https://checkpoint-savegame.github.io/docs) for technical details.
-
----
-
-**Checkpoint** - Because your progress matters
+Contributions welcome! See the [Developer Documentation](https://checkpoint-save.vercel.app/documentation/index.html) for technical details.
