@@ -146,6 +146,7 @@
     "badge": "Nuvem",
     "uploadComplete": "Upload para nuvem concluído",
     "uploaded": "enviado para nuvem",
+    "downloaded": "Baixado",
     "downloadSuccess": "Snapshot baixado da nuvem com sucesso",
     "syncing": "Sincronizando...",
     "lastUploaded": "Último envio",
@@ -164,7 +165,11 @@
     "deleteCloudBackup": "Excluir backup da nuvem",
     "delete": "Excluir",
     "lastDownloaded": "Último download",
-    "errorMessages": "Mensagens de erro"
+    "errorMessages": "Mensagens de erro",
+    "fromCloud": "da nuvem",
+    "failedLoadCloudBackups": "Falha ao carregar backups na nuvem",
+    "backupDeletedFromCloud": "Backup excluído da nuvem",
+    "failedDeleteBackup": "Falha ao excluir backup"
   },
   "cloudInfo": {
     "chooseWhere": "Escolha onde seus saves de jogo são armazenados:",
@@ -219,7 +224,8 @@
     "coverImageSoon": "Imagens de capa em breve"
   },
   "common": {
-    "soon": "em breve"
+    "soon": "em breve",
+    "unknown": "Desconhecido"
   },
   "time": {
     "justNow": "Agora mesmo",

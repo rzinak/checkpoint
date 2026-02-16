@@ -127,6 +127,10 @@
     "title": "Cloud Backup",
     "uploadSuccess": "Snapshot uploaded to cloud successfully",
     "downloadSuccess": "Snapshot downloaded from cloud successfully",
+    "downloadFailed": "Failed to download backup",
+    "downloaded": "Downloaded",
+    "fromCloud": "from cloud",
+    "missingBackupInfo": "Cannot download: missing backup information",
     "deleteSuccess": "Backup deleted from cloud",
     "uploadFailed": "Snapshot created but cloud upload failed",
     "notInCloud": "This snapshot is not in the cloud",
@@ -164,7 +168,11 @@
     "deleteCloudBackup": "Delete Cloud Backup",
     "delete": "Delete",
     "lastDownloaded": "Last downloaded",
-    "errorMessages": "Error messages"
+    "errorMessages": "Error messages",
+    "fromCloud": "from cloud",
+    "failedLoadCloudBackups": "Failed to load cloud backups",
+    "backupDeletedFromCloud": "Backup deleted from cloud",
+    "failedDeleteBackup": "Failed to delete backup"
   },
   "cloudInfo": {
     "chooseWhere": "Choose where your game saves are stored:",
@@ -219,7 +227,8 @@
     "coverImageSoon": "Cover images coming soon"
   },
   "common": {
-    "soon": "soon"
+    "soon": "soon",
+    "unknown": "Unknown"
   },
   "time": {
     "justNow": "Just now",
