@@ -81,6 +81,35 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 14px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--bg-primary);
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--bg-primary);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-hover);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--bg-primary);
 }
 
 .app {
@@ -969,6 +998,25 @@ body {
   font-style: italic;
 }
 
+.external-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  padding: 0.25rem 0;
+  font-size: 0.875rem;
+  text-decoration: underline;
+  text-align: left;
+  transition: color 0.15s ease;
+}
+
+.external-link:hover {
+  color: var(--accent-hover);
+}
+
 .notifications-page {
   width: 100%;
   animation: fadeIn 0.3s ease;
@@ -1141,23 +1189,7 @@ body {
   font-weight: 500;
 }
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-tertiary);
-}
 
 @media (max-width: 768px) {
   .sidebar {
@@ -1721,10 +1753,19 @@ body {
 
 .info-modal {
   max-width: 500px;
+  overflow: hidden;
 }
 
 .info-modal .modal-body {
   padding: 1.5rem;
+  overflow-y: auto;
+  max-height: 60vh;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.info-modal .modal-body::-webkit-scrollbar {
+  display: none;
 }
 
 .info-section {

@@ -84,7 +84,9 @@
     "saving": "Salvando...",
     "about": "Sobre",
     "version": "Checkpoint v0.1.0",
-    "description": "Uma ferramenta simples de backup de saves para jogos locais."
+    "description": "Uma ferramenta simples de backup de saves para jogos locais.",
+    "website": "Website",
+    "documentation": "Documentação"
   },
   "loading": {
     "creatingSnapshot": "Criando snapshot...",
