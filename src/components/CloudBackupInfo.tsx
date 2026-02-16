@@ -30,14 +30,13 @@ export function CloudBackupInfo({ isOpen, onClose }: CloudBackupInfoProps) {
             <X size={20} />
           </button>
         </div>
-        
+
         <div className="modal-body">
           <div className="info-section">
             <h4>{t('cloud.backupDestination')}</h4>
             <p>{t('cloudInfo.chooseWhere')}</p>
             <ul>
               <li><strong>{t('cloud.localOnly')}</strong> - {t('cloudInfo.localOnlyDesc')}</li>
-              <li><strong>{t('cloud.cloudOnly')}</strong> - {t('cloudInfo.cloudOnlyDesc')}</li>
               <li><strong>{t('cloud.both')}</strong> - {t('cloudInfo.bothDesc')}</li>
             </ul>
           </div>
