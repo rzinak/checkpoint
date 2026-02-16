@@ -84,7 +84,9 @@
     "saving": "Guardando...",
     "about": "Acerca de",
     "version": "Checkpoint v0.1.0",
-    "description": "Una herramienta simple de backup de partidas para juegos locales."
+    "description": "Una herramienta simple de backup de partidas para juegos locales.",
+    "website": "Sitio web",
+    "documentation": "Documentación"
   },
   "loading": {
     "creatingSnapshot": "Creando snapshot...",

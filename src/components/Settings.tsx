@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { setBackupLocation, selectFolder } from '../lib/api';
 import { useI18n } from '../lib/i18n';
 import type { Config } from '../lib/types';
-import { ArrowLeft, FolderOpen, Sun, Moon, Globe } from 'lucide-react';
+import { ArrowLeft, FolderOpen, Sun, Moon, Globe, ExternalLink } from 'lucide-react';
 import { Select, Input, Button } from './ui';
+import { openUrl } from '@tauri-apps/plugin-opener';
 
 interface SettingsProps {
   config: Config;
@@ -174,9 +175,25 @@ export function Settings({ config, onBack, onConfigUpdate, theme, onThemeChange 
         <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>
           {t('settings.version')}
         </p>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1rem' }}>
           {t('settings.description')}
         </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <button
+            className="external-link"
+            onClick={() => openUrl('https://checkpoint-save.vercel.app/')}
+          >
+            <ExternalLink size={14} />
+            {t('settings.website')}
+          </button>
+          <button
+            className="external-link"
+            onClick={() => openUrl('https://checkpoint-save.vercel.app/documentation/index.html')}
+          >
+            <ExternalLink size={14} />
+            {t('settings.documentation')}
+          </button>
+        </div>
       </div>
     </div>
   );
