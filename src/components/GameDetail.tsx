@@ -837,7 +837,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         onDownload={async (gameId, snapshotName, data) => {
           const newSnapshot = await importSnapshot(gameId, snapshotName, data);
           setSnapshots([newSnapshot, ...snapshots]);
-          addToast('Snapshot downloaded from cloud successfully', 'success');
+          addToast(t('cloud.downloadSuccess'), 'success');
         }}
       />
 

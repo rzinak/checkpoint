@@ -15,7 +15,7 @@ interface CloudBackupListModalProps {
 export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBackupListModalProps) {
   const { t, language } = useI18n();
   const { isAuthenticated, getValidAccessToken } = useProfile();
-  const { addToast } = useToast();
+  const { addToast, addNotification } = useToast();
   const [backups, setBackups] = useState<CloudBackupItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedBackup, setSelectedBackup] = useState<CloudBackupItem | null>(null);
@@ -33,13 +33,13 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
     try {
       const token = await getValidAccessToken();
       if (!token) {
-        throw new Error('Not authenticated');
+        throw new Error(t('errors.notAuthenticated'));
       }
 
       const allBackups = await listAllCloudSnapshots(token);
       setBackups(allBackups);
     } catch (err) {
-      addToast(err instanceof Error ? err.message : 'Failed to load cloud backups', 'error');
+      addToast(err instanceof Error ? err.message : t('cloud.failedLoadCloudBackups'), 'error');
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +68,7 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
 
   const handleDownload = async (backup: CloudBackupItem) => {
     if (!backup.gameId || !backup.snapshotName) {
-      addToast('Cannot download: missing backup information', 'warning');
+      addToast(t('cloud.missingBackupInfo'), 'warning');
       return;
     }
 
@@ -76,7 +76,7 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
     try {
       const token = await getValidAccessToken();
       if (!token) {
-        throw new Error('Not authenticated');
+        throw new Error(t('errors.notAuthenticated'));
       }
 
       const blob = await downloadSnapshot(token, backup.id);
@@ -87,10 +87,15 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
         onDownload(backup.gameId, backup.snapshotName, uint8Array);
       }
 
-      addToast(`Downloaded "${backup.snapshotName}" from cloud`, 'success');
+      addToast(`${t('cloud.downloaded')} "${backup.snapshotName}" ${t('cloud.fromCloud')}`, 'success');
+      addNotification(
+        t('cloud.downloadSuccess'),
+        `"${backup.snapshotName}"`,
+        'success'
+      );
       onClose();
     } catch (err) {
-      addToast(err instanceof Error ? err.message : 'Failed to download backup', 'error');
+      addToast(err instanceof Error ? err.message : t('cloud.downloadFailed'), 'error');
     } finally {
       setSelectedBackup(null);
     }
@@ -106,14 +111,14 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
     try {
       const token = await getValidAccessToken();
       if (!token) {
-        throw new Error('Not authenticated');
+        throw new Error(t('errors.notAuthenticated'));
       }
 
       await deleteCloudSnapshot(token, confirmDelete.backup.id);
       setBackups(backups.filter(b => b.id !== confirmDelete.backup!.id));
-      addToast('Backup deleted from cloud', 'success');
+      addToast(t('cloud.backupDeletedFromCloud'), 'success');
     } catch (err) {
-      addToast(err instanceof Error ? err.message : 'Failed to delete backup', 'error');
+      addToast(err instanceof Error ? err.message : t('cloud.failedDeleteBackup'), 'error');
     } finally {
       setConfirmDelete({ isOpen: false, backup: null });
     }
@@ -192,7 +197,7 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
                       <h4 style={{ margin: 0, fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                        {backup.snapshotName || backup.name.split('/').pop()?.replace('.zip', '') || 'Unknown'}
+                        {backup.snapshotName || backup.name.split('/').pop()?.replace('.zip', '') || t('common.unknown')}
                       </h4>
                       {backup.gameName && (
                         <span style={{

@@ -146,6 +146,7 @@
     "badge": "Nube",
     "uploadComplete": "Subida a la nube completada",
     "uploaded": "subido a la nube",
+    "downloaded": "Descargado",
     "downloadSuccess": "Snapshot descargado de la nube correctamente",
     "syncing": "Sincronizando...",
     "lastUploaded": "Última subida",
@@ -164,7 +165,11 @@
     "deleteCloudBackup": "Eliminar backup de la nube",
     "delete": "Eliminar",
     "lastDownloaded": "Última descarga",
-    "errorMessages": "Mensajes de error"
+    "errorMessages": "Mensajes de error",
+    "fromCloud": "de la nube",
+    "failedLoadCloudBackups": "Error al cargar backups en la nube",
+    "backupDeletedFromCloud": "Backup eliminado de la nube",
+    "failedDeleteBackup": "Error al eliminar backup"
   },
   "cloudInfo": {
     "chooseWhere": "Elige dónde se almacenan tus partidas guardadas:",
@@ -219,7 +224,8 @@
     "coverImageSoon": "Imágenes de portada próximamente"
   },
   "common": {
-    "soon": "próximamente"
+    "soon": "próximamente",
+    "unknown": "Desconocido"
   },
   "time": {
     "justNow": "Ahora mismo",
