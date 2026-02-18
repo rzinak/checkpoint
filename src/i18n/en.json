@@ -37,7 +37,7 @@
   "gameDetail": {
     "back": "Back to home",
     "saveLocation": "Save location",
-    "executable": "Executable",
+    "browseSaveFolder": "Browse save folder",
     "snapshots": "Snapshots",
     "createSnapshot": "Create snapshot",
     "deleteGame": "Delete game",

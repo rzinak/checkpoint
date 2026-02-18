@@ -37,7 +37,7 @@
   "gameDetail": {
     "back": "Voltar ao início",
     "saveLocation": "Local do save",
-    "executable": "Executável",
+    "browseSaveFolder": "Abrir pasta do save",
     "snapshots": "Snapshots",
     "createSnapshot": "Criar snapshot",
     "deleteGame": "Excluir jogo",

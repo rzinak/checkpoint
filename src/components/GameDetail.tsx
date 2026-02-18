@@ -7,14 +7,15 @@ import {
   renameSnapshot,
   deleteGame,
   isProcessRunning,
-  importSnapshot
+  importSnapshot,
+  openFolder
 } from '../lib/api';
 import { useI18n } from '../lib/i18n';
 import { useProfile } from '../lib/profileContext';
 import { useToast } from '../lib/toastContext';
 import { uploadSnapshot, listCloudSnapshots, /* downloadSnapshot */ } from '../lib/googleDrive';
 import type { Game, Snapshot, CloudSyncState } from '../lib/types';
-import { ArrowLeft, Plus, RotateCcw, Trash2, Edit3, CheckCircle, AlertTriangle, Cloud, CloudUpload, /* CloudDownload, */ Loader2, Info, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Plus, RotateCcw, Trash2, Edit3, CheckCircle, AlertTriangle, Cloud, CloudUpload, /* CloudDownload, */ Loader2, Info, RefreshCw, FolderOpen } from 'lucide-react';
 import { EditGameModal } from './EditGameModal';
 import { CloudBackupInfo } from './CloudBackupInfo';
 import { CloudBackupListModal } from './CloudBackupListModal';
@@ -53,6 +54,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
   // const [isDownloading, setIsDownloading] = useState(false);
   const [isCloudInfoOpen, setIsCloudInfoOpen] = useState(false);
   const [isCloudBackupListOpen, setIsCloudBackupListOpen] = useState(false);
+  const [saveFolderExists, setSaveFolderExists] = useState(false);
 
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
@@ -76,6 +78,31 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
     }
   }, [game.exe_name]);
 
+  const checkSaveFolderExists = useCallback(async () => {
+    try {
+      const { exists } = await import('@tauri-apps/plugin-fs');
+      const exists_result = await exists(game.save_location);
+      setSaveFolderExists(exists_result);
+    } catch (err) {
+      console.error('Failed to check save folder:', err);
+      setSaveFolderExists(false);
+    }
+  }, [game.save_location]);
+
+  const handleBrowseSaveFolder = async () => {
+    try {
+      await openFolder(game.save_location);
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : t('errors.failedSelectFolder');
+      addToast(errorMsg, 'error');
+      addNotification(
+        t('errors.failedSelectFolder'),
+        errorMsg,
+        'error'
+      );
+    }
+  };
+
   const loadSnapshots = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -98,10 +125,11 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
   useEffect(() => {
     loadSnapshots();
     checkProcess();
+    checkSaveFolderExists();
 
     const interval = setInterval(checkProcess, 5000);
     return () => clearInterval(interval);
-  }, [loadSnapshots, checkProcess]);
+  }, [loadSnapshots, checkProcess, checkSaveFolderExists]);
 
   useEffect(() => {
     console.log('Saving backup destination:', backupDestination, 'for game:', game.id);
@@ -592,8 +620,15 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         </button>
         <h2>{game.name}</h2>
         <div className="game-detail-info">
-          <p>{t('gameDetail.saveLocation')}: {game.save_location}</p>
-          {game.exe_name && <p>{t('gameDetail.executable')}: {game.exe_name}</p>}
+          <button
+            className="btn btn-secondary btn-small"
+            onClick={handleBrowseSaveFolder}
+            disabled={!saveFolderExists}
+            title={saveFolderExists ? game.save_location : 'Folder not found'}
+          >
+            <FolderOpen size={16} style={{ marginRight: '0.25rem', verticalAlign: 'middle' }} />
+            {t('gameDetail.browseSaveFolder')}
+          </button>
         </div>
       </div>
 

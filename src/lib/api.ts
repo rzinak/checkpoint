@@ -65,3 +65,6 @@ export const stopOAuthServer = (): Promise<void> =>
 
 export const resetCheckpoint = (): Promise<void> =>
   invoke('reset_checkpoint');
+
+export const openFolder = (path: string): Promise<void> =>
+  invoke('open_folder', { path });

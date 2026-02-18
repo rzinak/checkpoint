@@ -313,3 +313,39 @@ pub fn reset_checkpoint(state: State<AppState>) -> Result<(), String> {
 
     Ok(())
 }
+
+#[tauri::command]
+pub async fn open_folder(path: String) -> Result<(), String> {
+    let path_obj = std::path::Path::new(&path);
+
+    if !path_obj.exists() {
+        return Err(format!("Folder does not exist: {}", path));
+    }
+
+    if !path_obj.is_dir() {
+        return Err(format!("Path is not a directory: {}", path));
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        std::process::Command::new("explorer")
+            .arg(&path)
+            .spawn()
+            .map_err(|e| format!("Failed to open folder: {}", e))?;
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        let result = std::process::Command::new("xdg-open").arg(&path).spawn();
+
+        if result.is_err() {
+            let _ = std::process::Command::new("gnome-open")
+                .arg(&path)
+                .spawn()
+                .or_else(|_| std::process::Command::new("kde-open").arg(&path).spawn())
+                .map_err(|e| format!("Failed to open folder: {}", e))?;
+        }
+    }
+
+    Ok(())
+}

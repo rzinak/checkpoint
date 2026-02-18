@@ -37,7 +37,7 @@
   "gameDetail": {
     "back": "Volver al inicio",
     "saveLocation": "Ubicación de guardado",
-    "executable": "Ejecutable",
+    "browseSaveFolder": "Abrir carpeta de guardado",
     "snapshots": "Snapshots",
     "createSnapshot": "Crear snapshot",
     "deleteGame": "Eliminar juego",
