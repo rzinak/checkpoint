@@ -2,22 +2,19 @@ import { useState } from 'react';
 import { resetCheckpoint } from '../lib/api';
 import { useI18n } from '../lib/i18n';
 import { useToast } from '../lib/toastContext';
-import type { Config } from '../lib/types';
 import { ArrowLeft, Sun, Moon, Globe, ExternalLink, Bug, Trash2 } from 'lucide-react';
 import { Select, Button } from './ui';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { ConfirmModal } from './ConfirmModal';
 
 interface SettingsProps {
-  config: Config;
   onBack: () => void;
-  onConfigUpdate: (config: Config) => void;
   theme: 'light' | 'dark';
   onThemeChange: (theme: 'light' | 'dark') => void;
   onResetComplete?: () => void;
 }
 
-export function Settings({ config, onBack, onConfigUpdate, theme, onThemeChange, onResetComplete }: SettingsProps) {
+export function Settings({ onBack, theme, onThemeChange, onResetComplete }: SettingsProps) {
   const { t, language, setLanguage } = useI18n();
   const { addToast, addNotification } = useToast();
   const [isResetting, setIsResetting] = useState(false);
@@ -56,7 +53,7 @@ export function Settings({ config, onBack, onConfigUpdate, theme, onThemeChange,
   ] as const;
 
   const getDefaultBackupLocation = () => {
-    if (navigator.platform.toLowerCase().includes('win')) {
+    if (navigator.userAgent.toLowerCase().includes('windows')) {
       return '%USERPROFILE%\\checkpoint\\';
     }
     return '~/checkpoint/';
