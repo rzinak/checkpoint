@@ -139,6 +139,8 @@
     "title": "Backup en la nube",
     "uploadSuccess": "Snapshot subido a la nube correctamente",
     "downloadSuccess": "Snapshot descargado de la nube correctamente",
+    "downloadFailed": "Error al descargar backup",
+    "missingBackupInfo": "No se puede descargar: falta información del backup",
     "deleteSuccess": "Backup eliminado de la nube",
     "uploadFailed": "Snapshot creado pero falló la subida a la nube",
     "notInCloud": "Este snapshot no está en la nube",
