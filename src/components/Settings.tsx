@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { resetCheckpoint } from '../lib/api';
+import { useState, useEffect } from 'react';
+import { resetCheckpoint, getConfig } from '../lib/api';
 import { useI18n } from '../lib/i18n';
 import { useToast } from '../lib/toastContext';
 import { ArrowLeft, Sun, Moon, Globe, ExternalLink, Bug, Trash2 } from 'lucide-react';
@@ -19,6 +19,19 @@ export function Settings({ onBack, theme, onThemeChange, onResetComplete }: Sett
   const { addToast, addNotification } = useToast();
   const [isResetting, setIsResetting] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [backupLocation, setBackupLocation] = useState<string>('');
+
+  useEffect(() => {
+    const fetchBackupLocation = async () => {
+      try {
+        const config = await getConfig();
+        setBackupLocation(config.backup_location);
+      } catch (err) {
+        console.error('Failed to get backup location:', err);
+      }
+    };
+    fetchBackupLocation();
+  }, []);
 
   const toggleTheme = () => {
     onThemeChange(theme === 'light' ? 'dark' : 'light');
@@ -28,6 +41,18 @@ export function Settings({ onBack, theme, onThemeChange, onResetComplete }: Sett
     setIsResetting(true);
     try {
       await resetCheckpoint();
+
+      localStorage.removeItem('checkpoint-notifications');
+      localStorage.removeItem('checkpoint-language');
+      localStorage.removeItem('checkpoint-theme');
+      localStorage.removeItem('checkpoint-profile');
+
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('checkpoint-backup-dest-')) {
+          localStorage.removeItem(key);
+        }
+      });
+
       addToast(t('settings.resetSuccess'), 'success');
       setShowResetConfirm(false);
       if (onResetComplete) {
@@ -51,13 +76,6 @@ export function Settings({ onBack, theme, onThemeChange, onResetComplete }: Sett
     { code: 'pt', name: 'Português' },
     { code: 'es', name: 'Español' }
   ] as const;
-
-  const getDefaultBackupLocation = () => {
-    if (navigator.userAgent.toLowerCase().includes('windows')) {
-      return '%USERPROFILE%\\checkpoint\\';
-    }
-    return '~/checkpoint/';
-  };
 
   return (
     <div className="settings">
@@ -111,16 +129,16 @@ export function Settings({ onBack, theme, onThemeChange, onResetComplete }: Sett
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
           {t('settings.snapshotsLocationDesc')}
         </p>
-        <div style={{ 
-          background: 'var(--bg-tertiary)', 
-          padding: '0.75rem', 
+        <div style={{
+          background: 'var(--bg-tertiary)',
+          padding: '0.75rem',
           borderRadius: '6px',
           fontFamily: 'monospace',
           fontSize: '0.8125rem',
           color: 'var(--text-secondary)',
           wordBreak: 'break-all'
         }}>
-          {getDefaultBackupLocation()}
+          {backupLocation || (navigator.userAgent.toLowerCase().includes('windows') ? '%USERPROFILE%\\checkpoint\\' : '~/checkpoint/')}
         </div>
         <p className="settings-local-hint" style={{ marginTop: '0.5rem' }}>
           {t('settings.snapshotsLocationHint')}

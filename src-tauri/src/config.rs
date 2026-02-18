@@ -5,6 +5,40 @@ use std::path::PathBuf;
 const CONFIG_DIR: &str = ".config/checkpoint";
 const CONFIG_FILE: &str = "config.json";
 
+fn get_default_backup_location() -> String {
+    let home_dir = dirs::home_dir();
+
+    let valid_home = home_dir.filter(|path| {
+        let path_str = path.to_string_lossy();
+        !path_str.ends_with(":\\") && !path_str.ends_with(":/") && path_str.len() > 3
+    });
+
+    match valid_home {
+        Some(home) => home.join("checkpoint").to_string_lossy().to_string(),
+        None => {
+            if cfg!(target_os = "windows") {
+                std::env::var("USERPROFILE")
+                    .map(|p| {
+                        PathBuf::from(p)
+                            .join("checkpoint")
+                            .to_string_lossy()
+                            .to_string()
+                    })
+                    .unwrap_or_else(|_| "C:\\Users\\Default\\checkpoint".to_string())
+            } else {
+                std::env::var("HOME")
+                    .map(|p| {
+                        PathBuf::from(p)
+                            .join("checkpoint")
+                            .to_string_lossy()
+                            .to_string()
+                    })
+                    .unwrap_or_else(|_| "/tmp/checkpoint".to_string())
+            }
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
     pub games: Vec<Game>,
@@ -13,8 +47,7 @@ pub struct Config {
 
 impl Default for Config {
     fn default() -> Self {
-        let home_dir = dirs::home_dir().unwrap_or_else(|| PathBuf::from("~"));
-        let backup_location = home_dir.join("checkpoint").to_string_lossy().to_string();
+        let backup_location = get_default_backup_location();
 
         Self {
             games: Vec::new(),
