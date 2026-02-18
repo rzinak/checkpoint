@@ -83,7 +83,13 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       const data = await listSnapshots(game.id);
       setSnapshots(data);
     } catch (err) {
-      addToast(err instanceof Error ? err.message : t('errors.failedLoadData'), 'error');
+      const errorMsg = err instanceof Error ? err.message : t('errors.failedLoadData');
+      addToast(errorMsg, 'error');
+      addNotification(
+        t('errors.failedLoadData'),
+        errorMsg,
+        'error'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -133,7 +139,13 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       );
     } catch (err) {
       console.log(err)
-      addToast(err instanceof Error ? err.message : t('errors.failedCreateSnapshot'), 'error');
+      const errorMsg = err instanceof Error ? err.message : t('errors.failedCreateSnapshot');
+      addToast(errorMsg, 'error');
+      addNotification(
+        t('errors.failedCreateSnapshot'),
+        errorMsg,
+        'error'
+      );
       setIsCreatingSnapshot(false);
     } finally {
       setLoading(false, '');
@@ -168,9 +180,20 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
             loadSnapshots();
           } else {
             addToast(result.message, 'error');
+            addNotification(
+              t('errors.failedRestore'),
+              result.message,
+              'error'
+            );
           }
         } catch (err) {
-          addToast(err instanceof Error ? err.message : t('errors.failedRestore'), 'error');
+          const errorMsg = err instanceof Error ? err.message : t('errors.failedRestore');
+          addToast(errorMsg, 'error');
+          addNotification(
+            t('errors.failedRestore'),
+            errorMsg,
+            'error'
+          );
         } finally {
           setLoading(false, '');
         }
@@ -199,7 +222,13 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
             'success'
           );
         } catch (err) {
-          addToast(err instanceof Error ? err.message : t('errors.failedDeleteSnapshot'), 'error');
+          const errorMsg = err instanceof Error ? err.message : t('errors.failedDeleteSnapshot');
+          addToast(errorMsg, 'error');
+          addNotification(
+            t('errors.failedDeleteSnapshot'),
+            errorMsg,
+            'error'
+          );
         } finally {
           setLoading(false, '');
         }
@@ -241,7 +270,13 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
             'success'
           );
         } catch (err) {
-          addToast(err instanceof Error ? err.message : t('errors.failedDeleteCloud'), 'error');
+          const errorMsg = err instanceof Error ? err.message : t('errors.failedDeleteCloud');
+          addToast(errorMsg, 'error');
+          addNotification(
+            t('errors.failedDeleteCloud'),
+            errorMsg,
+            'error'
+          );
         } finally {
           setLoading(false, '');
         }
@@ -265,7 +300,13 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
           setLoading(false, '');
           onGameDeleted(game.id);
         } catch (err) {
-          addToast(err instanceof Error ? err.message : t('errors.failedDeleteGame'), 'error');
+          const errorMsg = err instanceof Error ? err.message : t('errors.failedDeleteGame');
+          addToast(errorMsg, 'error');
+          addNotification(
+            t('errors.failedDeleteGame'),
+            errorMsg,
+            'error'
+          );
           setLoading(false, '');
         }
       }
@@ -343,7 +384,13 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       ));
       setEditingSnapshot(null);
     } catch (err) {
-      addToast(err instanceof Error ? err.message : t('errors.failedRename'), 'error');
+      const errorMsg = err instanceof Error ? err.message : t('errors.failedRename');
+      addToast(errorMsg, 'error');
+      addNotification(
+        t('errors.failedRename'),
+        errorMsg,
+        'error'
+      );
     }
   };
 
@@ -427,10 +474,16 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
 
       loadCloudSnapshots();
     } catch (err) {
-      addToast(err instanceof Error ? err.message : t('errors.failedUploadCloud'), 'error');
+      const errorMsg = err instanceof Error ? err.message : t('errors.failedUploadCloud');
+      addToast(errorMsg, 'error');
+      addNotification(
+        t('errors.failedUploadCloud'),
+        errorMsg,
+        'error'
+      );
       setCloudSyncState({
         sync_status: 'error',
-        error_message: err instanceof Error ? err.message : t('errors.uploadFailed')
+        error_message: errorMsg
       });
     } finally {
       setIsUploading(false);

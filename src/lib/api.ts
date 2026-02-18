@@ -62,3 +62,6 @@ export const waitForOAuthCode = (): Promise<string | null> =>
 
 export const stopOAuthServer = (): Promise<void> =>
   invoke('stop_oauth_server');
+
+export const resetCheckpoint = (): Promise<void> =>
+  invoke('reset_checkpoint');

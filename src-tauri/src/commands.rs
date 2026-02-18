@@ -285,3 +285,31 @@ pub async fn import_snapshot(
     .await
     .map_err(|e| format!("Task failed: {}", e))?
 }
+
+#[tauri::command]
+pub fn reset_checkpoint(state: State<AppState>) -> Result<(), String> {
+    let backup_location = {
+        let config = state.config.lock().map_err(|e| e.to_string())?;
+        config.backup_location.clone()
+    };
+
+    let backup_path = std::path::Path::new(&backup_location);
+    if backup_path.exists() {
+        if let Ok(entries) = std::fs::read_dir(backup_path) {
+            for entry in entries.flatten() {
+                let path = entry.path();
+                if path.is_dir() {
+                    let _ = std::fs::remove_dir_all(&path);
+                }
+            }
+        }
+    }
+
+    {
+        let mut config = state.config.lock().map_err(|e| e.to_string())?;
+        config.games.clear();
+        config.save()?;
+    }
+
+    Ok(())
+}

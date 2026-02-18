@@ -274,6 +274,9 @@ function AppContent() {
               onConfigUpdate={setConfig}
               theme={theme}
               onThemeChange={setTheme}
+              onResetComplete={() => {
+                window.location.reload();
+              }}
             />
           )}
 

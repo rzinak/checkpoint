@@ -39,7 +39,13 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
       const allBackups = await listAllCloudSnapshots(token);
       setBackups(allBackups);
     } catch (err) {
-      addToast(err instanceof Error ? err.message : t('cloud.failedLoadCloudBackups'), 'error');
+      const errorMsg = err instanceof Error ? err.message : t('cloud.failedLoadCloudBackups');
+      addToast(errorMsg, 'error');
+      addNotification(
+        t('cloud.failedLoadCloudBackups'),
+        errorMsg,
+        'error'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -95,7 +101,13 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
       );
       onClose();
     } catch (err) {
-      addToast(err instanceof Error ? err.message : t('cloud.downloadFailed'), 'error');
+      const errorMsg = err instanceof Error ? err.message : t('cloud.downloadFailed');
+      addToast(errorMsg, 'error');
+      addNotification(
+        t('cloud.downloadFailed'),
+        errorMsg,
+        'error'
+      );
     } finally {
       setSelectedBackup(null);
     }
@@ -118,7 +130,13 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
       setBackups(backups.filter(b => b.id !== confirmDelete.backup!.id));
       addToast(t('cloud.backupDeletedFromCloud'), 'success');
     } catch (err) {
-      addToast(err instanceof Error ? err.message : t('cloud.failedDeleteBackup'), 'error');
+      const errorMsg = err instanceof Error ? err.message : t('cloud.failedDeleteBackup');
+      addToast(errorMsg, 'error');
+      addNotification(
+        t('cloud.failedDeleteBackup'),
+        errorMsg,
+        'error'
+      );
     } finally {
       setConfirmDelete({ isOpen: false, backup: null });
     }
