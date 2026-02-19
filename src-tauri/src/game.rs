@@ -10,6 +10,8 @@ pub struct Game {
     pub exe_name: Option<String>,
     pub cover_image: Option<String>,
     pub created_at: DateTime<Utc>,
+    pub last_restored_snapshot_id: Option<String>,
+    pub last_restored_at: Option<DateTime<Utc>>,
 }
 
 impl Game {
@@ -26,6 +28,8 @@ impl Game {
             exe_name,
             cover_image,
             created_at: Utc::now(),
+            last_restored_snapshot_id: None,
+            last_restored_at: None,
         }
     }
 }

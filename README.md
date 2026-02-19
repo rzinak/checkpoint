@@ -27,13 +27,11 @@ Checkpoint is built with privacy as the foundation:
 ## Download
 
 ### Windows
-- Download `checkpoint.exe` (portable - no installation needed)
-- Or use the `.msi` installer
+- Download the `.exe` installer
 
 ### Linux
 - **Ubuntu/Debian**: `checkpoint_0.1.0_amd64.deb`
 - **Fedora**: `checkpoint-0.1.0-1.x86_64.rpm`  
-- **Arch**: Available on AUR
 - **Universal**: AppImage works on any distro
 
 [View All Releases](https://github.com/rzinak/checkpoint/releases)
@@ -41,16 +39,16 @@ Checkpoint is built with privacy as the foundation:
 ## Quick Start
 
 1. **Add Your First Game**
-   - Click "Add Game" button
+   - Click "Add game" button
    - Enter game name
    - Select save folder location
-   - Click "Add Game"
+   - Click "Add game"
 
 2. **Create a Snapshot**
    - Click on your game card
    - Click "Create Snapshot"
-   - Give it a name (e.g., "Before Boss Fight")
-   - Choose backup destination: Local, Cloud, or Both
+   - Give it a name (e.g. "Before Boss Fight")
+   - Choose backup destination: Local or Local and cloud
 
 3. **Restore a Save**
    - Click the restore button on any snapshot
@@ -58,7 +56,7 @@ Checkpoint is built with privacy as the foundation:
    - Game must not be running
 
 4. **Enable Cloud Backup** (Optional)
-   - Sign in with Google in the Profile section
+   - Sign in with Google in the profile section
    - Set backup destination to "Cloud" or "Both"
    - Snapshots automatically upload to your Google Drive
    - Access your saves from any device

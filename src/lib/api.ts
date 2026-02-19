@@ -62,3 +62,12 @@ export const waitForOAuthCode = (): Promise<string | null> =>
 
 export const stopOAuthServer = (): Promise<void> =>
   invoke('stop_oauth_server');
+
+export const resetCheckpoint = (): Promise<void> =>
+  invoke('reset_checkpoint');
+
+export const openFolder = (path: string): Promise<void> =>
+  invoke('open_folder', { path });
+
+export const updateLastRestoredSnapshot = (gameId: string, snapshotId: string): Promise<void> =>
+  invoke('update_last_restored_snapshot', { gameId, snapshotId });

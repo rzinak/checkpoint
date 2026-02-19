@@ -1,66 +1,74 @@
-import { useState } from 'react';
-import { setBackupLocation, selectFolder } from '../lib/api';
+import { useState, useEffect } from 'react';
+import { resetCheckpoint, getConfig } from '../lib/api';
 import { useI18n } from '../lib/i18n';
-import type { Config } from '../lib/types';
-import { ArrowLeft, FolderOpen, Sun, Moon, Globe, ExternalLink } from 'lucide-react';
-import { Select, Input, Button } from './ui';
+import { useToast } from '../lib/toastContext';
+import { ArrowLeft, Sun, Moon, Globe, ExternalLink, Bug, Trash2 } from 'lucide-react';
+import { Select, Button } from './ui';
 import { openUrl } from '@tauri-apps/plugin-opener';
+import { ConfirmModal } from './ConfirmModal';
 
 interface SettingsProps {
-  config: Config;
   onBack: () => void;
-  onConfigUpdate: (config: Config) => void;
   theme: 'light' | 'dark';
   onThemeChange: (theme: 'light' | 'dark') => void;
+  onResetComplete?: () => void;
 }
 
-export function Settings({ config, onBack, onConfigUpdate, theme, onThemeChange }: SettingsProps) {
+export function Settings({ onBack, theme, onThemeChange, onResetComplete }: SettingsProps) {
   const { t, language, setLanguage } = useI18n();
-  const [backupPath, setBackupPath] = useState(config.backup_location);
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const { addToast, addNotification } = useToast();
+  const [isResetting, setIsResetting] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [backupLocation, setBackupLocation] = useState<string>('');
 
-  const handleBrowse = async () => {
-    try {
-      const folder = await selectFolder();
-      if (folder) {
-        setBackupPath(folder);
-        setSuccess(false);
+  useEffect(() => {
+    const fetchBackupLocation = async () => {
+      try {
+        const config = await getConfig();
+        setBackupLocation(config.backup_location);
+      } catch (err) {
+        console.error('Failed to get backup location:', err);
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t('errors.failedSelectFolder'));
-    }
-  };
-
-  const handleSave = async () => {
-    if (!backupPath.trim()) {
-      setError(t('errors.backupLocationEmpty'));
-      return;
-    }
-
-    if (backupPath.trim().length > 500) {
-      setError('Backup location path must be less than 500 characters');
-      return;
-    }
-
-    setIsSaving(true);
-    setError(null);
-    setSuccess(false);
-
-    try {
-      await setBackupLocation(backupPath.trim());
-      onConfigUpdate({ ...config, backup_location: backupPath.trim() });
-      setSuccess(true);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t('errors.failedSaveSettings'));
-    } finally {
-      setIsSaving(false);
-    }
-  };
+    };
+    fetchBackupLocation();
+  }, []);
 
   const toggleTheme = () => {
     onThemeChange(theme === 'light' ? 'dark' : 'light');
+  };
+
+  const handleReset = async () => {
+    setIsResetting(true);
+    try {
+      await resetCheckpoint();
+
+      localStorage.removeItem('checkpoint-notifications');
+      localStorage.removeItem('checkpoint-language');
+      localStorage.removeItem('checkpoint-theme');
+      localStorage.removeItem('checkpoint-profile');
+
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('checkpoint-backup-dest-')) {
+          localStorage.removeItem(key);
+        }
+      });
+
+      addToast(t('settings.resetSuccess'), 'success');
+      setShowResetConfirm(false);
+      if (onResetComplete) {
+        onResetComplete();
+      }
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : t('settings.resetFailed');
+      addToast(errorMsg, 'error');
+      addNotification(
+        t('settings.resetFailed'),
+        errorMsg,
+        'error'
+      );
+    } finally {
+      setIsResetting(false);
+    }
   };
 
   const languages = [
@@ -77,18 +85,6 @@ export function Settings({ config, onBack, onConfigUpdate, theme, onThemeChange 
       </button>
 
       <h2 style={{ marginBottom: '1rem', fontSize: '1.125rem', fontWeight: 700 }}>{t('settings.title')}</h2>
-
-      {error && (
-        <div className="alert alert-error" style={{ marginBottom: '1rem' }}>
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="alert alert-success" style={{ marginBottom: '1rem' }}>
-          {t('success.settingsSaved')}
-        </div>
-      )}
 
       <div className="settings-section">
         <h3>{t('settings.appearance')}</h3>
@@ -129,45 +125,40 @@ export function Settings({ config, onBack, onConfigUpdate, theme, onThemeChange 
       </div>
 
       <div className="settings-section">
-        <h3>{t('settings.backupLocation')}</h3>
-        <div className="form-group">
-          <Input
-            label={t('settings.backupFolder')}
-            id="backupLocation"
-            type="text"
-            value={backupPath}
-            onChange={(e) => {
-              setBackupPath(e.target.value);
-              setSuccess(false);
-            }}
-            placeholder="/path/to/backup/folder"
-            hint={t('settings.backupHint')}
-            maxLength={500}
-          />
-          <Button
-            variant="secondary"
-            size="sm"
-            leftIcon={<FolderOpen size={16} />}
-            onClick={handleBrowse}
-            style={{ marginTop: '0.5rem' }}
-          >
-            {t('addGame.browse')}
-          </Button>
-          <p className="settings-local-hint">
-            {t('validation.localBackupOnly')}
-          </p>
+        <h3>{t('settings.snapshotsLocation')}</h3>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '0.5rem' }}>
+          {t('settings.snapshotsLocationDesc')}
+        </p>
+        <div style={{
+          background: 'var(--bg-tertiary)',
+          padding: '0.75rem',
+          borderRadius: '6px',
+          fontFamily: 'monospace',
+          fontSize: '0.8125rem',
+          color: 'var(--text-secondary)',
+          wordBreak: 'break-all'
+        }}>
+          {backupLocation || (navigator.userAgent.toLowerCase().includes('windows') ? '%USERPROFILE%\\checkpoint\\' : '~/checkpoint/')}
         </div>
+        <p className="settings-local-hint" style={{ marginTop: '0.5rem' }}>
+          {t('settings.snapshotsLocationHint')}
+        </p>
+      </div>
 
-        <div style={{ marginTop: '1.5rem' }}>
-          <Button
-            variant="primary"
-            size="md"
-            isLoading={isSaving}
-            onClick={handleSave}
-          >
-            {t('settings.save')}
-          </Button>
-        </div>
+      <div className="settings-section">
+        <h3>{t('settings.dangerZone')}</h3>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1rem' }}>
+          {t('settings.dangerZoneDesc')}
+        </p>
+        <Button
+          variant="danger"
+          size="md"
+          leftIcon={<Trash2 size={16} />}
+          onClick={() => setShowResetConfirm(true)}
+          disabled={isResetting}
+        >
+          {t('settings.resetData')}
+        </Button>
       </div>
 
       <div className="settings-section">
@@ -178,7 +169,7 @@ export function Settings({ config, onBack, onConfigUpdate, theme, onThemeChange 
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1rem' }}>
           {t('settings.description')}
         </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
           <button
             className="external-link"
             onClick={() => openUrl('https://checkpoint-save.vercel.app/')}
@@ -194,7 +185,26 @@ export function Settings({ config, onBack, onConfigUpdate, theme, onThemeChange 
             {t('settings.documentation')}
           </button>
         </div>
+        <button
+          className="external-link"
+          onClick={() => openUrl('https://github.com/rzinak/checkpoint/issues')}
+          style={{ color: 'var(--accent)' }}
+        >
+          <Bug size={14} />
+          {t('settings.reportBug')}
+        </button>
       </div>
+
+      <ConfirmModal
+        isOpen={showResetConfirm}
+        title={t('settings.resetConfirmTitle')}
+        message={t('settings.resetConfirmMessage')}
+        confirmText={t('settings.resetConfirm')}
+        cancelText={t('addGame.cancel')}
+        danger={true}
+        onConfirm={handleReset}
+        onCancel={() => setShowResetConfirm(false)}
+      />
     </div>
   );
 }

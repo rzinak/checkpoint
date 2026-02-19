@@ -5,6 +5,8 @@ export interface Game {
   exe_name?: string;
   cover_image?: string;
   created_at: string;
+  last_restored_snapshot_id?: string;
+  last_restored_at?: string;
 }
 
 export interface Snapshot {

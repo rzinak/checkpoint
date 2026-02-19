@@ -37,7 +37,7 @@
   "gameDetail": {
     "back": "Voltar ao início",
     "saveLocation": "Local do save",
-    "executable": "Executável",
+    "browseSaveFolder": "Abrir pasta do save",
     "snapshots": "Snapshots",
     "createSnapshot": "Criar snapshot",
     "deleteGame": "Excluir jogo",
@@ -53,7 +53,9 @@
     "gameRunning": "está em execução. Você não pode restaurar enquanto o jogo estiver ativo.",
     "confirmRestore": "Tem certeza que deseja restaurar este snapshot? Isso substituirá seu save atual.",
     "confirmDeleteSnapshot": "Tem certeza que deseja excluir este snapshot?",
-    "confirmDeleteGame": "Tem certeza que deseja excluir {name}? Isso também excluirá todos os snapshots."
+    "confirmDeleteGame": "Tem certeza que deseja excluir {name}? Isso também excluirá todos os snapshots.",
+    "lastRestored": "Último restaurado",
+    "searchSnapshots": "Buscar snapshots..."
   },
   "addGame": {
     "title": "Adicionar novo jogo",
@@ -83,10 +85,22 @@
     "save": "Salvar configurações",
     "saving": "Salvando...",
     "about": "Sobre",
-    "version": "Checkpoint v0.1.0",
+    "version": "Checkpoint v0.1.1",
     "description": "Uma ferramenta simples de backup de saves para jogos locais.",
     "website": "Website",
-    "documentation": "Documentação"
+    "documentation": "Documentação",
+    "reportBug": "Reportar um bug",
+    "snapshotsLocation": "Local dos backups",
+    "snapshotsLocationDesc": "Seus backups de jogos são armazenados aqui:",
+    "snapshotsLocationHint": "Este local não pode ser alterado para evitar problemas de sincronização",
+    "dangerZone": "Zona de perigo",
+    "dangerZoneDesc": "Estas ações não podem ser desfeitas. Tenha cuidado!",
+    "resetData": "Resetar todos os dados",
+    "resetConfirmTitle": "Resetar todos os dados?",
+    "resetConfirmMessage": "Isso excluirá TODOS os seus jogos, snapshots e configurações. Esta ação não pode ser desfeita. Tem certeza?",
+    "resetConfirm": "Sim, resetar tudo",
+    "resetSuccess": "Todos os dados foram resetados com sucesso",
+    "resetFailed": "Falha ao resetar dados"
   },
   "loading": {
     "creatingSnapshot": "Criando snapshot...",
@@ -127,6 +141,8 @@
     "title": "Backup na nuvem",
     "uploadSuccess": "Snapshot enviado para nuvem com sucesso",
     "downloadSuccess": "Snapshot baixado da nuvem com sucesso",
+    "downloadFailed": "Falha ao baixar backup",
+    "missingBackupInfo": "Não é possível baixar: informações do backup ausentes",
     "deleteSuccess": "Backup excluído da nuvem",
     "uploadFailed": "Snapshot criado, mas falha ao enviar para nuvem",
     "notInCloud": "Este snapshot não está na nuvem",
@@ -136,7 +152,7 @@
     "backupDestination": "Destino do backup",
     "localOnly": "Apenas local",
     "cloudOnly": "Apenas nuvem",
-    "both": "Local & nuvem",
+    "both": "Local e nuvem",
     "viewAll": "Ver todos",
     "howItWorks": "Como funciona o backup na nuvem",
     "namingSaves": "Nomeando seus saves",
@@ -179,7 +195,7 @@
     "uploadTitle": "Enviar para nuvem",
     "uploadDesc": "Clique no ícone de nuvem ao lado de qualquer save para enviá-lo ao Google Drive. Seus saves são armazenados em uma pasta oculta do app, então não vão bagunçar seu Drive principal.",
     "downloadTitle": "Baixar da nuvem",
-    "downloadDesc": "Clique em \"Baixar da Nuvem\" para obter seu último save na nuvem. Isso cria uma nova cópia local que você pode restaurar.",
+    "downloadDesc": "Clique em \"Baixar da nuvem\" para obter seu último save na nuvem. Isso cria uma nova cópia local que você pode restaurar.",
     "namingDesc": "Saves na nuvem são armazenados globalmente entre todos os jogos, então use nomes descritivos que você reconhecerá depois:",
     "example1": "RDR2 - Capítulo 3 - 2026-02-11",
     "example2": "Elden Ring - Antes do Chefão",
@@ -214,7 +230,8 @@
     "loading": "Carregando notificações...",
     "unreadSingular": "notificação não lida",
     "unreadPlural": "notificações não lidas",
-    "clearAll": "Limpar tudo"
+    "clearAll": "Limpar tudo",
+    "deleteNotification": "Excluir notificação"
   },
   "validation": {
     "nameMaxLength": "Nome do jogo deve ter menos de 100 caracteres",
@@ -225,7 +242,9 @@
   },
   "common": {
     "soon": "em breve",
-    "unknown": "Desconhecido"
+    "unknown": "Desconhecido",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar"
   },
   "time": {
     "justNow": "Agora mesmo",
@@ -234,6 +253,7 @@
     "daysAgo": "{days}d atrás"
   },
   "editGame": {
-    "title": "Editar jogo"
+    "title": "Editar jogo",
+    "saveChanges": "Salvar alterações"
   }
 }

@@ -12,8 +12,8 @@ import { ToastContainer } from './components/Toast';
 import { I18nProvider, useI18n } from './lib/i18n';
 import { ProfileProvider, useProfile } from './lib/profileContext';
 import { ToastProvider, useToast } from './lib/toastContext';
-import { listGames, getConfig } from './lib/api';
-import type { Game, Config } from './lib/types';
+import { listGames } from './lib/api';
+import type { Game } from './lib/types';
 import { Home, Settings as SettingsIcon, Plus, Bell } from 'lucide-react';
 
 function AddGameFAB({ onClick, title }: { onClick: () => void; title: string }) {
@@ -65,7 +65,7 @@ function AppContent() {
   const [view, setView] = useState<View>('dashboard');
   const [games, setGames] = useState<Game[]>([]);
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
-  const [config, setConfig] = useState<Config | null>(null);
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
@@ -86,12 +86,8 @@ function AppContent() {
       setIsLoading(true);
       setLoadingMessage(t('loading.loading') as string);
       setError(null);
-      const [gamesData, configData] = await Promise.all([
-        listGames(),
-        getConfig()
-      ]);
+      const gamesData = await listGames();
       setGames(gamesData);
-      setConfig(configData);
     } catch (err) {
       setError(err instanceof Error ? err.message : (t('errors.failedLoadData') as string));
     } finally {
@@ -267,13 +263,14 @@ function AppContent() {
             />
           )}
 
-          {view === 'settings' && config && (
+          {view === 'settings' && (
             <Settings
-              config={config}
               onBack={() => setView('dashboard')}
-              onConfigUpdate={setConfig}
               theme={theme}
               onThemeChange={setTheme}
+              onResetComplete={() => {
+                window.location.reload();
+              }}
             />
           )}
 

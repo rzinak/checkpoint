@@ -82,8 +82,8 @@
         <ul>
           <li>Click on your game card</li>
           <li>Click "Create Snapshot"</li>
-          <li>Choose backup destination: Local, Cloud, or Both</li>
-          <li>Name it (e.g., "Before Boss Fight")</li>
+          <li>Choose backup destination: Local or Local + Cloud</li>
+          <li>Name it (e.g. "Before Boss Fight")</li>
         </ul>
         
         <h3>3. Restore a Save</h3>
@@ -104,7 +104,7 @@
         <h3>Setting Up</h3>
         <ol>
           <li>Sign in with Google in the Profile section</li>
-          <li>Set backup destination to "Cloud" or "Both"</li>
+          <li>Set backup destination to "Local + Cloud"</li>
           <li>Snapshots automatically upload to your Google Drive</li>
         </ol>
         
@@ -185,7 +185,12 @@
       <section id="storage">
         <h2>How Storage Works</h2>
         
-        <h3>Local Storage</h3>
+        <h3>Snapshots (Game Backups)</h3>
+        <p>Your game snapshots are stored here:</p>
+        <ul>
+          <li><strong>Linux:</strong> <code>~/checkpoint/</code></li>
+          <li><strong>Windows:</strong> <code>%USERPROFILE%\checkpoint\</code></li>
+        </ul>
         <pre><code>~/checkpoint/
 ├── [game-id-1]/
 │   ├── [timestamp-1].zip
@@ -193,7 +198,7 @@
 │   └── ...
 ├── [game-id-2]/
 │   └── ...
-└── config.json</code></pre>
+└── ...</code></pre>
         
         <h3>Snapshot Format</h3>
         <p>
@@ -207,12 +212,13 @@
         
         <h3>Configuration</h3>
         <p>
-          Config file location:
+          App configuration is stored separately in standard system locations:
         </p>
         <ul>
           <li><strong>Linux:</strong> <code>~/.config/checkpoint/config.json</code></li>
           <li><strong>Windows:</strong> <code>%APPDATA%\checkpoint\config.json</code></li>
         </ul>
+        <p><em>Note: These locations cannot be changed to prevent cloud sync issues.</em></p>
       </section>
 
       <section id="gdrive">

@@ -1,21 +1,21 @@
 {
   "app": {
     "name": "Checkpoint",
-    "tagline": "Save Game Manager"
+    "tagline": "Save game manager"
   },
   "nav": {
     "home": "Home",
     "settings": "Settings",
-    "addGame": "Add Game",
+    "addGame": "Add game",
     "profile": "Profile",
     "notifications": "Notifications"
   },
   "dashboard": {
-    "title": "Your Games",
+    "title": "Your games",
     "emptyState": {
       "title": "Ready to backup your saves?",
       "description": "Add your first game to start creating snapshots of your save files. Never lose progress again.",
-      "button": "Add Your First Game"
+      "button": "Add your first game"
     },
     "refresh": "Refresh",
     "search": {
@@ -36,16 +36,16 @@
   },
   "gameDetail": {
     "back": "Back to home",
-    "saveLocation": "Save Location",
-    "executable": "Executable",
+    "saveLocation": "Save location",
+    "browseSaveFolder": "Browse save folder",
     "snapshots": "Snapshots",
-    "createSnapshot": "Create Snapshot",
-    "deleteGame": "Delete Game",
+    "createSnapshot": "Create snapshot",
+    "deleteGame": "Delete game",
     "rename": "Rename",
     "restore": "Restore",
     "delete": "Delete",
-    "editGame": "Edit Game",
-    "deleteSnapshot": "Delete Snapshot",
+    "editGame": "Edit game",
+    "deleteSnapshot": "Delete snapshot",
     "snapshotNamePlaceholder": "Snapshot name (optional)",
     "cancel": "Cancel",
     "create": "Create",
@@ -53,40 +53,54 @@
     "gameRunning": "is currently running. You cannot restore while the game is active.",
     "confirmRestore": "Are you sure you want to restore this snapshot? This will overwrite your current save.",
     "confirmDeleteSnapshot": "Are you sure you want to delete this snapshot?",
-    "confirmDeleteGame": "Are you sure you want to delete {name}? This will also delete all snapshots."
+    "confirmDeleteGame": "Are you sure you want to delete {name}? This will also delete all snapshots.",
+    "lastRestored": "Last restored",
+    "searchSnapshots": "Search snapshots..."
   },
   "addGame": {
-    "title": "Add New Game",
-    "name": "Game Name",
-    "namePlaceholder": "e.g., NBA 2K16",
-    "saveLocation": "Save Location",
+    "title": "Add new game",
+    "name": "Game name",
+    "namePlaceholder": "e.g. NBA 2K16",
+    "saveLocation": "Save location",
     "saveLocationPlaceholder": "/path/to/save/folder",
     "browse": "Browse",
     "saveLocationHint": "The folder where your game saves are stored",
-    "executable": "Executable Name (optional)",
-    "executablePlaceholder": "e.g., NBA2K16.exe",
+    "executable": "Executable name (optional)",
+    "executablePlaceholder": "e.g. NBA2K16.exe",
     "executableHint": "Used to check if the game is running before restore",
     "cancel": "Cancel",
-    "add": "Add Game",
-    "coverImage": "Cover Image"
+    "add": "Add game",
+    "coverImage": "Cover image"
   },
   "settings": {
     "title": "Settings",
     "appearance": "Appearance",
     "theme": "Theme",
-    "lightMode": "Light Mode",
-    "darkMode": "Dark Mode",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
     "language": "Language",
-    "backupLocation": "Backup Location",
-    "backupFolder": "Backup Folder",
+    "backupLocation": "Backup location",
+    "backupFolder": "Backup folder",
     "backupHint": "All game snapshots will be stored in this folder",
-    "save": "Save Settings",
+    "save": "Save settings",
     "saving": "Saving...",
     "about": "About",
-    "version": "Checkpoint v0.1.0",
+    "version": "Checkpoint v0.1.1",
     "description": "A simple save game backup tool for local games.",
     "website": "Website",
-    "documentation": "Documentation"
+    "documentation": "Documentation",
+    "reportBug": "Report a bug",
+    "snapshotsLocation": "Snapshots location",
+    "snapshotsLocationDesc": "Your game backups are stored here:",
+    "snapshotsLocationHint": "This location cannot be changed to prevent cloud sync issues",
+    "dangerZone": "Danger zone",
+    "dangerZoneDesc": "These actions cannot be undone. Be careful!",
+    "resetData": "Reset all data",
+    "resetConfirmTitle": "Reset all data?",
+    "resetConfirmMessage": "This will delete ALL your games, snapshots, and settings. This action cannot be undone. Are you sure?",
+    "resetConfirm": "Yes, reset everything",
+    "resetSuccess": "All data has been reset successfully",
+    "resetFailed": "Failed to reset data"
   },
   "loading": {
     "creatingSnapshot": "Creating snapshot...",
@@ -124,7 +138,7 @@
     "snapshotDeleted": "Snapshot deleted successfully"
   },
   "cloud": {
-    "title": "Cloud Backup",
+    "title": "Cloud backup",
     "uploadSuccess": "Snapshot uploaded to cloud successfully",
     "downloadSuccess": "Snapshot downloaded from cloud successfully",
     "downloadFailed": "Failed to download backup",
@@ -137,27 +151,27 @@
     "notAuthenticated": "Please sign in with Google first",
     "noSnapshots": "No cloud snapshots found for this game",
     "confirmDelete": "Are you sure you want to delete \"{name}\" from the cloud? This cannot be undone.",
-    "backupDestination": "Backup Destination",
-    "localOnly": "Local Only",
-    "cloudOnly": "Cloud Only",
-    "both": "Local & Cloud",
-    "viewAll": "View All",
-    "howItWorks": "How Cloud Backup Works",
-    "namingSaves": "Naming Your Saves",
-    "deleteFromCloud": "Delete from Cloud",
+    "backupDestination": "Backup destination",
+    "localOnly": "Local only",
+    "cloudOnly": "Cloud only",
+    "both": "Local and cloud",
+    "viewAll": "View all",
+    "howItWorks": "How cloud backup works",
+    "namingSaves": "Naming your saves",
+    "deleteFromCloud": "Delete from cloud",
     "uploadToCloud": "Upload to cloud",
     "backedUp": "Backed up to cloud",
     "badge": "Cloud",
-    "uploadComplete": "Cloud Upload Complete",
+    "uploadComplete": "Cloud upload complete",
     "uploaded": "uploaded to cloud",
     "downloadSuccess": "Snapshot downloaded from cloud successfully",
     "syncing": "Syncing...",
     "lastUploaded": "Last uploaded",
     "refreshCloudList": "Refresh cloud list",
     "viewAllCloudBackups": "View all cloud backups",
-    "cloudBackups": "Cloud Backups",
+    "cloudBackups": "Cloud backups",
     "loadingBackups": "Loading cloud backups...",
-    "noBackups": "No Cloud Backups",
+    "noBackups": "No cloud backups",
     "uploadToSeeHere": "Upload snapshots to the cloud to see them here",
     "file": "file",
     "files": "files",
@@ -165,7 +179,7 @@
     "backupSingular": "backup",
     "backupPlural": "backups",
     "refresh": "Refresh",
-    "deleteCloudBackup": "Delete Cloud Backup",
+    "deleteCloudBackup": "Delete cloud backup",
     "delete": "Delete",
     "lastDownloaded": "Last downloaded",
     "errorMessages": "Error messages",
@@ -179,16 +193,16 @@
     "localOnlyDesc": "Saves stay on this computer only",
     "cloudOnlyDesc": "Saves go to Google Drive only (access from anywhere)",
     "bothDesc": "Saves go to both (recommended for safety)",
-    "uploadTitle": "Upload to Cloud",
+    "uploadTitle": "Upload to cloud",
     "uploadDesc": "Click the cloud icon next to any save to upload it to Google Drive. Your saves are stored in a hidden app folder, so they won't clutter your main Drive.",
-    "downloadTitle": "Download from Cloud",
-    "downloadDesc": "Click \"Download from Cloud\" to get your latest cloud save. This creates a new local copy you can restore from.",
+    "downloadTitle": "Download from cloud",
+    "downloadDesc": "Click \"Download from cloud\" to get your latest cloud save. This creates a new local copy you can restore from.",
     "namingDesc": "Cloud saves are stored globally across all games, so use descriptive names you'll recognize later:",
     "example1": "RDR2 - Chapter 3 - 2026-02-11",
     "example2": "Elden Ring - Before Boss Fight",
     "example3": "Cyberpunk 2077 - Act 2 Complete",
     "namingNote": "If you delete and re-add a game later, you'll need to recognize your saves by their names in \"View All\".",
-    "syncTitle": "Sync Status",
+    "syncTitle": "Sync status",
     "syncDesc": "The sync indicators show:",
     "lastUploadedDesc": "When you last backed up to cloud",
     "lastDownloadedDesc": "When you last restored from cloud",
@@ -199,11 +213,11 @@
   "profile": {
     "notLoggedIn": "Not logged in",
     "login": "Login",
-    "signOut": "Sign Out",
-    "storage": "Cloud Storage",
+    "signOut": "Sign out",
+    "storage": "Cloud storage",
     "account": "Account",
     "confirmSignOut": "Are you sure you want to sign out? You'll need to sign in again to access your cloud backups.",
-    "notSignedIn": "Not Signed In",
+    "notSignedIn": "Not signed in",
     "signInPrompt": "Sign in with Google to enable cloud backup features.",
     "loadingStorage": "Loading storage info...",
     "used": "used",
@@ -212,12 +226,13 @@
   },
   "notifications": {
     "title": "Notifications",
-    "noNotifications": "No Notifications",
+    "noNotifications": "No notifications",
     "description": "You'll see notifications here when you upload or download cloud backups",
     "loading": "Loading notifications...",
     "unreadSingular": "unread notification",
     "unreadPlural": "unread notifications",
-    "clearAll": "Clear all"
+    "clearAll": "Clear all",
+    "deleteNotification": "Delete notification"
   },
   "validation": {
     "nameMaxLength": "Game name must be less than 100 characters",
@@ -228,7 +243,9 @@
   },
   "common": {
     "soon": "soon",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
   },
   "time": {
     "justNow": "Just now",
@@ -237,6 +254,7 @@
     "daysAgo": "{days}d ago"
   },
   "editGame": {
-    "title": "Edit Game"
+    "title": "Edit game",
+    "saveChanges": "Save changes"
   }
 }

@@ -155,7 +155,7 @@ export function Notifications({ onBack }: NotificationsProps) {
                   removeNotification(notification.id);
                 }}
                 className="notification-close-btn"
-                title="Delete notification"
+                title={t('notifications.deleteNotification')}
               >
                 <X size={16} />
               </button>

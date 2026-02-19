@@ -37,7 +37,7 @@
   "gameDetail": {
     "back": "Volver al inicio",
     "saveLocation": "Ubicación de guardado",
-    "executable": "Ejecutable",
+    "browseSaveFolder": "Abrir carpeta de guardado",
     "snapshots": "Snapshots",
     "createSnapshot": "Crear snapshot",
     "deleteGame": "Eliminar juego",
@@ -53,7 +53,9 @@
     "gameRunning": "está en ejecución. No puedes restaurar mientras el juego esté activo.",
     "confirmRestore": "¿Estás seguro de que quieres restaurar este snapshot? Esto sobrescribirá tu partida actual.",
     "confirmDeleteSnapshot": "¿Estás seguro de que quieres eliminar este snapshot?",
-    "confirmDeleteGame": "¿Estás seguro de que quieres eliminar {name}? Esto también eliminará todos los snapshots."
+    "confirmDeleteGame": "¿Estás seguro de que quieres eliminar {name}? Esto también eliminará todos los snapshots.",
+    "lastRestored": "Última restauración",
+    "searchSnapshots": "Buscar snapshots..."
   },
   "addGame": {
     "title": "Añadir nuevo juego",
@@ -83,10 +85,22 @@
     "save": "Guardar ajustes",
     "saving": "Guardando...",
     "about": "Acerca de",
-    "version": "Checkpoint v0.1.0",
+    "version": "Checkpoint v0.1.1",
     "description": "Una herramienta simple de backup de partidas para juegos locales.",
     "website": "Sitio web",
-    "documentation": "Documentación"
+    "documentation": "Documentación",
+    "reportBug": "Reportar un error",
+    "snapshotsLocation": "Ubicación de backups",
+    "snapshotsLocationDesc": "Tus backups de juegos se almacenan aquí:",
+    "snapshotsLocationHint": "Esta ubicación no se puede cambiar para evitar problemas de sincronización",
+    "dangerZone": "Zona de peligro",
+    "dangerZoneDesc": "Estas acciones no se pueden deshacer. ¡Ten cuidado!",
+    "resetData": "Restablecer todos los datos",
+    "resetConfirmTitle": "¿Restablecer todos los datos?",
+    "resetConfirmMessage": "Esto eliminará TODOS tus juegos, snapshots y configuraciones. Esta acción no se puede deshacer. ¿Estás seguro?",
+    "resetConfirm": "Sí, restablecer todo",
+    "resetSuccess": "Todos los datos han sido restablecidos exitosamente",
+    "resetFailed": "Error al restablecer los datos"
   },
   "loading": {
     "creatingSnapshot": "Creando snapshot...",
@@ -127,6 +141,8 @@
     "title": "Backup en la nube",
     "uploadSuccess": "Snapshot subido a la nube correctamente",
     "downloadSuccess": "Snapshot descargado de la nube correctamente",
+    "downloadFailed": "Error al descargar backup",
+    "missingBackupInfo": "No se puede descargar: falta información del backup",
     "deleteSuccess": "Backup eliminado de la nube",
     "uploadFailed": "Snapshot creado pero falló la subida a la nube",
     "notInCloud": "Este snapshot no está en la nube",
@@ -136,7 +152,7 @@
     "backupDestination": "Destino del backup",
     "localOnly": "Solo local",
     "cloudOnly": "Solo nube",
-    "both": "Local & nube",
+    "both": "Local y nube",
     "viewAll": "Ver todos",
     "howItWorks": "Cómo funciona el backup en la nube",
     "namingSaves": "Nombrando tus partidas",
@@ -214,7 +230,8 @@
     "loading": "Cargando notificaciones...",
     "unreadSingular": "notificación no leída",
     "unreadPlural": "notificaciones no leídas",
-    "clearAll": "Limpiar todo"
+    "clearAll": "Limpiar todo",
+    "deleteNotification": "Eliminar notificación"
   },
   "validation": {
     "nameMaxLength": "El nombre del juego debe tener menos de 100 caracteres",
@@ -225,7 +242,9 @@
   },
   "common": {
     "soon": "próximamente",
-    "unknown": "Desconocido"
+    "unknown": "Desconhecido",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar"
   },
   "time": {
     "justNow": "Ahora mismo",
@@ -234,6 +253,7 @@
     "daysAgo": "{days}d atrás"
   },
   "editGame": {
-    "title": "Editar juego"
+    "title": "Editar juego",
+    "saveChanges": "Guardar cambios"
   }
 }
