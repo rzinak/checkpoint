@@ -858,14 +858,16 @@ html {
 
 .snapshots-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   margin-bottom: 1rem;
+  gap: 1rem;
 }
 
 .snapshots-header h3 {
   font-size: 0.9375rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .snapshot-list {
@@ -900,6 +902,65 @@ html {
   display: flex;
   gap: 0.25rem;
   margin-left: .5rem;
+}
+
+.snapshot-search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 300px;
+  margin: 0 1rem;
+}
+
+.snapshot-search-bar .search-icon {
+  position: absolute;
+  left: 0.625rem;
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+.snapshot-search-input {
+  width: 100%;
+  padding: 0.375rem 0.625rem 0.375rem 2rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  transition: all 0.15s ease;
+}
+
+.snapshot-search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.snapshot-search-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.last-restored-badge {
+  position: absolute;
+  top: -8px;
+  left: 8px;
+  background: var(--accent);
+  color: white;
+  font-size: 0.45rem;
+  font-weight: 400;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 1;
+  line-height: 1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.snapshot-item.last-restored {
+  position: relative;
+  margin-top: 6px;
+  border: 1px solid var(--accent);
 }
 
 .btn-small {

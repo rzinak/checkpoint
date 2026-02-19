@@ -8,14 +8,15 @@ import {
   deleteGame,
   isProcessRunning,
   importSnapshot,
-  openFolder
+  openFolder,
+  updateLastRestoredSnapshot
 } from '../lib/api';
 import { useI18n } from '../lib/i18n';
 import { useProfile } from '../lib/profileContext';
 import { useToast } from '../lib/toastContext';
 import { uploadSnapshot, listCloudSnapshots, /* downloadSnapshot */ } from '../lib/googleDrive';
 import type { Game, Snapshot, CloudSyncState } from '../lib/types';
-import { ArrowLeft, Plus, RotateCcw, Trash2, Edit3, CheckCircle, AlertTriangle, Cloud, CloudUpload, /* CloudDownload, */ Loader2, Info, RefreshCw, FolderOpen } from 'lucide-react';
+import { ArrowLeft, Plus, RotateCcw, Trash2, Edit3, CheckCircle, AlertTriangle, Cloud, CloudUpload, /* CloudDownload, */ Loader2, Info, RefreshCw, FolderOpen, Search } from 'lucide-react';
 import { EditGameModal } from './EditGameModal';
 import { CloudBackupInfo } from './CloudBackupInfo';
 import { CloudBackupListModal } from './CloudBackupListModal';
@@ -66,6 +67,15 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
 
   const [cloudSnapshots, setCloudSnapshots] = useState<Map<string, { id: string; modifiedTime: string }>>(new Map());
   const [isLoadingCloudList, setIsLoadingCloudList] = useState(false);
+  const [snapshotSearchQuery, setSnapshotSearchQuery] = useState('');
+  const [debouncedSnapshotSearch, setDebouncedSnapshotSearch] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSnapshotSearch(snapshotSearchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [snapshotSearchQuery]);
 
   const checkProcess = useCallback(async () => {
     if (game.exe_name) {
@@ -136,6 +146,10 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
     localStorage.setItem(`checkpoint-backup-dest-${game.id}`, backupDestination);
   }, [backupDestination, game.id]);
 
+  useEffect(() => {
+    setSnapshotSearchQuery('');
+  }, [game.id]);
+
   const handleCreateSnapshot = async () => {
     setIsCreatingSnapshot(true);
     setLoading(true, t('loading.creatingSnapshot'));
@@ -205,6 +219,8 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
               `"${snapshotToRestore?.name || snapshotId}" - ${game.name}`,
               'success'
             );
+            await updateLastRestoredSnapshot(game.id, snapshotId);
+            onGameUpdated({ ...game, last_restored_snapshot_id: snapshotId, last_restored_at: new Date().toISOString() });
             loadSnapshots();
           } else {
             addToast(result.message, 'error');
@@ -740,7 +756,17 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       <div className="snapshots-section">
         <div className="snapshots-header">
           <h3>{t('gameDetail.snapshots')}</h3>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div className="snapshot-search-bar">
+            <Search size={16} className="search-icon" />
+            <input
+              type="text"
+              value={snapshotSearchQuery}
+              onChange={(e) => setSnapshotSearchQuery(e.target.value)}
+              placeholder={t('gameDetail.searchSnapshots')}
+              className="snapshot-search-input"
+            />
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', marginLeft: 'auto' }}>
             <button
               className="btn btn-secondary btn-small"
               onClick={() => setIsEditModalOpen(true)}
@@ -812,92 +838,117 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
           </p>
         ) : (
           <div className="snapshot-list">
-            {snapshots.map(snapshot => (
-              <div key={snapshot.id} className="snapshot-item">
-                <div className="snapshot-info">
-                  {editingSnapshot === snapshot.id ? (
-                    <input
-                      type="text"
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                      onBlur={() => handleRenameSave(snapshot.id)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleRenameSave(snapshot.id);
-                        if (e.key === 'Escape') setEditingSnapshot(null);
-                      }}
-                      autoFocus
-                      style={{
-                        padding: '0.25rem',
-                        background: 'var(--bg-primary)',
-                        border: '1px solid var(--accent)',
-                        borderRadius: '0.25rem',
-                        color: 'var(--text-primary)',
-                        fontSize: '1rem',
-                        fontWeight: 600
-                      }}
-                    />
-                  ) : (
-                    <h4>{snapshot.name}</h4>
-                  )}
-                  <p>
-                    {formatDate(snapshot.timestamp)} • {formatSize(snapshot.size)} • {snapshot.file_count} {snapshot.file_count === 1 ? t('cloud.file') : t('cloud.files')}
-                    {cloudSnapshots.has(snapshot.id) && (
-                      <span className="cloud-badge" title={t('cloud.backedUp')}>
-                        <Cloud size={12} /> {t('cloud.badge')}
-                      </span>
-                    )}
+            {(() => {
+              const filteredSnapshots = debouncedSnapshotSearch.trim()
+                ? snapshots.filter(s => s.name.toLowerCase().includes(debouncedSnapshotSearch.toLowerCase()))
+                : snapshots;
+
+              if (filteredSnapshots.length === 0) {
+                return (
+                  <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem' }}>
+                    {t('dashboard.noResults')}
                   </p>
-                </div>
-                <div className="snapshot-actions">
-                  {isAuthenticated && !cloudSnapshots.has(snapshot.id) && backupDestination !== 'local' && (
-                    <button
-                      className="btn btn-secondary btn-small"
-                      onClick={() => handleUploadToCloud(snapshot)}
-                      disabled={isUploading}
-                      title={t('cloud.uploadToCloud')}
-                    >
-                      {isUploading ? (
-                        <Loader2 size={16} className="spinner" />
+                );
+              }
+
+              return filteredSnapshots.map(snapshot => {
+                const isLastRestored = game.last_restored_snapshot_id === snapshot.id;
+                return (
+                  <div
+                    key={snapshot.id}
+                    className={`snapshot-item${isLastRestored ? ' last-restored' : ''}`}
+                  >
+                    <div className="snapshot-info">
+                      {editingSnapshot === snapshot.id ? (
+                        <input
+                          type="text"
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                          onBlur={() => handleRenameSave(snapshot.id)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleRenameSave(snapshot.id);
+                            if (e.key === 'Escape') setEditingSnapshot(null);
+                          }}
+                          autoFocus
+                          style={{
+                            padding: '0.25rem',
+                            background: 'var(--bg-primary)',
+                            border: '1px solid var(--accent)',
+                            borderRadius: '0.25rem',
+                            color: 'var(--text-primary)',
+                            fontSize: '1rem',
+                            fontWeight: 600
+                          }}
+                        />
                       ) : (
-                        <CloudUpload size={16} />
+                        <h4>{snapshot.name}</h4>
                       )}
-                    </button>
-                  )}
-                  <button
-                    className="btn btn-secondary btn-small"
-                    onClick={() => handleRenameStart(snapshot)}
-                    title={t('gameDetail.rename')}
-                  >
-                    <Edit3 size={16} />
-                  </button>
-                  <button
-                    className="btn btn-success btn-small"
-                    onClick={() => handleRestore(snapshot.id)}
-                    disabled={isProcessRunningState}
-                    title={t('gameDetail.restore')}
-                  >
-                    <RotateCcw size={16} />
-                  </button>
-                  <button
-                    className="btn btn-danger btn-small"
-                    onClick={() => handleDeleteSnapshot(snapshot.id)}
-                    title={t('gameDetail.delete')}
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                  {cloudSnapshots.has(snapshot.id) && (
-                    <button
-                      className="btn btn-danger btn-small"
-                      onClick={() => handleDeleteCloudSnapshot(snapshot)}
-                      title={t('cloud.deleteFromCloud')}
-                      style={{ marginLeft: '0.25rem' }}
-                    >
-                      <Cloud size={16} />
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
+                      <p>
+                        {formatDate(snapshot.timestamp)} • {formatSize(snapshot.size)} • {snapshot.file_count} {snapshot.file_count === 1 ? t('cloud.file') : t('cloud.files')}
+                        {cloudSnapshots.has(snapshot.id) && (
+                          <span className="cloud-badge" title={t('cloud.backedUp')}>
+                            <Cloud size={12} /> {t('cloud.badge')}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                    <div className="snapshot-actions">
+                      {isAuthenticated && !cloudSnapshots.has(snapshot.id) && backupDestination !== 'local' && (
+                        <button
+                          className="btn btn-secondary btn-small"
+                          onClick={() => handleUploadToCloud(snapshot)}
+                          disabled={isUploading}
+                          title={t('cloud.uploadToCloud')}
+                        >
+                          {isUploading ? (
+                            <Loader2 size={16} className="spinner" />
+                          ) : (
+                            <CloudUpload size={16} />
+                          )}
+                        </button>
+                      )}
+                      <button
+                        className="btn btn-secondary btn-small"
+                        onClick={() => handleRenameStart(snapshot)}
+                        title={t('gameDetail.rename')}
+                      >
+                        <Edit3 size={16} />
+                      </button>
+                      <button
+                        className="btn btn-success btn-small"
+                        onClick={() => handleRestore(snapshot.id)}
+                        disabled={isProcessRunningState}
+                        title={t('gameDetail.restore')}
+                      >
+                        <RotateCcw size={16} />
+                      </button>
+                      <button
+                        className="btn btn-danger btn-small"
+                        onClick={() => handleDeleteSnapshot(snapshot.id)}
+                        title={t('gameDetail.delete')}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                      {cloudSnapshots.has(snapshot.id) && (
+                        <button
+                          className="btn btn-danger btn-small"
+                          onClick={() => handleDeleteCloudSnapshot(snapshot)}
+                          title={t('cloud.deleteFromCloud')}
+                          style={{ marginLeft: '0.25rem' }}
+                        >
+                          <Cloud size={16} />
+                        </button>
+                      )}
+                    </div>
+                    {isLastRestored && (
+                      <div className="last-restored-badge">
+                        {t('gameDetail.lastRestored')}
+                      </div>
+                    )}
+                  </div>
+                );
+              });
+            })()}
           </div>
         )}
       </div>

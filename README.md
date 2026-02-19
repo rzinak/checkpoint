@@ -49,7 +49,7 @@ Checkpoint is built with privacy as the foundation:
 2. **Create a Snapshot**
    - Click on your game card
    - Click "Create Snapshot"
-   - Give it a name (e.g., "Before Boss Fight")
+   - Give it a name (e.g. "Before Boss Fight")
    - Choose backup destination: Local, Cloud, or Both
 
 3. **Restore a Save**

@@ -3,6 +3,7 @@ use crate::game::{AddGameRequest, Game, UpdateGameRequest};
 use crate::snapshot::{CreateSnapshotRequest, RestoreResult, Snapshot};
 use crate::AppState;
 use base64::{engine::general_purpose, Engine as _};
+use chrono::Utc;
 use tauri::{AppHandle, State};
 
 #[tauri::command]
@@ -346,6 +347,28 @@ pub async fn open_folder(path: String) -> Result<(), String> {
                 .map_err(|e| format!("Failed to open folder: {}", e))?;
         }
     }
+
+    Ok(())
+}
+
+#[tauri::command]
+pub fn update_last_restored_snapshot(
+    game_id: String,
+    snapshot_id: String,
+    state: State<AppState>,
+) -> Result<(), String> {
+    let mut config = state.config.lock().map_err(|e| e.to_string())?;
+
+    let game_index = config
+        .games
+        .iter()
+        .position(|g| g.id == game_id)
+        .ok_or("Game not found")?;
+
+    config.games[game_index].last_restored_snapshot_id = Some(snapshot_id);
+    config.games[game_index].last_restored_at = Some(Utc::now());
+
+    config.save()?;
 
     Ok(())
 }

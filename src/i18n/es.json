@@ -53,7 +53,9 @@
     "gameRunning": "está en ejecución. No puedes restaurar mientras el juego esté activo.",
     "confirmRestore": "¿Estás seguro de que quieres restaurar este snapshot? Esto sobrescribirá tu partida actual.",
     "confirmDeleteSnapshot": "¿Estás seguro de que quieres eliminar este snapshot?",
-    "confirmDeleteGame": "¿Estás seguro de que quieres eliminar {name}? Esto también eliminará todos los snapshots."
+    "confirmDeleteGame": "¿Estás seguro de que quieres eliminar {name}? Esto también eliminará todos los snapshots.",
+    "lastRestored": "Última restauración",
+    "searchSnapshots": "Buscar snapshots..."
   },
   "addGame": {
     "title": "Añadir nuevo juego",

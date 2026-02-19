@@ -38,6 +38,7 @@ pub fn run() {
             import_snapshot,
             reset_checkpoint,
             open_folder,
+            update_last_restored_snapshot,
             oauth_server::start_oauth_server,
             oauth_server::wait_for_oauth_code,
             oauth_server::stop_oauth_server,

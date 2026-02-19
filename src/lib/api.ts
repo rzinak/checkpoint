@@ -68,3 +68,6 @@ export const resetCheckpoint = (): Promise<void> =>
 
 export const openFolder = (path: string): Promise<void> =>
   invoke('open_folder', { path });
+
+export const updateLastRestoredSnapshot = (gameId: string, snapshotId: string): Promise<void> =>
+  invoke('update_last_restored_snapshot', { gameId, snapshotId });

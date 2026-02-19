@@ -53,18 +53,20 @@
     "gameRunning": "is currently running. You cannot restore while the game is active.",
     "confirmRestore": "Are you sure you want to restore this snapshot? This will overwrite your current save.",
     "confirmDeleteSnapshot": "Are you sure you want to delete this snapshot?",
-    "confirmDeleteGame": "Are you sure you want to delete {name}? This will also delete all snapshots."
+    "confirmDeleteGame": "Are you sure you want to delete {name}? This will also delete all snapshots.",
+    "lastRestored": "Last restored",
+    "searchSnapshots": "Search snapshots..."
   },
   "addGame": {
     "title": "Add new game",
     "name": "Game name",
-    "namePlaceholder": "e.g., NBA 2K16",
+    "namePlaceholder": "e.g. NBA 2K16",
     "saveLocation": "Save location",
     "saveLocationPlaceholder": "/path/to/save/folder",
     "browse": "Browse",
     "saveLocationHint": "The folder where your game saves are stored",
     "executable": "Executable name (optional)",
-    "executablePlaceholder": "e.g., NBA2K16.exe",
+    "executablePlaceholder": "e.g. NBA2K16.exe",
     "executableHint": "Used to check if the game is running before restore",
     "cancel": "Cancel",
     "add": "Add game",

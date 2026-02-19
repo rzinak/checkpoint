@@ -129,6 +129,11 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
       await deleteCloudSnapshot(token, confirmDelete.backup.id);
       setBackups(backups.filter(b => b.id !== confirmDelete.backup!.id));
       addToast(t('cloud.backupDeletedFromCloud'), 'success');
+      addNotification(
+        t('cloud.backupDeletedFromCloud'),
+        `"${confirmDelete.backup?.snapshotName || confirmDelete.backup?.name || 'Backup'}"`,
+        'success'
+      );
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : t('cloud.failedDeleteBackup');
       addToast(errorMsg, 'error');
