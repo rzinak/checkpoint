@@ -93,7 +93,7 @@
     "snapshotsLocationHint": "Este local não pode ser alterado para evitar problemas de sincronização",
     "dangerZone": "Zona de perigo",
     "dangerZoneDesc": "Estas ações não podem ser desfeitas. Tenha cuidado!",
-    "resetData": "Resetar Todos os dados",
+    "resetData": "Resetar todos os dados",
     "resetConfirmTitle": "Resetar todos os dados?",
     "resetConfirmMessage": "Isso excluirá TODOS os seus jogos, snapshots e configurações. Esta ação não pode ser desfeita. Tem certeza?",
     "resetConfirm": "Sim, resetar tudo",
@@ -228,7 +228,8 @@
     "loading": "Carregando notificações...",
     "unreadSingular": "notificação não lida",
     "unreadPlural": "notificações não lidas",
-    "clearAll": "Limpar tudo"
+    "clearAll": "Limpar tudo",
+    "deleteNotification": "Excluir notificação"
   },
   "validation": {
     "nameMaxLength": "Nome do jogo deve ter menos de 100 caracteres",
@@ -239,7 +240,9 @@
   },
   "common": {
     "soon": "em breve",
-    "unknown": "Desconhecido"
+    "unknown": "Desconhecido",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar"
   },
   "time": {
     "justNow": "Agora mesmo",
@@ -248,6 +251,7 @@
     "daysAgo": "{days}d atrás"
   },
   "editGame": {
-    "title": "Editar jogo"
+    "title": "Editar jogo",
+    "saveChanges": "Salvar alterações"
   }
 }

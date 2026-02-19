@@ -63,7 +63,7 @@
     "saveLocationPlaceholder": "/path/to/save/folder",
     "browse": "Browse",
     "saveLocationHint": "The folder where your game saves are stored",
-    "executable": "Executable Name (optional)",
+    "executable": "Executable name (optional)",
     "executablePlaceholder": "e.g., NBA2K16.exe",
     "executableHint": "Used to check if the game is running before restore",
     "cancel": "Cancel",
@@ -229,7 +229,8 @@
     "loading": "Loading notifications...",
     "unreadSingular": "unread notification",
     "unreadPlural": "unread notifications",
-    "clearAll": "Clear all"
+    "clearAll": "Clear all",
+    "deleteNotification": "Delete notification"
   },
   "validation": {
     "nameMaxLength": "Game name must be less than 100 characters",
@@ -240,7 +241,9 @@
   },
   "common": {
     "soon": "soon",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
   },
   "time": {
     "justNow": "Just now",
@@ -249,6 +252,7 @@
     "daysAgo": "{days}d ago"
   },
   "editGame": {
-    "title": "Edit game"
+    "title": "Edit game",
+    "saveChanges": "Save changes"
   }
 }

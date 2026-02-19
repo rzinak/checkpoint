@@ -228,7 +228,8 @@
     "loading": "Cargando notificaciones...",
     "unreadSingular": "notificación no leída",
     "unreadPlural": "notificaciones no leídas",
-    "clearAll": "Limpiar todo"
+    "clearAll": "Limpiar todo",
+    "deleteNotification": "Eliminar notificación"
   },
   "validation": {
     "nameMaxLength": "El nombre del juego debe tener menos de 100 caracteres",
@@ -239,7 +240,9 @@
   },
   "common": {
     "soon": "próximamente",
-    "unknown": "Desconocido"
+    "unknown": "Desconhecido",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar"
   },
   "time": {
     "justNow": "Ahora mismo",
@@ -248,6 +251,7 @@
     "daysAgo": "{days}d atrás"
   },
   "editGame": {
-    "title": "Editar juego"
+    "title": "Editar juego",
+    "saveChanges": "Guardar cambios"
   }
 }

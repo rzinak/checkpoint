@@ -213,7 +213,7 @@ export function EditGameModal({ game, onClose, onGameUpdated, setLoading }: Edit
               type="submit"
               isLoading={isLoading}
             >
-              Save Changes
+              {t('editGame.saveChanges')}
             </Button>
           </div>
         </form>

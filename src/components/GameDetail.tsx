@@ -934,6 +934,8 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
         title={confirmModal.title}
         message={confirmModal.message}
         danger={confirmModal.danger}
+        confirmText={t('common.confirm')}
+        cancelText={t('common.cancel')}
         onConfirm={confirmModal.onConfirm}
         onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
       />
