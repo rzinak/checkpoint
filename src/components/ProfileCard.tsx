@@ -17,8 +17,22 @@ export function ProfileCard({ onOpenProfile }: ProfileCardProps) {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const { t } = useI18n();
 
+  const handleCancelLogin = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    stopOAuthServer().catch(() => {});
+  };
+
   const handleLogin = async () => {
     setIsLoggingIn(true);
+
+    let isCancelled = false;
+    const onFocus = () => {
+      setTimeout(() => {
+        if (!isCancelled) {
+          stopOAuthServer().catch(() => {});
+        }
+      }, 500);
+    };
 
     try {
       const port = await startOAuthServer();
@@ -28,7 +42,19 @@ export function ProfileCard({ onOpenProfile }: ProfileCardProps) {
       const authUrl = await initiateGoogleAuth();
       await openUrl(authUrl);
 
+      setTimeout(() => {
+        if (!isCancelled) {
+          if (document.hasFocus()) {
+            onFocus();
+          } else {
+            window.addEventListener('focus', onFocus, { once: true });
+          }
+        }
+      }, 1500);
+
       const code = await waitForOAuthCode();
+      isCancelled = true;
+      window.removeEventListener('focus', onFocus);
 
       if (code) {
         await loginWithGoogle(code);
@@ -37,6 +63,8 @@ export function ProfileCard({ onOpenProfile }: ProfileCardProps) {
       alert('Login failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
       await stopOAuthServer().catch(() => { });
     } finally {
+      isCancelled = true;
+      window.removeEventListener('focus', onFocus);
       setIsLoggingIn(false);
     }
   };
@@ -56,12 +84,14 @@ export function ProfileCard({ onOpenProfile }: ProfileCardProps) {
       <div className="profile-card profile-card-guest">
         <button
           className="profile-login-compact"
-          onClick={handleLogin}
-          disabled={isLoggingIn}
-          title={t('profile.googleLogin')}
+          onClick={isLoggingIn ? handleCancelLogin : handleLogin}
+          title={isLoggingIn ? t('common.cancel') : t('profile.googleLogin')}
         >
           {isLoggingIn ? (
-            <Loader2 size={16} className="spinner" />
+            <>
+              <Loader2 size={16} className="spinner" />
+              <span>{t('common.cancel')}</span>
+            </>
           ) : (
             <>
               <svg className="google-icon" viewBox="0 0 24 24" width="16" height="16">
