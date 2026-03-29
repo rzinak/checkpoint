@@ -190,6 +190,7 @@
         <ul>
           <li><strong>Linux:</strong> <code>~/checkpoint/</code></li>
           <li><strong>Windows:</strong> <code>%USERPROFILE%\checkpoint\</code></li>
+          <li><strong>macOS:</strong> <code>~/checkpoint/</code></li>
         </ul>
         <pre><code>~/checkpoint/
 ├── [game-id-1]/
@@ -217,6 +218,7 @@
         <ul>
           <li><strong>Linux:</strong> <code>~/.config/checkpoint/config.json</code></li>
           <li><strong>Windows:</strong> <code>%APPDATA%\checkpoint\config.json</code></li>
+          <li><strong>macOS:</strong> <code>~/.config/checkpoint/config.json</code></li>
         </ul>
         <p><em>Note: These locations cannot be changed to prevent cloud sync issues.</em></p>
       </section>
@@ -306,6 +308,10 @@ sudo apt install -y \
   patchelf \
   pkg-config \
   build-essential</code></pre>
+        
+        <h4>macOS</h4>
+        <pre><code># Install Xcode Command Line Tools
+xcode-select --install</code></pre>
         
         <h4>All Platforms</h4>
         <ul>
