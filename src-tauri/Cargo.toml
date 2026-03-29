@@ -13,7 +13,7 @@ name = "checkpoint"
 path = "src/main.rs"
 
 [dependencies]
-tauri = { version = "2.0", features = [] }
+tauri = { version = "2.0", features = ["protocol-asset"] }
 tauri-plugin-dialog = "2.0"
 tauri-plugin-fs = "2.0"
 tauri-plugin-process = "2.0"

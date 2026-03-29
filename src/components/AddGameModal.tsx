@@ -17,6 +17,7 @@ export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalP
   const [saveLocation, setSaveLocation] = useState('');
   const [exeName, setExeName] = useState('');
   const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mouseDownOnOverlay, setMouseDownOnOverlay] = useState(false);
@@ -55,14 +56,12 @@ export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalP
     reader.readAsDataURL(file);
   };
 
-  /*
   const handleRemoveCover = () => {
     setCoverImage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
-  */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,115 +106,170 @@ export function AddGameModal({ onClose, onGameAdded, setLoading }: AddGameModalP
   };
 
   return (
-    <div
-      className="modal-overlay"
-      onMouseDown={(e) => setMouseDownOnOverlay(e.target === e.currentTarget)}
-      onMouseUp={(e) => {
-        if (mouseDownOnOverlay && e.target === e.currentTarget) {
-          onClose();
-        }
-      }}
-    >
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>{t('addGame.title')}</h2>
-          <button className="modal-close" onClick={onClose}>
-            <X size={24} />
-          </button>
-        </div>
+    <>
+      <div
+        className="modal-overlay"
+        onMouseDown={(e) => setMouseDownOnOverlay(e.target === e.currentTarget)}
+        onMouseUp={(e) => {
+          if (mouseDownOnOverlay && e.target === e.currentTarget) {
+            onClose();
+          }
+        }}
+      >
+        <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal-header">
+            <h2>{t('addGame.title')}</h2>
+            <button className="modal-close" onClick={onClose}>
+              <X size={24} />
+            </button>
+          </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="modal-body">
-            {error && (
-              <div className="alert alert-error" style={{ marginBottom: '1rem' }}>
-                {error}
+          <form onSubmit={handleSubmit}>
+            <div className="modal-body">
+              {error && (
+                <div className="alert alert-error" style={{ marginBottom: '1rem' }}>
+                  {error}
+                </div>
+              )}
+
+              <div className="cover-upload">
+                <label className="cover-upload-label">
+                  {t('addGame.coverImage')} <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>(JPG/PNG, 2MB max)</span>
+                </label>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileSelect}
+                  accept="image/png,image/jpeg"
+                  style={{ display: 'none' }}
+                />
+
+                {coverImage ? (
+                  <>
+                    <div
+                      className="cover-upload-preview"
+                      onClick={() => setLightboxOpen(true)}
+                    >
+                      <img
+                        src={coverImage}
+                        alt="Cover preview"
+                      />
+                    </div>
+                    <div className="cover-upload-links">
+                      <div
+                        className="cover-upload-view-link"
+                        onClick={() => setLightboxOpen(true)}
+                      >
+                        {t('addGame.viewImage')}
+                      </div>
+                      <div
+                        className="cover-upload-remove-link"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveCover();
+                        }}
+                      >
+                        {t('addGame.removeImage')}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div
+                    className="cover-upload-area"
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="cover-upload-placeholder">
+                      <ImagePlus size={32} style={{ opacity: 0.4 }} />
+                      <p style={{ marginTop: '0.5rem', marginBottom: 0, opacity: 0.6 }}>{t('addGame.coverImage')}</p>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
 
-            <div className="cover-upload" style={{ opacity: 0.5, pointerEvents: 'none' }}>
-              <label className="cover-upload-label">{t('addGame.coverImage')} <span style={{ fontSize: '0.75rem', color: 'var(--accent)', marginLeft: '0.5rem' }}>({t('common.soon')})</span></label>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileSelect}
-                accept="image/png,image/jpeg"
-                style={{ display: 'none' }}
-                disabled
+              <Input
+                label={t('addGame.name') + ' *'}
+                id="gameName"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={t('addGame.namePlaceholder')}
+                maxLength={100}
+                required
               />
 
-              <div className="cover-upload-area" style={{ cursor: 'not-allowed' }}>
-                <div className="cover-upload-placeholder">
-                  <ImagePlus size={32} style={{ opacity: 0.4 }} />
-                  <p style={{ marginTop: '0.5rem', marginBottom: 0, opacity: 0.6 }}>{t('validation.coverImageSoon')}</p>
-                </div>
-              </div>
+              <Input
+                label={t('addGame.saveLocation') + ' *'}
+                id="saveLocation"
+                type="text"
+                value={saveLocation}
+                onChange={(e) => setSaveLocation(e.target.value)}
+                placeholder={t('addGame.saveLocationPlaceholder')}
+                hint={t('addGame.saveLocationHint')}
+                maxLength={500}
+                required
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                leftIcon={<FolderOpen size={16} />}
+                onClick={handleBrowse}
+                style={{ marginTop: '-0.5rem', marginBottom: '1rem' }}
+              >
+                {t('addGame.browse')}
+              </Button>
+
+              <Input
+                label={t('addGame.executable')}
+                id="exeName"
+                type="text"
+                value={exeName}
+                onChange={(e) => setExeName(e.target.value)}
+                placeholder={t('addGame.executablePlaceholder')}
+                hint={t('addGame.executableHint')}
+                maxLength={100}
+              />
             </div>
 
-            <Input
-              label={t('addGame.name') + ' *'}
-              id="gameName"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t('addGame.namePlaceholder')}
-              maxLength={100}
-              required
-            />
-
-            <Input
-              label={t('addGame.saveLocation') + ' *'}
-              id="saveLocation"
-              type="text"
-              value={saveLocation}
-              onChange={(e) => setSaveLocation(e.target.value)}
-              placeholder={t('addGame.saveLocationPlaceholder')}
-              hint={t('addGame.saveLocationHint')}
-              maxLength={500}
-              required
-            />
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              leftIcon={<FolderOpen size={16} />}
-              onClick={handleBrowse}
-              style={{ marginTop: '-0.5rem', marginBottom: '1rem' }}
-            >
-              {t('addGame.browse')}
-            </Button>
-
-            <Input
-              label={t('addGame.executable')}
-              id="exeName"
-              type="text"
-              value={exeName}
-              onChange={(e) => setExeName(e.target.value)}
-              placeholder={t('addGame.executablePlaceholder')}
-              hint={t('addGame.executableHint')}
-              maxLength={100}
-            />
-          </div>
-
-          <div className="modal-footer">
-            <Button
-              variant="secondary"
-              size="md"
-              onClick={onClose}
-              disabled={isLoading}
-            >
-              {t('addGame.cancel')}
-            </Button>
-            <Button
-              variant="primary"
-              size="md"
-              type="submit"
-              isLoading={isLoading}
-            >
-              {t('addGame.add')}
-            </Button>
-          </div>
-        </form>
+            <div className="modal-footer">
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={onClose}
+                disabled={isLoading}
+              >
+                {t('addGame.cancel')}
+              </Button>
+              <Button
+                variant="primary"
+                size="md"
+                type="submit"
+                isLoading={isLoading}
+              >
+                {t('addGame.add')}
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+
+      {lightboxOpen && coverImage && (
+        <div
+          className="lightbox-overlay"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <button className="lightbox-close" onClick={() => setLightboxOpen(false)}>
+            <X size={24} />
+          </button>
+          <img
+            className="lightbox-image"
+            src={coverImage}
+            alt={name || 'Cover preview'}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+    </>
   );
 }

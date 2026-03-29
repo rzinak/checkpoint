@@ -70,7 +70,9 @@
     "executableHint": "Se usa para verificar si el juego está en ejecución antes de restaurar",
     "cancel": "Cancelar",
     "add": "Añadir juego",
-    "coverImage": "Imagen de portada"
+    "coverImage": "Imagen de portada",
+    "viewImage": "Ver imagen",
+    "removeImage": "Eliminar imagen"
   },
   "settings": {
     "title": "Ajustes",

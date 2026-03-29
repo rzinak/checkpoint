@@ -70,7 +70,9 @@
     "executableHint": "Used to check if the game is running before restore",
     "cancel": "Cancel",
     "add": "Add game",
-    "coverImage": "Cover image"
+    "coverImage": "Cover image",
+    "viewImage": "View image",
+    "removeImage": "Remove image"
   },
   "settings": {
     "title": "Settings",

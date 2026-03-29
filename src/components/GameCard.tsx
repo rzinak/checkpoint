@@ -1,6 +1,7 @@
 import type { Game } from '../lib/types';
 import { Folder, Calendar, Gamepad2 } from 'lucide-react';
 import { useI18n } from '../lib/i18n';
+import { convertFileSrc } from '@tauri-apps/api/core';
 import type { CSSProperties } from 'react';
 
 interface GameCardProps {
@@ -21,7 +22,9 @@ export function GameCard({ game, onClick, style }: GameCardProps) {
     });
   };
 
-  const coverUrl = game.cover_image ? `file://${game.cover_image}` : null;
+  const coverUrl = game.cover_image
+    ? `${convertFileSrc(game.cover_image)}?t=${Date.now()}`
+    : null;
 
   return (
     <div className="game-card" onClick={onClick} style={style}>
