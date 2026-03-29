@@ -65,6 +65,15 @@ pub async fn add_game(request: AddGameRequest, state: State<'_, AppState>) -> Re
         config.save()?;
     }
 
+    if let Some(ref cover) = game.cover_image {
+        if cover == "cover.png" {
+            let cover_path = std::path::Path::new(&backup_location)
+                .join(&game.id)
+                .join(cover);
+            game.cover_image = Some(cover_path.to_string_lossy().to_string());
+        }
+    }
+
     Ok(game)
 }
 
@@ -134,36 +143,54 @@ pub async fn update_game(
     if let Some(cover_data) = request.cover_image {
         let game_id = config.games[game_index].id.clone();
 
-        let base64_data = if cover_data.contains(',') {
-            cover_data
-                .split(',')
-                .nth(1)
-                .unwrap_or(&cover_data)
-                .to_string()
-        } else {
-            cover_data
-        };
-
-        match general_purpose::STANDARD.decode(&base64_data) {
-            Ok(image_bytes) => {
-                let game_dir = std::path::Path::new(&backup_location).join(&game_id);
-                std::fs::create_dir_all(&game_dir)
-                    .map_err(|e| format!("Failed to create game directory: {}", e))?;
-
-                let cover_path = game_dir.join("cover.png");
-                std::fs::write(&cover_path, image_bytes)
-                    .map_err(|e| format!("Failed to save cover: {}", e))?;
-
-                config.games[game_index].cover_image = Some("cover.png".to_string());
+        if cover_data.is_empty() {
+            let game_dir = std::path::Path::new(&backup_location).join(&game_id);
+            let cover_path = game_dir.join("cover.png");
+            if cover_path.exists() {
+                let _ = std::fs::remove_file(&cover_path);
             }
-            Err(e) => {
-                return Err(format!("Failed to decode cover image: {}", e));
+            config.games[game_index].cover_image = None;
+        } else {
+            let base64_data = if cover_data.contains(',') {
+                cover_data
+                    .split(',')
+                    .nth(1)
+                    .unwrap_or(&cover_data)
+                    .to_string()
+            } else {
+                cover_data
+            };
+
+            match general_purpose::STANDARD.decode(&base64_data) {
+                Ok(image_bytes) => {
+                    let game_dir = std::path::Path::new(&backup_location).join(&game_id);
+                    std::fs::create_dir_all(&game_dir)
+                        .map_err(|e| format!("Failed to create game directory: {}", e))?;
+
+                    let cover_path = game_dir.join("cover.png");
+                    std::fs::write(&cover_path, image_bytes)
+                        .map_err(|e| format!("Failed to save cover: {}", e))?;
+
+                    config.games[game_index].cover_image = Some("cover.png".to_string());
+                }
+                Err(e) => {
+                    return Err(format!("Failed to decode cover image: {}", e));
+                }
             }
         }
     }
 
-    let updated_game = config.games[game_index].clone();
+    let mut updated_game = config.games[game_index].clone();
     config.save()?;
+
+    if let Some(ref cover) = updated_game.cover_image {
+        if cover == "cover.png" {
+            let cover_path = std::path::Path::new(&backup_location)
+                .join(&updated_game.id)
+                .join(cover);
+            updated_game.cover_image = Some(cover_path.to_string_lossy().to_string());
+        }
+    }
 
     Ok(updated_game)
 }
