@@ -5,7 +5,7 @@ use tokio::sync::{oneshot, Mutex};
 use warp::Filter;
 
 struct OAuthState {
-    code_sender: Option<oneshot::Sender<String>>,
+    code_sender: Arc<Mutex<Option<oneshot::Sender<String>>>>,
     code_receiver: Option<oneshot::Receiver<String>>,
     server_running: AtomicBool,
 }
@@ -14,7 +14,7 @@ impl OAuthState {
     fn new() -> Self {
         let (tx, rx) = oneshot::channel();
         Self {
-            code_sender: Some(tx),
+            code_sender: Arc::new(Mutex::new(Some(tx))),
             code_receiver: Some(rx),
             server_running: AtomicBool::new(false),
         }
@@ -22,7 +22,7 @@ impl OAuthState {
 
     fn reset(&mut self) {
         let (tx, rx) = oneshot::channel();
-        self.code_sender = Some(tx);
+        self.code_sender = Arc::new(Mutex::new(Some(tx)));
         self.code_receiver = Some(rx);
         self.server_running.store(false, Ordering::SeqCst);
     }
@@ -39,8 +39,8 @@ pub async fn start_oauth_server() -> Result<u16, String> {
     state.reset();
     println!("State reset complete");
 
-    let code_sender = Arc::new(Mutex::new(state.code_sender.take()));
-    println!("Sender taken and wrapped in Arc");
+    let code_sender = state.code_sender.clone();
+    println!("Sender cloned");
 
     let html = r#"<!DOCTYPE html>
 <html>
@@ -170,5 +170,8 @@ pub async fn wait_for_oauth_code() -> Result<Option<String>, String> {
 pub async fn stop_oauth_server() -> Result<(), String> {
     let state = OAUTH_STATE.lock().await;
     state.server_running.store(false, Ordering::SeqCst);
+    
+    let mut sender_guard = state.code_sender.lock().await;
+    let _ = sender_guard.take(); // Close channel
     Ok(())
 }
