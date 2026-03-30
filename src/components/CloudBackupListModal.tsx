@@ -5,6 +5,7 @@ import { useProfile } from '../lib/profileContext';
 import { useToast } from '../lib/toastContext';
 import { ConfirmModal } from './ConfirmModal';
 import { listAllCloudSnapshots, downloadSnapshot, deleteCloudSnapshot, type CloudBackupItem } from '../lib/googleDrive';
+import { listGames } from '../lib/api';
 
 interface CloudBackupListModalProps {
   isOpen: boolean;
@@ -36,8 +37,19 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
         throw new Error(t('errors.notAuthenticated'));
       }
 
-      const allBackups = await listAllCloudSnapshots(token);
-      setBackups(allBackups);
+      const [allBackups, games] = await Promise.all([
+        listAllCloudSnapshots(token),
+        listGames()
+      ]);
+      
+      const gamesMap = new Map(games.map(g => [g.id, g.name]));
+      
+      const backupsWithNames = allBackups.map(b => ({
+        ...b,
+        gameName: b.gameName || (b.gameId ? gamesMap.get(b.gameId) : undefined)
+      }));
+
+      setBackups(backupsWithNames);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : t('cloud.failedLoadCloudBackups');
       addToast(errorMsg, 'error');

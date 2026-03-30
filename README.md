@@ -12,7 +12,7 @@ Checkpoint is a save game backup tool for local games. Create timestamped backup
 - **100% Private** - Your data stays on your device. We have zero access to your saves or Google Drive
 - **Smart Protection** - Automatically backs up current save before restoring
 - **Process Detection** - Prevents restore while game is running
-- **Cross-Platform** - Windows and Linux support
+- **Cross-Platform** - Windows, macOS, and Linux support
 
 ## Your Data, Your Control
 
@@ -28,6 +28,9 @@ Checkpoint is built with privacy as the foundation:
 
 ### Windows
 - Download the `.exe` installer
+
+### macOS
+- Download the `.dmg` installer or `.app.tar.gz` archive
 
 ### Linux
 - **Ubuntu/Debian**: `checkpoint_0.1.0_amd64.deb`
@@ -72,6 +75,7 @@ Checkpoint is built with privacy as the foundation:
 ## System Requirements
 
 - **Windows**: Windows 10 or later
+- **macOS**: macOS 10.15 Catalina or later
 - **Linux**: Any modern distro with GTK3
 
 ## Support
