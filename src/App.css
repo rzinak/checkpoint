@@ -631,6 +631,24 @@ html {
   color: var(--text-primary);
 }
 
+.cloud-backup-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cloud-backup-modal-title-icon {
+  flex-shrink: 0;
+  display: block;
+}
+
+.cloud-backup-modal-heading {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
 .modal-close {
   background: var(--bg-tertiary);
   border: none;

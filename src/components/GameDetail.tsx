@@ -496,6 +496,7 @@ export function GameDetail({ game, onBack, onGameDeleted, onGameUpdated, setLoad
       const fileId = await uploadSnapshot(
         token,
         game.id,
+        game.name,
         snapshot.name,
         zipBlob
       );

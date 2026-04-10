@@ -121,12 +121,16 @@ export async function getDriveStorageInfo(accessToken: string): Promise<{ used: 
 export async function uploadSnapshot(
   accessToken: string,
   gameId: string,
+  gameName: string,
   snapshotName: string,
   fileBlob: Blob
 ): Promise<string> {
   const metadata = {
     name: `${gameId}/${snapshotName}.zip`,
-    parents: ['appDataFolder']
+    parents: ['appDataFolder'],
+    appProperties: {
+      gameName: gameName
+    }
   };
 
   const boundary = '-------314159265358979323846';
@@ -191,7 +195,7 @@ export async function listCloudSnapshots(accessToken: string, gameId: string): P
 
 export async function listAllCloudSnapshots(accessToken: string): Promise<CloudBackupItem[]> {
   const query = encodeURIComponent(`name contains '/' and trashed = false`);
-  const response = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/files?q=${query}&spaces=appDataFolder&fields=files(id,name,modifiedTime,size)`, {
+  const response = await fetch(`${GOOGLE_DRIVE_ENDPOINT}/files?q=${query}&spaces=appDataFolder&fields=files(id,name,modifiedTime,size,appProperties)`, {
     headers: { Authorization: `Bearer ${accessToken}` }
   });
 
@@ -202,7 +206,7 @@ export async function listAllCloudSnapshots(accessToken: string): Promise<CloudB
   const data = await response.json();
   const files = data.files || [];
 
-  return files.map((file: { id: string; name: string; modifiedTime: string; size?: string }) => {
+  return files.map((file: { id: string; name: string; modifiedTime: string; size?: string; appProperties?: { gameName?: string } }) => {
     const nameParts = file.name.split('/');
     const isSnapshot = nameParts.length === 2 && nameParts[1].endsWith('.zip');
 
@@ -213,7 +217,7 @@ export async function listAllCloudSnapshots(accessToken: string): Promise<CloudB
       size: file.size ? parseInt(file.size) : undefined,
       gameId: isSnapshot ? nameParts[0] : undefined,
       snapshotName: isSnapshot ? nameParts[1].replace('.zip', '') : undefined,
-      gameName: undefined
+      gameName: file.appProperties?.gameName
     };
   }).filter((file: CloudBackupItem) => file.gameId);
 }

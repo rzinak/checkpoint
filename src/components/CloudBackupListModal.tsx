@@ -5,6 +5,7 @@ import { useProfile } from '../lib/profileContext';
 import { useToast } from '../lib/toastContext';
 import { ConfirmModal } from './ConfirmModal';
 import { listAllCloudSnapshots, downloadSnapshot, deleteCloudSnapshot, type CloudBackupItem } from '../lib/googleDrive';
+import { listGames } from '../lib/api';
 
 interface CloudBackupListModalProps {
   isOpen: boolean;
@@ -36,8 +37,19 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
         throw new Error(t('errors.notAuthenticated'));
       }
 
-      const allBackups = await listAllCloudSnapshots(token);
-      setBackups(allBackups);
+      const [allBackups, games] = await Promise.all([
+        listAllCloudSnapshots(token),
+        listGames()
+      ]);
+      
+      const gamesMap = new Map(games.map(g => [g.id, g.name]));
+      
+      const backupsWithNames = allBackups.map(b => ({
+        ...b,
+        gameName: b.gameName || (b.gameId ? gamesMap.get(b.gameId) : undefined)
+      }));
+
+      setBackups(backupsWithNames);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : t('cloud.failedLoadCloudBackups');
       addToast(errorMsg, 'error');
@@ -161,9 +173,9 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
     >
       <div className="modal-content cloud-backup-list-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px' }}>
         <div className="modal-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Cloud size={20} />
-            <h2>{t('cloud.cloudBackups')}</h2>
+          <div className="cloud-backup-modal-title">
+            <Cloud size={20} className="cloud-backup-modal-title-icon" />
+            <div className="cloud-backup-modal-heading">{t('cloud.cloudBackups')}</div>
           </div>
           <button className="modal-close" onClick={onClose}>
             <X size={20} />
