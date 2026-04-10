@@ -173,9 +173,9 @@ export function CloudBackupListModal({ isOpen, onClose, onDownload }: CloudBacku
     >
       <div className="modal-content cloud-backup-list-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px' }}>
         <div className="modal-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Cloud size={20} />
-            <h2>{t('cloud.cloudBackups')}</h2>
+          <div className="cloud-backup-modal-title">
+            <Cloud size={20} className="cloud-backup-modal-title-icon" />
+            <div className="cloud-backup-modal-heading">{t('cloud.cloudBackups')}</div>
           </div>
           <button className="modal-close" onClick={onClose}>
             <X size={20} />
